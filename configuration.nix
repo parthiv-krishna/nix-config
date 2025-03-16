@@ -36,6 +36,11 @@
     initialHashedPassword = "[redacted]";
     extraGroups = [ "wheel" ];
   };
+
+  systemd.tmpfiles.rules = [
+    "d /persist/home/ 1777 root root -" # /persist/home created, owned by root
+    "d /persist/home/parthiv 0770 parthiv users -" # /persist/home/parthiv created, owned by parthiv
+  ];
   programs.fuse.userAllowOther = true;
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
