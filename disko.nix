@@ -2,7 +2,7 @@
 # the root partition is further subdivided into 3 subvolumes
 #   /root    (intended to be wiped on boot by impermanence module)
 #   /persist (keeps explicitly-declared persistent state)
-#   /nix     (holds nix store) 
+#   /nix     (holds nix store)
 # based on https://github.com/vimjoyer/impermanent-setup/blob/main/final/disko.nix
 
 {
