@@ -7,7 +7,7 @@
 
   home.stateVersion = "24.11";
 
-  home.persistence."/persist/home" = {
+  home.persistence."/persist/home/parthiv" = {
     directories = [
       ".ssh"
       "nix-config"
