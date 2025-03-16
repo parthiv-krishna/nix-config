@@ -6,6 +6,13 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    impermanence = {
+      url = "github:nix-community/impermanence";
+    };
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
@@ -21,6 +28,8 @@
         midnight = lib.nixosSystem {
           modules = [
             inputs.disko.nixosModules.default
+            inputs.home-manager.nixosModules.default
+            inputs.impermanence.nixosModules.impermanence
             ./configuration.nix
           ];
           specialArgs = { inherit inputs; };

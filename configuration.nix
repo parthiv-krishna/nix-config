@@ -4,6 +4,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -13,6 +14,11 @@
     ./hardware-configuration.nix
     (import ./disko.nix { device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116"; })
     ./impermanence.nix
+  ];
+
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -30,6 +36,13 @@
     initialHashedPassword = "[redacted]";
     extraGroups = [ "wheel" ];
   };
+  programs.fuse.userAllowOther = true;
+  home-manager = {
+    extraSpecialArgs = { inherit inputs; };
+    users = {
+      parthiv = import ./home.nix;
+    };
+  };
 
   environment.systemPackages = with pkgs; [
     git
@@ -44,4 +57,5 @@
   networking.firewall.allowedTCPPorts = [ 22 ];
 
   system.stateVersion = "24.11";
+
 }

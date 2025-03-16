@@ -1,6 +1,7 @@
 # impermanence-related configuration
 
 {
+  config,
   pkgs,
   lib,
   inputs,
@@ -9,6 +10,9 @@
 
 {
   # startup script from https://github.com/nix-community/impermanence
+  # 1. backup current state of root
+  # 2. clear out backups older than 30d
+  # 3. make a new empty root
   boot.initrd.postDeviceCommands = lib.mkAfter ''
     mkdir /btrfs_tmp
     mount /dev/root_vg/root /btrfs_tmp
@@ -33,4 +37,17 @@
     btrfs subvolume create /btrfs_tmp/root
     umount /btrfs_tmp
   '';
+
+  fileSystems."/persist".neededForBoot = true;
+  environment.persistence."/persist/system" = {
+    hideMounts = true;
+    directories = [
+      "/var/lib/nixos"
+      "/var/lib/systemd/coredump"
+      "/var/log"
+    ];
+    files = [
+      "/etc/machine-id"
+    ];
+  };
 }
