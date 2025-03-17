@@ -1,10 +1,7 @@
 # impermanence-related configuration
 
 {
-  config,
-  pkgs,
   lib,
-  inputs,
   ...
 }:
 
@@ -38,7 +35,7 @@
     umount /btrfs_tmp
   '';
 
-  fileSystems."/persist".neededForBoot = true;
+  fileSystems."/persist".neededForBoot = lib.mkForce true;
   environment.persistence."/persist/system" = {
     hideMounts = true;
     directories = [

@@ -22,6 +22,7 @@
     { nixpkgs, ... }@inputs:
     let
       lib = nixpkgs.lib;
+      helpers = import ./helpers { inherit lib; };
     in
     {
       nixosConfigurations = {
@@ -30,9 +31,12 @@
             inputs.disko.nixosModules.default
             inputs.home-manager.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
-            ./configuration.nix
+            ./system/midnight
           ];
-          specialArgs = { inherit inputs; };
+          specialArgs = {
+            inherit inputs;
+            inherit helpers;
+          };
           system = "x86_64-linux";
         };
       };

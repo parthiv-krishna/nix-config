@@ -1,4 +1,4 @@
-# disko configuration for a main disk with boot/ESP/swap/root partitions
+# disko configuration for a boot drive with boot/ESP/swap/root partitions
 # the root partition is further subdivided into 3 subvolumes
 #   /root    (intended to be wiped on boot by impermanence module)
 #   /persist (keeps explicitly-declared persistent state)

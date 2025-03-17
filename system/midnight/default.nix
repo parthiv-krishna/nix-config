@@ -1,10 +1,9 @@
 # Configuration for midnight (home server)
 
 {
-  config,
-  lib,
-  pkgs,
+  helpers,
   inputs,
+  pkgs,
   ...
 }:
 
@@ -12,13 +11,10 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    (import ./disko.nix { device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116"; })
-    ./impermanence.nix
-  ];
-
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
+    (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
+      device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
+    })
+    (helpers.relativeToRoot "./hosts/common/required")
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -45,21 +41,9 @@
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users = {
-      parthiv = import ./home.nix;
+      parthiv = import (helpers.relativeToRoot "./home/parthiv/midnight.nix");
     };
   };
-
-  environment.systemPackages = with pkgs; [
-    git
-    nixfmt-rfc-style
-    tmux
-    vim
-    wget
-  ];
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 ];
 
   system.stateVersion = "24.11";
 
