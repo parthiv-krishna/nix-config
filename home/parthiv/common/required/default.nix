@@ -17,6 +17,7 @@
     htop
     nixfmt-rfc-style
     pciutils
+    trash-cli
     unzip
     usbutils
     wget
