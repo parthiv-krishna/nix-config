@@ -10,7 +10,7 @@
   # persist downloaded models
   environment.persistence."/persist/system" = {
     directories = [
-	"/var/lib/ollama/models"
+      "/var/lib/ollama/models"
     ];
   };
 
