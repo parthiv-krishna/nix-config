@@ -14,7 +14,7 @@
     (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
     })
-    (helpers.relativeToRoot "./hosts/common/required")
+    (helpers.relativeToRoot "system/common/required")
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -41,7 +41,7 @@
   home-manager = {
     extraSpecialArgs = { inherit inputs; };
     users = {
-      parthiv = import (helpers.relativeToRoot "./home/parthiv/midnight.nix");
+      parthiv = import (helpers.relativeToRoot "home/parthiv/midnight.nix");
     };
   };
 
