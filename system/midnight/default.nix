@@ -3,18 +3,27 @@
 {
   helpers,
   inputs,
+  lib,
   pkgs,
   ...
 }:
 
 {
-  imports = [
+  imports = lib.flatten [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+
+    # disks
     (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
     })
-    (helpers.relativeToRoot "system/common/required")
+
+    # common system packages
+    (map helpers.relativeToRoot [
+      "system/common/required"
+      "system/common/optional/ollama.nix"
+      "system/common/optional/sshd.nix"
+    ])
   ];
 
   # Use the systemd-boot EFI boot loader.
