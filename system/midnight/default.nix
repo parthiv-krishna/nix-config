@@ -21,7 +21,6 @@
     # common system packages
     (map helpers.relativeToRoot [
       "system/common/required"
-      "system/common/optional/ollama.nix"
       "system/common/optional/sshd.nix"
     ])
   ];
