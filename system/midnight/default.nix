@@ -22,6 +22,7 @@
     (map helpers.relativeToRoot [
       "system/common/required"
       "system/common/optional/sshd.nix"
+      "system/common/optional/nvidia.nix"
     ])
   ];
 

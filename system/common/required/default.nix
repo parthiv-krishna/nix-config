@@ -1,4 +1,10 @@
-{ helpers, ... }:
+{
+  config,
+  helpers,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = helpers.scanPaths ./.;
 
@@ -6,4 +12,5 @@
     "nix-command"
     "flakes"
   ];
+
 }
