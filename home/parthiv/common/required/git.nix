@@ -1,7 +1,6 @@
 # git configuration, should be imported to home-manager
 
-{ ... }:
-{
+_: {
   programs.git = {
     enable = true;
     lfs.enable = true;

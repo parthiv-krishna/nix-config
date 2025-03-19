@@ -16,13 +16,18 @@
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
+    pre-commit-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { nixpkgs, ... }@inputs:
+    { nixpkgs, self, ... }@inputs:
     let
-      lib = nixpkgs.lib;
+      inherit (nixpkgs) lib; # equivalent to lib = nixpkgs.lib;
       helpers = import ./helpers { inherit lib; };
+      system = "x86_64-linux";
     in
     {
       nixosConfigurations = {
@@ -38,7 +43,29 @@
             inherit inputs;
             inherit helpers;
           };
-          system = "x86_64-linux";
+          inherit system;
+        };
+      };
+
+      # `nix fmt`
+      formatter = {
+        ${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+      };
+
+      # Pre-commit checks
+      checks = {
+        ${system} =
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+          in
+          import ./tools/checks.nix { inherit inputs system pkgs; };
+      };
+
+      # `nix develop`
+      devShells = {
+        ${system} = import ./tools/shell.nix {
+          pkgs = nixpkgs.legacyPackages.${system};
+          checks = self.checks.${system};
         };
       };
     };
