@@ -2,7 +2,6 @@
 
 {
   helpers,
-  inputs,
   lib,
   ...
 }:
@@ -17,7 +16,7 @@
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
     })
 
-    # common system packages
+    # common system modules
     (map helpers.relativeToRoot [
       "system/common/required"
       "system/common/optional/sshd.nix"
@@ -25,34 +24,12 @@
     ])
   ];
 
+  networking.hostName = "midnight"; # Define your hostname.
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "midnight"; # Define your hostname.
-
   time.timeZone = "Etc/UTC";
-
-  users.mutableUsers = false;
-  users.users.root.hashedPassword = "*"; # no root password
-  users.users.parthiv = {
-    isNormalUser = true;
-    initialHashedPassword = "[redacted]";
-    extraGroups = [ "wheel" ];
-  };
-
-  systemd.tmpfiles.rules = [
-    "d /persist/home/ 1777 root root -" # /persist/home created, owned by root
-    "d /persist/home/parthiv 0770 parthiv users -" # /persist/home/parthiv created, owned by parthiv
-  ];
-  programs.fuse.userAllowOther = true;
-  home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    users = {
-      parthiv = import (helpers.relativeToRoot "home/parthiv/midnight.nix");
-    };
-  };
-
-  system.stateVersion = "24.11";
 
 }
