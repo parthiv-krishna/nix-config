@@ -14,14 +14,16 @@
   ];
 
   users.users.root.hashedPassword = "*"; # no root password
+
+  sops.secrets.parthiv-password.neededForUsers = true;
   users.users.parthiv = {
     isNormalUser = true;
-    initialHashedPassword = "[redacted]";
+    hashedPasswordFile = config.sops.secrets.parthiv-password.path;
     extraGroups = [ "wheel" ];
   };
   # TODO: allow home-manager config to be used outside of NixOS
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit helpers inputs; };
     users = {
       parthiv = import (helpers.relativeToRoot "home/parthiv/${config.networking.hostName}.nix");
     };
