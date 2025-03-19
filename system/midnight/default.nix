@@ -4,7 +4,6 @@
   helpers,
   inputs,
   lib,
-  pkgs,
   ...
 }:
 
