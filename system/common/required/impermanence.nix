@@ -35,7 +35,10 @@
     umount /btrfs_tmp
   '';
 
+  # make sure /persist is available during boot
   fileSystems."/persist".neededForBoot = lib.mkForce true;
+
+  # bare minimum system needs when persisting, other modules should add their own
   environment.persistence."/persist/system" = {
     hideMounts = true;
     directories = [
@@ -47,4 +50,15 @@
       "/etc/machine-id"
     ];
   };
+
+  users.mutableUsers = false;
+
+  /*
+    systemd.tmpfiles.rules = [
+      "d /persist/home/ 1777 root root -" # /persist/home created, owned by root
+      "d /persist/home/parthiv 0770 parthiv users -" # /persist/home/parthiv created, owned by parthiv
+    ];
+    programs.fuse.userAllowOther = true;
+  */
+
 }
