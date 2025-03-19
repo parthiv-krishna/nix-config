@@ -1,8 +1,6 @@
 # ssh configuration
 
-{
-  ...
-}:
+_:
 
 {
   # enable sshd and allow connections on port 22

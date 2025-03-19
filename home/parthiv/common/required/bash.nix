@@ -1,7 +1,6 @@
 # bash configuration, should be imported to home-manager
 
-{ ... }:
-{
+_: {
   programs.bash = {
     enable = true;
 
