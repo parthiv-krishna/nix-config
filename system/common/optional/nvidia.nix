@@ -1,8 +1,6 @@
 {
   config,
-  helpers,
   lib,
-  pkgs,
   ...
 }:
 
@@ -11,11 +9,11 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
-    modesetting.enable = true;
+    modesetting.enable = lib.mkDefault true;
 
-    open = true;
+    open = lib.mkDefault true;
 
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
   unfree.allowedPackages = [
