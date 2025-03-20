@@ -6,6 +6,7 @@
   imports = [
     ./bash.nix
     ./git.nix
+    ./impermanence.nix
     ./sops.nix
     ./tmux.nix
   ];
@@ -22,4 +23,6 @@
     wget
     zip
   ];
+
+  home.stateVersion = "24.11";
 }
