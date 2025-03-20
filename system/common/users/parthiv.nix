@@ -10,6 +10,10 @@
     isNormalUser = true;
     hashedPasswordFile = config.sops.secrets.parthiv-password.path;
     extraGroups = [ "wheel" ];
+    openssh.authorizedKeys.keys = [
+      # parthiv@icicle
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDn4cP5Vjigpv2s3CVWSQc3VlmlnxJqfcYMku3Dwbi2k"
+    ];
   };
   # TODO: allow home-manager config to be used outside of NixOS
   home-manager = {

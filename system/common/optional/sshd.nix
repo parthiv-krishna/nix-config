@@ -1,13 +1,19 @@
-# ssh configuration
+# ssh server configuration
 
 _:
 
 {
-  # enable sshd and allow connections on port 22
-  services.openssh.enable = true;
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  services.openssh = {
+    enable = true;
+    # require public-key auth
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
+  };
 
-  # move to ssh key auth before opening router to internet
+  # allow incoming connections on port 22
+  networking.firewall.allowedTCPPorts = [ 22 ];
 
   # persist SSH host keys
   environment.persistence."/persist/system" = {
