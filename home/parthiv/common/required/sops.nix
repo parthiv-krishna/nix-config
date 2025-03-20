@@ -21,6 +21,10 @@
     };
   };
 
+  home.sessionVariables = {
+    SOPS_AGE_KEY_FILE = "/home/parthiv/.age/parthiv.age";
+  };
+
   # persist age keys
   home.persistence."/persist/home/parthiv" = {
     directories = [
