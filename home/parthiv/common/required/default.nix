@@ -7,6 +7,7 @@
     ./bash.nix
     ./git.nix
     ./impermanence.nix
+    ./nixvim
     ./sops.nix
     ./tmux.nix
   ];
