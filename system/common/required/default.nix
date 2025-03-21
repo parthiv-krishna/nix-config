@@ -13,6 +13,4 @@
 
   users.users.root.hashedPassword = "*"; # no root password
 
-  system.stateVersion = "24.11";
-
 }

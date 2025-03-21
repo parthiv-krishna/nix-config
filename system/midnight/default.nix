@@ -17,17 +17,19 @@
     })
 
     # users
-    (helpers.relativeToRoot "system/common/users/parthiv.nix")
+    (map (helpers.relativeTo "system/common/users/") [
+      "parthiv.nix"
+    ])
 
     # common system modules
-    (map helpers.relativeToRoot [
-      "system/common/required"
-      "system/common/optional/sshd.nix"
-      "system/common/optional/nvidia.nix"
+    (map (helpers.relativeTo "system/common") [
+      "required"
+      "optional/sshd.nix"
+      "optional/nvidia.nix"
     ])
   ];
 
-  networking.hostName = "midnight"; # Define your hostname.
+  networking.hostName = "midnight";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -35,4 +37,6 @@
 
   time.timeZone = "Etc/UTC";
 
+  # should not be changed until a clean install
+  system.stateVersion = "24.11";
 }
