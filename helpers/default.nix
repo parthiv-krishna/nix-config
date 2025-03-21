@@ -4,6 +4,7 @@
 {
   # use path relative to the root of the project
   relativeToRoot = lib.path.append ../.;
+  relativeTo = dir: lib.path.append (lib.path.append ../. dir);
   scanPaths =
     path:
     builtins.map (f: (path + "/${f}")) (
