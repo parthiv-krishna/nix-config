@@ -1,29 +1,21 @@
 {
+  helpers,
   pkgs,
   ...
 }:
 {
-  imports = [
-    ./bash.nix
-    ./git.nix
-    ./impermanence.nix
-    ./nixvim
-    ./sops.nix
-    ./tmux.nix
-  ];
+  imports = helpers.scanPaths ./.;
 
   home.packages = with pkgs; [
     curl
     fastfetch
     htop
-    nixfmt-rfc-style
     pciutils
+    powertop
     trash-cli
     unzip
     usbutils
     wget
     zip
   ];
-
-  home.stateVersion = "24.11";
 }
