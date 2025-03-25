@@ -3,6 +3,7 @@
 {
   inputs,
   helpers,
+  pkgs,
   ...
 }:
 {
@@ -21,15 +22,19 @@
     };
   };
 
-  home.sessionVariables = {
-    SOPS_AGE_KEY_FILE = "/home/parthiv/.age/parthiv.age";
-  };
-
-  # persist age keys
-  home.persistence."/persist/home/parthiv" = {
-    directories = [
-      ".age"
+  home = {
+    packages = with pkgs; [
+      sops
     ];
+    sessionVariables = {
+      SOPS_AGE_KEY_FILE = "/home/parthiv/.age/parthiv.age";
+    };
+    # persist age keys
+    persistence."/persist/home/parthiv" = {
+      directories = [
+        ".age"
+      ];
+    };
   };
 
 }

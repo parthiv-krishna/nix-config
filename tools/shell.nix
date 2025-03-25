@@ -26,16 +26,11 @@
       inherit (pkgs)
 
         age
-        deadnix
         git
-        home-manager
         nix
-        nixfmt-rfc-style
         sops
-        statix
         pre-commit
         ssh-to-age
-        vim
         ;
     };
   };
