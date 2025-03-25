@@ -16,6 +16,7 @@
 
     viAlias = true;
     vimAlias = true;
+    defaultEditor = true;
 
     opts = {
       # line numbers
