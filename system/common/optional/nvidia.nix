@@ -48,4 +48,11 @@
     nvtopPackages.nvidia
   ];
 
+  nixpkgs.config = {
+    cudaSupport = true;
+    cudaCapability = lib.mkDefault "8.6"; # 3060Ti
+  };
+
+  hardware.nvidia-container-toolkit.enable = true;
+
 }

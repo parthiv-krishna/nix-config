@@ -26,6 +26,8 @@
       "required"
       "optional/sshd.nix"
       "optional/nvidia.nix"
+      "optional/containers/actual.nix"
+      "optional/containers/ollama.nix"
     ])
   ];
 
