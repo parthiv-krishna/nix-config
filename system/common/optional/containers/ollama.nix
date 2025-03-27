@@ -3,7 +3,7 @@
   ...
 }:
 let
-  dataDir = "/containers/ollama";
+  dataDir = "/var/lib/ollama";
 in
 {
   virtualisation.docker.enable = lib.mkForce true;
