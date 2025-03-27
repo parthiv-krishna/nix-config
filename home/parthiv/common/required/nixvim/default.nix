@@ -38,6 +38,9 @@
 
       # persistent undo
       undofile = true;
+
+      # auto reload files changed on disk
+      autoread = true;
     };
 
     colorschemes = {
