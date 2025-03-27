@@ -29,7 +29,7 @@
       "sshd.nix"
       "nvidia.nix"
       "podman.nix"
-      # "traefik.nix"
+      "traefik.nix"
     ])
 
     # containers
