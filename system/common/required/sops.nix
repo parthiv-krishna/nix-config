@@ -24,6 +24,8 @@
 
     secrets = {
       parthiv-password = { };
+      "cloudflare/email" = { };
+      "cloudflare/api_token" = { };
     };
   };
 

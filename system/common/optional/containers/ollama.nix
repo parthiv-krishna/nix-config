@@ -1,14 +1,8 @@
-{
-  lib,
-  ...
-}:
+_:
 let
   dataDir = "/var/lib/ollama";
 in
 {
-  virtualisation.docker.enable = lib.mkForce true;
-  users.users.parthiv.extraGroups = [ "docker" ];
-
   virtualisation.oci-containers.containers.ollama = {
     image = "ollama/ollama:latest";
     autoStart = true;

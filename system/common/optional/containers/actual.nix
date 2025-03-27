@@ -1,14 +1,8 @@
-{
-  lib,
-  ...
-}:
+_:
 let
   dataDir = "/var/lib/actual";
 in
 {
-  virtualisation.docker.enable = lib.mkForce true;
-  users.users.parthiv.extraGroups = [ "docker" ];
-
   virtualisation.oci-containers.containers.actual = {
     image = "actualbudget/actual-server:latest";
     autoStart = true;
