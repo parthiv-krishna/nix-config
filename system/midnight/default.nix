@@ -21,14 +21,22 @@
       "parthiv.nix"
     ])
 
-    # common system modules
-    (map (helpers.relativeTo "system/common") [
-      "required"
-      "optional/sshd.nix"
-      "optional/nvidia.nix"
-      "optional/containers/actual.nix"
-      "optional/containers/ollama.nix"
+    # required system modules
+    (helpers.relativeToRoot "system/common/required")
+
+    # optional system modules
+    (map (helpers.relativeTo "system/common/optional") [
+      "sshd.nix"
+      "nvidia.nix"
+      "podman.nix"
+      # "traefik.nix"
     ])
+
+    # containers
+    (map (helpers.relativeTo "system/common/optional/containers") [
+      "helloworld.nix"
+    ])
+
   ];
 
   networking.hostName = "midnight";
