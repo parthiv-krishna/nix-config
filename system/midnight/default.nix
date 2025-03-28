@@ -34,7 +34,10 @@
 
     # containers
     (map (helpers.relativeTo "system/common/optional/containers") [
+      "actual.nix"
       "helloworld.nix"
+      "ollama.nix"
+      "open-webui.nix"
     ])
 
   ];

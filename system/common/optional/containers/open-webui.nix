@@ -1,19 +1,19 @@
 _:
 let
-  serviceName = "ollama";
-  subdomain = serviceName;
+  serviceName = "open-webui";
+  subdomain = "ai";
   dataDir = "/var/lib/${serviceName}";
-  port = "11434";
+  port = "3000";
 in
 {
-  virtualisation.oci-containers.containers."${serviceName}" = {
-    image = "ollama/ollama:latest";
+  virtualisation.oci-containers.containers.${serviceName} = {
+    image = "ghcr.io/open-webui/open-webui:cuda";
     autoStart = true;
     ports = [
-      "${port}:11434"
+      "${port}:8080"
     ];
     volumes = [
-      "${dataDir}:/root/.ollama"
+      dataDir
     ];
     # enable NVIDIA GPU
     extraOptions = [ "--device=nvidia.com/gpu=all" ];
