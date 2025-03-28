@@ -41,8 +41,10 @@ in
           acme = {
             email = "letsencrypt.snowy015@passmail.net";
             storage = "${dataDir}/acme.json";
-            # caServer = "https://acme-v02.api.letsencrypt.org/directory";
-            caServer = "https://acme-staging-v02.api.letsencrypt.org/directory";
+            # main server (trusted by browsers) - use once it's working on staging
+            caServer = "https://acme-v02.api.letsencrypt.org/directory";
+            # staging server (not trusted by browsers) - use for testing
+            # caServer = "https://acme-staging-v02.api.letsencrypt.org/directory";
             dnsChallenge = {
               provider = "cloudflare";
               resolvers = [
@@ -56,7 +58,7 @@ in
         };
       };
       log = {
-        level = "DEBUG";
+        level = "WARN";
         filePath = "${dataDir}/traefik.log";
       };
       accessLog = {
