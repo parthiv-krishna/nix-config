@@ -1,7 +1,8 @@
 _:
 let
-  port = "43110";
   serviceName = "helloworld";
+  subdomain = serviceName;
+  port = "43110";
 in
 {
   virtualisation.oci-containers.containers."${serviceName}" = {
@@ -15,7 +16,7 @@ in
 
   services.traefik.dynamicConfigOptions.http = {
     routers."${serviceName}" = {
-      rule = "Host(`${serviceName}.sub0.net`)";
+      rule = "Host(`${subdomain}.sub0.net`)";
       service = serviceName;
       entryPoints = [ "websecure" ];
     };
