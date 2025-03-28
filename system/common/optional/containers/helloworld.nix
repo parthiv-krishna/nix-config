@@ -1,12 +1,24 @@
-_: {
-  virtualisation.oci-containers.containers.helloworld = {
+_:
+let
+  port = "43110";
+  serviceName = "helloworld";
+in
+{
+  virtualisation.oci-containers.containers."${serviceName}" = {
     image = "docker.io/nginxdemos/hello";
     autoStart = true;
     ports = [
-      "81:80"
+      # hello
+      "${port}:80"
     ];
   };
 
-  networking.firewall.allowedTCPPorts = [ 81 ];
-
+  services.traefik.dynamicConfigOptions.http = {
+    routers."${serviceName}" = {
+      rule = "Host(`${serviceName}.sub0.net`)";
+      service = serviceName;
+      entryPoints = [ "websecure" ];
+    };
+    services."${serviceName}".loadBalancer.servers = [ { url = "http://localhost:${port}"; } ];
+  };
 }
