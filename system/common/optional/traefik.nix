@@ -4,6 +4,7 @@
 }:
 let
   dataDir = "/var/lib/traefik";
+  userAndGroupName = "traefik";
 in
 {
   services.traefik = {
@@ -24,6 +25,13 @@ in
           address = ":443";
           http.tls = {
             certResolver = "letsencrypt";
+            domains = [
+              {
+                # wildcard, one cert works for all subdomains
+                main = "sub0.net";
+                sans = [ "*.sub0.net" ];
+              }
+            ];
           };
         };
       };
@@ -70,7 +78,7 @@ in
 
   # create service user/group
   users.groups.traefik = { };
-  users.users.traefik.extraGroups = [ "traefik" ];
+  users.users.traefik.extraGroups = [ userAndGroupName ];
 
   systemd.services.traefik = {
     # pass cloudflare token to the service
@@ -80,8 +88,8 @@ in
 
     # assign service user/group
     serviceConfig = {
-      User = "traefik";
-      Group = "traefik";
+      User = userAndGroupName;
+      Group = userAndGroupName;
     };
   };
 
@@ -101,7 +109,7 @@ in
   sops.secrets = {
     "cloudflare/api_token" = {
       owner = "root";
-      group = "traefik";
+      group = userAndGroupName;
       mode = "0640"; # root rw, traefik r
       restartUnits = [ "traefik.service" ];
     };
