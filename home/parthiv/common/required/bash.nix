@@ -19,7 +19,6 @@ _: {
 
     shellAliases = {
       open = "xdg-open";
-      rm = "echo \"rm is disabled, please use trash\"";
     };
 
     shellOptions = [
