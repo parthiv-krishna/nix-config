@@ -5,6 +5,7 @@
 let
   dataDir = "/var/lib/traefik";
   userAndGroupName = "traefik";
+  cloudflareApiTokenSecretName = "${config.networking.hostName}/cloudflare_api_token";
 in
 {
   services.traefik = {
@@ -85,7 +86,7 @@ in
   systemd.services.traefik = {
     # pass cloudflare token to the service
     environment = {
-      CF_DNS_API_TOKEN_FILE = config.sops.secrets."cloudflare/api_token".path;
+      CF_DNS_API_TOKEN_FILE = config.sops.secrets."${cloudflareApiTokenSecretName}".path;
     };
 
     # assign service user/group
@@ -109,7 +110,7 @@ in
 
   # allow service group to read token
   sops.secrets = {
-    "cloudflare/api_token" = {
+    "${cloudflareApiTokenSecretName}" = {
       owner = "root";
       group = userAndGroupName;
       mode = "0640"; # root rw, traefik r
