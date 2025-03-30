@@ -1,8 +1,9 @@
 # sops configuration, should be imported to home-manager
 
 {
-  inputs,
   helpers,
+  hostname,
+  inputs,
   pkgs,
   ...
 }:
@@ -18,7 +19,7 @@
 
     secrets = {
       # compute SSH private key from sops secret
-      "private_keys/parthiv".path = "/home/parthiv/.ssh/id_ed25519";
+      "${hostname}/sshKeys/parthiv".path = "/home/parthiv/.ssh/id_ed25519";
     };
   };
 

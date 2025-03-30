@@ -22,11 +22,6 @@
       sshKeyPaths = [ "/persist/system/etc/ssh/ssh_host_ed25519_key" ];
     };
 
-    secrets = {
-      parthiv-password = { };
-      "cloudflare/email" = { };
-      "cloudflare/api_token" = { };
-    };
   };
 
 }
