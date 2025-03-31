@@ -1,4 +1,7 @@
-_:
+{
+  pkgs,
+  ...
+}:
 let
   serviceName = "ollama";
   subdomain = serviceName;
@@ -33,5 +36,9 @@ in
     };
     services."${serviceName}".loadBalancer.servers = [ { url = "http://localhost:${port}"; } ];
   };
+
+  environment.systemPackages = with pkgs; [
+    ollama # for managing
+  ];
 
 }
