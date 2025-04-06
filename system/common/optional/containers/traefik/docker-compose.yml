@@ -1,4 +1,3 @@
-name: traefik
 services:
   reverse-proxy:
     image: traefik:latest
@@ -12,8 +11,8 @@ services:
       - 443:443 # HTTPS
     volumes:
       # Config
-      - ./traefik.yml:/traefik.yaml:ro
-      - ./config.yml:/config.yaml:ro
+      - NIX_DERIVATION_SRC/traefik.yml:/traefik.yaml:ro
+      - NIX_DERIVATION_SRC/config.yml:/config.yaml:ro
       # Timezone
       - /etc/localtime:/etc/localtime:ro
       # Podman events

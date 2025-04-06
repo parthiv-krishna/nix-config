@@ -1,13 +1,19 @@
 {
   config,
+  helpers,
   ...
 }:
 let
-  containerName = "traefik";
-  secretName = "${config.networking.hostName}/containerEnvironments/${containerName}";
+  name = "traefik";
+  secretName = "${config.networking.hostName}/containerEnvironments/${name}";
 in
 {
-  imports = [ ./docker-compose.nix ];
+  imports = [
+    (helpers.mkCompose {
+      inherit name;
+      src = ./.;
+    })
+  ];
 
   virtualisation.oci-containers.containers."traefik-reverse-proxy" = {
     environmentFiles = [
