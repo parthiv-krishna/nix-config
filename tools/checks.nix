@@ -36,7 +36,6 @@
         # don't bother "fixing" auto-generated files
         settings.ignore = [
           "hardware-configuration.nix"
-          "docker-compose.nix"
         ];
       };
 
