@@ -1,4 +1,3 @@
-name: helloworld
 services:
   helloworld:
     image: nginx:alpine

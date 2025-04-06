@@ -2,6 +2,10 @@
   description = "My nix flake for system configuration, intended to be usable on NixOS and non-NixOS machines";
 
   inputs = {
+    compose2nix = {
+      url = "github:aksiksi/compose2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,8 +38,16 @@
     { nixpkgs, self, ... }@inputs:
     let
       inherit (nixpkgs) lib; # equivalent to lib = nixpkgs.lib;
-      helpers = import ./helpers { inherit lib; };
       system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      helpers = import ./helpers {
+        inherit
+          inputs
+          lib
+          pkgs
+          system
+          ;
+      };
     in
     {
       nixosConfigurations = {
