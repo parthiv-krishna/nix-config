@@ -2,7 +2,25 @@ name: helloworld
 services:
   helloworld:
     image: nginx:alpine
-    container_name: helloworld
-    ports:
-      #  hello
-      - "43110:80"
+    restart: unless-stopped
+    security_opt:
+      - "no-new-privileges:true"
+    networks:
+      traefik_proxy:
+    labels:
+      - "traefik.enable=true"
+      # redirect HTTP to HTTPS
+      - "traefik.http.routers.helloworld.entrypoints=http"
+      - "traefik.http.routers.helloworld.rule=Host(`helloworld.sub0.net`)"
+      - "traefik.http.routers.helloworld.middlewares=helloworld-https-redirect"
+      - "traefik.http.middlewares.helloworld-https-redirect.redirectscheme.scheme=https"
+      # configure helloworld HTTPS
+      - "traefik.http.routers.helloworld-secure.entrypoints=https"
+      - "traefik.http.routers.helloworld-secure.rule=Host(`helloworld.sub0.net`)"
+      - "traefik.http.routers.helloworld-secure.tls=true"
+      - "traefik.http.routers.helloworld-secure.service=helloworld"
+      - "traefik.http.services.helloworld.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik_proxy"
+networks:
+  traefik_proxy:
+    external: true

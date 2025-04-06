@@ -1,0 +1,3 @@
+# don't check in generated docker-compose.nix files
+# they will be auto-created during rebuild
+docker-compose.nix

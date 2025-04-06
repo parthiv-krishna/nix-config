@@ -1,5 +1,5 @@
 # Auto-generated using compose2nix v0.3.1.
-{ pkgs, lib, ... }:
+{ lib, ... }:
 
 {
   # Runtime
@@ -20,48 +20,38 @@
   virtualisation.oci-containers.backend = "podman";
 
   # Containers
-  virtualisation.oci-containers.containers."web_server" = {
+  virtualisation.oci-containers.containers."helloworld-helloworld" = {
     image = "nginx:alpine";
-    ports = [
-      "43110:80/tcp"
-    ];
+    labels = {
+      "traefik.docker.network" = "traefik_proxy";
+      "traefik.enable" = "true";
+      "traefik.http.middlewares.helloworld-https-redirect.redirectscheme.scheme" = "https";
+      "traefik.http.routers.helloworld-secure.entrypoints" = "https";
+      "traefik.http.routers.helloworld-secure.rule" = "Host(`helloworld.sub0.net`)";
+      "traefik.http.routers.helloworld-secure.service" = "helloworld";
+      "traefik.http.routers.helloworld-secure.tls" = "true";
+      "traefik.http.routers.helloworld.entrypoints" = "http";
+      "traefik.http.routers.helloworld.middlewares" = "helloworld-https-redirect";
+      "traefik.http.routers.helloworld.rule" = "Host(`helloworld.sub0.net`)";
+      "traefik.http.services.helloworld.loadbalancer.server.port" = "80";
+    };
     log-driver = "journald";
     extraOptions = [
       "--network-alias=helloworld"
-      "--network=helloworld_default"
+      "--network=traefik_proxy"
+      "--security-opt=no-new-privileges:true"
     ];
   };
-  systemd.services."podman-web_server" = {
+  systemd.services."podman-helloworld-helloworld" = {
     serviceConfig = {
-      Restart = lib.mkOverride 90 "no";
+      Restart = lib.mkOverride 90 "always";
     };
-    after = [
-      "podman-network-helloworld_default.service"
-    ];
-    requires = [
-      "podman-network-helloworld_default.service"
-    ];
     partOf = [
       "podman-compose-helloworld-root.target"
     ];
     wantedBy = [
       "podman-compose-helloworld-root.target"
     ];
-  };
-
-  # Networks
-  systemd.services."podman-network-helloworld_default" = {
-    path = [ pkgs.podman ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStop = "podman network rm -f helloworld_default";
-    };
-    script = ''
-      podman network inspect helloworld_default || podman network create helloworld_default
-    '';
-    partOf = [ "podman-compose-helloworld-root.target" ];
-    wantedBy = [ "podman-compose-helloworld-root.target" ];
   };
 
   # Root service
