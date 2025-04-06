@@ -26,6 +26,7 @@
       inherit (pkgs)
 
         age
+        compose2nix
         git
         nix
         sops

@@ -33,13 +33,17 @@
       nixfmt-rfc-style.enable = true;
       statix = {
         enable = true;
-        # don't bother "fixing" auto-generated hardware-configuration.nix
-        settings.ignore = [ "hardware-configuration.nix" ];
+        # don't bother "fixing" auto-generated files
+        settings.ignore = [
+          "hardware-configuration.nix"
+          "docker-compose.nix"
+        ];
       };
 
-      # bash formatting
+      # other formatting
       shellcheck.enable = true;
       shfmt.enable = true;
+      yamlfmt.enable = true;
 
     };
   };

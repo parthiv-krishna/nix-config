@@ -1,0 +1,8 @@
+name: helloworld
+services:
+  helloworld:
+    image: nginx:alpine
+    container_name: helloworld
+    ports:
+      #  hello
+      - "43110:80"

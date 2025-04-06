@@ -28,17 +28,11 @@
     (map (helpers.relativeTo "system/common/optional") [
       "sshd.nix"
       "nvidia.nix"
-      "podman.nix"
-      "traefik.nix"
     ])
 
     # containers
     (map (helpers.relativeTo "system/common/optional/containers") [
-      "actual.nix"
-      "forgejo.nix"
-      "helloworld.nix"
-      "ollama.nix"
-      "open-webui.nix"
+      "helloworld"
     ])
 
   ];
