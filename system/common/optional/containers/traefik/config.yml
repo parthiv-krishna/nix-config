@@ -1,3 +1,4 @@
+# based on https://github.com/JamesTurland/JimsGarage/blob/main/Traefikv3/config/config.yaml
 http:
   middlewares:
     default-security-headers:
