@@ -33,6 +33,7 @@
     # containers
     (map (helpers.relativeTo "system/common/optional/containers") [
       "helloworld"
+      "traefik"
     ])
 
   ];

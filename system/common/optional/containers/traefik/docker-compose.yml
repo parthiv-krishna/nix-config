@@ -1,0 +1,43 @@
+name: traefik
+services:
+  reverse-proxy:
+    image: traefik:latest
+    restart: unless-stopped
+    security_opt:
+      - "no-new-privileges:true"
+    networks:
+      proxy:
+    ports:
+      - 80:80 # HTTP
+      - 443:443 # HTTPS
+    volumes:
+      # Config
+      - ./traefik.yml:/traefik.yaml:ro
+      - ./config.yml:/config.yaml:ro
+      # Timezone
+      - /etc/localtime:/etc/localtime:ro
+      # Podman events
+      - /run/podman/podman.sock:/var/run/docker.sock
+      # LetsEncrypt TLS cert
+      - /var/lib/traefik/acme.json:/acme.json
+      # Logs
+      - /var/log/traefik:/var/log/traefik
+    labels:
+      - "traefik.enable=true"
+      # redirect HTTP to HTTPS
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      # configure traefik api dashboard HTTPS
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.sub0.net`)"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=sub0.net"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.sub0.net"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+      # traefik api dashboard HTTP redirect to https
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.sub0.net`)"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+networks:
+  proxy:
