@@ -1,0 +1,40 @@
+api:
+  dashboard: true
+  debug: true
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entrypoint:
+          to: https
+          scheme: https
+  https:
+    address: ":443"
+serversTransport:
+  insecureSkipVerify: true
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    filename: /config.yaml
+certificatesResolvers:
+  cloudflare:
+    acme:
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging (testing)
+      caServer: https://acme-v02.api.letsencrypt.org/directory # production (default)
+      email: letsencrypt.snowy015@sub0.net
+      storage: /acme.json
+      dnsChallenge:
+        provider: cloudflare
+        propagation:
+          delayBeforeChecks: 60s # wait 60s before checking DNS propagation
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+log:
+  level: "INFO"
+  filePath: "/var/log/traefik/traefik.log"
+accessLog:
+  filePath: "/var/log/traefik/access.log"
