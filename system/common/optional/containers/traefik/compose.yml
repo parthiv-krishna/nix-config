@@ -11,8 +11,8 @@ services:
       - 443:443 # HTTPS
     volumes:
       # Config
-      - NIX_DERIVATION_SRC/traefik.yml:/traefik.yaml:ro
-      - NIX_DERIVATION_SRC/config.yml:/config.yaml:ro
+      - ${out}/traefik.yml:/traefik.yaml:ro
+      - ${out}/config.yml:/config.yaml:ro
       # Timezone
       - /etc/localtime:/etc/localtime:ro
       # Podman events

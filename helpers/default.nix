@@ -34,20 +34,19 @@
         inherit name src;
         buildInputs = [ inputs.compose2nix.packages.${system}.default ];
 
-        # make a writeable build dir with compose.yml
-        # edit the writeable compose.yml to point NIX_DERIVATION_SRC to the $src dir
-        # then run compose2nix
+        # run compose2nix to generate required output file
         buildPhase = ''
           mkdir -p build
-          cp $src/compose.yml build/
-          chmod +w build/compose.yml
-          substituteInPlace build/compose.yml --replace 'NIX_DERIVATION_SRC' '$src'
-
-          compose2nix -project=${name} -inputs=build/compose.yml -output=build/compose.nix
+          compose2nix -project=${name} -inputs=$src/compose.yml -output=compose.nix
         '';
 
         # add generated output to expected $out directory
-        installPhase = "mkdir -p $out && cp build/compose.nix $out";
+        # then copy the extraConfigFiles to $out as well
+        installPhase = ''
+          mkdir -p $out
+          cp $src/* $out
+          cp compose.nix $out
+        '';
       };
     in
     {
