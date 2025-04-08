@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: traefik:latest
+    image: docker.io/traefik:latest
     restart: unless-stopped
     security_opt:
       - "no-new-privileges:true"
@@ -37,6 +37,8 @@ services:
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=sub0.net"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.sub0.net"
       - "traefik.http.routers.traefik-secure.service=api@internal"
-# craetes a network called traefik_proxy that other contaners should use
+      # add authelia authentication
+      - "traefik.http.routers.traefik-secure.middlewares=authelia@docker"
+# creates a network called traefik_proxy that other contaners should use
 networks:
   proxy:

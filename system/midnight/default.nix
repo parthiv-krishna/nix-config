@@ -32,6 +32,7 @@
 
     # containers
     (map (helpers.relativeTo "system/common/optional/containers") [
+      "authelia"
       "helloworld"
       "traefik"
     ])
