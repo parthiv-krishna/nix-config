@@ -1,0 +1,29 @@
+services:
+  server:
+    image: "ghcr.io/actualbudget/actual-server:latest-alpine"
+    restart: "unless-stopped"
+    security_opt:
+      - "no-new-privileges:true"
+    networks:
+      traefik_proxy:
+    volumes:
+      - "/var/lib/actual:/data"
+    labels:
+      - "traefik.enable=true"
+      # redirect HTTP to HTTPS
+      - "traefik.http.routers.actual.entrypoints=http"
+      - "traefik.http.routers.actual.rule=Host(`actual.sub0.net`)"
+      - "traefik.http.routers.actual.middlewares=actual-https-redirect"
+      - "traefik.http.middlewares.actual-https-redirect.redirectscheme.scheme=https"
+      # configure actual HTTPS
+      - "traefik.http.routers.actual-secure.entrypoints=https"
+      - "traefik.http.routers.actual-secure.rule=Host(`actual.sub0.net`)"
+      - "traefik.http.routers.actual-secure.tls=true"
+      - "traefik.http.routers.actual-secure.service=actual"
+      - "traefik.http.services.actual.loadbalancer.server.port=5006"
+      - "traefik.docker.network=traefik_proxy"
+      # Enable authelia
+      - "traefik.http.routers.actual-secure.middlewares=authelia@docker"
+networks:
+  traefik_proxy:
+    external: true
