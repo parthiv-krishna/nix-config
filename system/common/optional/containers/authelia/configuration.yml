@@ -1,0 +1,52 @@
+server:
+  address: "tcp://:9091"
+theme: "dark"
+log:
+  level: "warn"
+  format: "text"
+  file_path: "/log/authelia.log"
+totp:
+  issuer: "sub0.net"
+# identity_validation:
+#   reset_password:
+#     jwt_secret: $AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET
+authentication_backend:
+  file:
+    path: "/data/users_database.yml"
+access_control:
+  default_policy: "deny"
+  rules:
+    # Rules applied to everyone
+    - domain: "actual.sub0.net"
+      policy: "two_factor"
+    - domain: "helloworld.sub0.net"
+      policy: "one_factor"
+    - domain: "traefik.sub0.net"
+      policy: "two_factor"
+session:
+  # secret: $AUTHELIA_SESSION_SECRET
+  cookies:
+    - name: "sub0_session"
+      domain: "sub0.net" # Should match whatever your root protected domain is
+      authelia_url: "https://auth.sub0.net"
+      expiration: "1 hour"
+      inactivity: "5 minutes"
+  redis:
+    host: "redis"
+    port: 6379
+    # password: $AUTHELIA_SESSION_REDIS_PASSWORD
+# ban for 5 minutes if there are 3 failed password attempts in 2 minutes
+regulation:
+  max_retries: 3
+  find_time: "2 minutes"
+  ban_time: "5 minutes"
+storage:
+  # encryption_key: $AUTHELIA_STORAGE_ENCRYPTION_KEY
+  local:
+    path: "/data/db.sqlite3"
+# Notifier file for password reset and TOTP confirmation
+# TODO: setup SMTP server for email
+notifier:
+  disable_startup_check: false
+  filesystem:
+    filename: "/data/notification.txt"
