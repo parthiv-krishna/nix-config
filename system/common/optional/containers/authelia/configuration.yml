@@ -16,13 +16,18 @@ authentication_backend:
 access_control:
   default_policy: "deny"
   rules:
-    # Rules applied to everyone
-    - domain: "actual.sub0.net"
-      policy: "two_factor"
-    - domain: "helloworld.sub0.net"
+    # admin group gets access to anything with 2FA
+    - domain_regex: "[a-z0-9]*.sub0.net"
       policy: "one_factor"
-    - domain: "traefik.sub0.net"
-      policy: "two_factor"
+      subject:
+        - "group:admins"
+    # per-service access groups
+    - domain_regex:
+        - '^(?P<Group>\w+)\.sub0\.net$'
+      policy: one_factor
+    # unconfigured subdomain gets
+    - domain_regex: "[a-z0-9]*.sub0.net"
+      policy: deny
 session:
   secret: {{ secret "/secrets/session/secret" }}
   cookies:
@@ -50,3 +55,26 @@ notifier:
   disable_startup_check: false
   filesystem:
     filename: "/data/notification.txt"
+# OpenID Connect configuration
+identity_providers:
+  oidc:
+    hmac_secret: {{ secret "/secrets/identity_providers/oidc/hmac_secret" }}
+    jwks:
+      - algorithm: "RS256"
+        use: "sig"
+        key: {{ secret "/secrets/identity_providers/oidc/jwks/key" | mindent 10 "|" | msquote }}
+    clients:
+      - client_name: "Actual"
+        client_id: {{ secret "/secrets/identity_providers/oidc/clients/actual/id" }}
+        client_secret: {{ secret "/secrets/identity_providers/oidc/clients/actual/secret" }}
+        public: false
+        authorization_policy: "one_factor"
+        redirect_uris:
+          - "https://actual.sub0.net/openid/callback"
+        scopes:
+          - "email"
+          - "groups"
+          - "openid"
+          - "profile"
+        userinfo_signed_response_alg: "none"
+        token_endpoint_auth_method: "client_secret_basic"
