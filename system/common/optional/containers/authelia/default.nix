@@ -5,7 +5,12 @@
 }:
 let
   name = "authelia";
-  secretName = "${config.networking.hostName}/containerEnvironments/${name}";
+  # dummy to find path to secrets
+  secrets = "${config.networking.hostName}/${name}";
+  # rootSecret is a workaround to determine the actual path of secrets
+  # TODO: is there a better way to do this?
+  rootSecret = "${secrets}/root";
+  secretsDir = builtins.dirOf "${config.sops.secrets.${rootSecret}.path}";
 in
 {
   imports = [
@@ -16,8 +21,9 @@ in
   ];
 
   virtualisation.oci-containers.containers."authelia-authelia" = {
-    environmentFiles = [
-      config.sops.secrets."${secretName}".path
+    volumes = [
+      # extra mount of secrets volume
+      "${secretsDir}:/secrets:ro"
     ];
 
     environment = {
@@ -27,17 +33,20 @@ in
   };
 
   virtualisation.oci-containers.containers."authelia-redis" = {
-    environmentFiles = [
-      config.sops.secrets."${secretName}".path
-    ];
-
     environment = {
       TZ = config.time.timeZone;
     };
 
   };
 
-  sops.secrets."${secretName}" = { };
+  sops.secrets = {
+    "${rootSecret}" = { };
+    # declare all secrets used in authelia.yml
+    "${secrets}/identity_validation/reset_password/jwt_secret" = { };
+    "${secrets}/session/secret" = { };
+    "${secrets}/session/redis/password" = { };
+    "${secrets}/storage/encryption_key" = { };
+  };
 
   # persist user configuration and redis data
   environment.persistence."/persist/system" = {
