@@ -46,6 +46,10 @@ in
     "${secrets}/session/secret" = { };
     "${secrets}/session/redis/password" = { };
     "${secrets}/storage/encryption_key" = { };
+    "${secrets}/identity_providers/oidc/hmac_secret" = { };
+    "${secrets}/identity_providers/oidc/jwks/key" = { };
+    "${secrets}/identity_providers/oidc/clients/actual/id" = { };
+    "${secrets}/identity_providers/oidc/clients/actual/secret" = { };
   };
 
   # persist user configuration and redis data
