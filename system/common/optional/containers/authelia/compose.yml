@@ -26,6 +26,8 @@ services:
       - 9091:9091
     healthcheck:
       disable: true
+    environment:
+      X_AUTHELIA_CONFIG_FILTERS: "template" # Enable templating filter
   redis:
     image: "redis:alpine"
     restart: "unless-stopped"
