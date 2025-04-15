@@ -16,7 +16,7 @@
   # MergerFS configuration
   fileSystems."/data" = {
     device = lib.strings.concatStringsSep ":" (
-      map (disk: "/mnt/hdd/${builtins.baseNameOf disk}") dataDevices
+      lib.lists.imap0 (i: _disk: "/hdd/data${toString i}") dataDevices
     );
     fsType = "fuse.mergerfs";
     options = [
@@ -35,15 +35,15 @@
   services.snapraid = {
     enable = true;
     contentFiles = lib.lists.imap0 (
-      i: disk: "/mnt/hdd/${builtins.baseNameOf disk}/snapraid${toString i}.content"
+      i: _disk: "/hdd/data${toString i}/snapraid${toString i}.content"
     ) dataDevices;
     parityFiles = lib.lists.imap0 (
-      i: disk: "/mnt/hdd/${builtins.baseNameOf disk}/snapraid${toString i}.parity"
+      i: _disk: "/hdd/parity${toString i}/snapraid${toString i}.parity"
     ) parityDevices;
     dataDisks = builtins.listToAttrs (
-      lib.lists.imap0 (i: disk: {
+      lib.lists.imap0 (i: _disk: {
         name = "disk${toString i}";
-        value = "/mnt/hdd/${builtins.baseNameOf disk}";
+        value = "/hdd/data${toString i}";
       }) dataDevices
     );
     exclude = [
