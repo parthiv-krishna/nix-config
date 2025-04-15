@@ -3,9 +3,18 @@
 {
   helpers,
   lib,
+  pkgs,
   ...
 }:
-
+let
+  dataDevices = [
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
+  ];
+  parityDevices = [
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE"
+  ];
+in
 {
   imports = lib.flatten [
     # Include the results of the hardware scan.
@@ -14,6 +23,17 @@
     # disks
     (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
+    })
+    (import (helpers.relativeToRoot "system/common/disks/hdd_array.nix") {
+      devices = dataDevices ++ parityDevices;
+    })
+    (import (helpers.relativeToRoot "system/common/optional/mergerfs-snapraid.nix") {
+      inherit
+        dataDevices
+        parityDevices
+        lib
+        pkgs
+        ;
     })
 
     # users
@@ -26,8 +46,8 @@
 
     # optional system modules
     (map (helpers.relativeTo "system/common/optional") [
-      "sshd.nix"
       "nvidia.nix"
+      "sshd.nix"
     ])
 
     # containers
@@ -37,7 +57,6 @@
       "helloworld"
       "traefik"
     ])
-
   ];
 
   networking.hostName = "midnight";
