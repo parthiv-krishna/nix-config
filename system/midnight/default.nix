@@ -25,7 +25,7 @@ in
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
     })
     (import (helpers.relativeToRoot "system/common/disks/hdd_array.nix") {
-      devices = dataDevices ++ parityDevices;
+      inherit dataDevices parityDevices lib;
     })
     (import (helpers.relativeToRoot "system/common/optional/mergerfs-snapraid.nix") {
       inherit
