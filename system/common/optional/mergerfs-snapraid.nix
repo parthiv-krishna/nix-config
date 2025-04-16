@@ -10,6 +10,7 @@
   # Add necessary packages
   environment.systemPackages = with pkgs; [
     mergerfs
+    openseachest
     snapraid
   ];
 
@@ -51,5 +52,41 @@
       "/lost+found/"
     ];
   };
+
+  # spin down disks after the specified times
+  systemd.services."seachest-epc" =
+    let
+      devices = dataDevices ++ parityDevices;
+      # times in ms
+      idleATimer = 100; # full rpm
+      idleBTimer = 120000; # park heads
+      idleCTimer = 600000; # reduce rpm
+      standbyZTimer = 900000; # spin down
+    in
+    {
+      description = "Configure Seagate Exos EPC spindown timers";
+      wantedBy = [ "multi-user.target" ];
+      script = ''
+        ${builtins.concatStringsSep "\n" (
+          map (dev: ''
+              ${pkgs.openseachest}/bin/openSeaChest_PowerControl -d ${dev} \
+                --idle_a ${toString idleATimer} \
+                --idle_b ${toString idleBTimer} \
+                --idle_c ${toString idleCTimer} \
+                --standby_z ${toString standbyZTimer}
+
+            echo "Set ${dev} to \
+            idle_a=${toString idleATimer}ms, \
+            idle_b=${toString idleBTimer}ms, \
+            idle_c=${toString idleCTimer}ms, \
+            standby_z=${toString standbyZTimer}ms"
+          '') devices
+        )}
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        User = "root";
+      };
+    };
 
 }
