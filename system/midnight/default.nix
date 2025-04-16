@@ -55,6 +55,7 @@ in
       "actual"
       "authelia"
       "helloworld"
+      "jellyfin"
       "traefik"
     ])
   ];
