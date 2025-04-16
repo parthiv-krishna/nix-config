@@ -50,6 +50,8 @@ in
     "${secrets}/identity_providers/oidc/jwks/key" = { };
     "${secrets}/identity_providers/oidc/clients/actual/id" = { };
     "${secrets}/identity_providers/oidc/clients/actual/secret" = { };
+    "${secrets}/identity_providers/oidc/clients/jellyfin/id" = { };
+    "${secrets}/identity_providers/oidc/clients/jellyfin/secret" = { };
   };
 
   # persist user configuration and redis data
