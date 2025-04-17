@@ -17,6 +17,10 @@
     impermanence = {
       url = "github:nix-community/impermanence";
     };
+    nix-config-secrets = {
+      url = "git+ssh://git@github.com/parthiv-krishna/nix-config-secrets.git?ref=main&shallow=1";
+      flake = false;
+    };
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };

@@ -1,7 +1,6 @@
 # sops configuration, should be imported to home-manager
 
 {
-  helpers,
   hostname,
   inputs,
   pkgs,
@@ -14,7 +13,7 @@
 
   sops = {
     age.keyFile = "/home/parthiv/.age/parthiv.age";
-    defaultSopsFile = helpers.relativeToRoot "secrets.yaml";
+    defaultSopsFile = "${inputs.nix-config-secrets}/secrets.yaml";
     validateSopsFiles = false;
 
     secrets = {

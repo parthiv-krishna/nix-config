@@ -16,6 +16,7 @@
     directories = [
       ".ssh"
       "nix-config"
+      "nix-config-secrets"
     ];
     allowOther = true;
   };

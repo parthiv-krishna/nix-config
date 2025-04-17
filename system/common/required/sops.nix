@@ -1,5 +1,4 @@
 {
-  helpers,
   inputs,
   ...
 }:
@@ -9,7 +8,7 @@
   ];
 
   sops = {
-    defaultSopsFile = helpers.relativeToRoot "secrets.yaml";
+    defaultSopsFile = "${inputs.nix-config-secrets}/secrets.yaml";
     validateSopsFiles = false;
 
     age = {
