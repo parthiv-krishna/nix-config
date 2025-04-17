@@ -195,6 +195,24 @@
         "type": "github"
       }
     },
+    "nix-config-secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1744866383,
+        "narHash": "sha256-qovvwVD9m4vwb+8qBL0Zpe7OUVcaF+invsJ11I18Ll4=",
+        "ref": "main",
+        "rev": "755fd8a527287ad456a3375c5837f23b5be7cf38",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
+      },
+      "original": {
+        "ref": "main",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
+      }
+    },
     "nix-pre-commit": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -328,6 +346,7 @@
         "disko": "disko",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "nix-config-secrets": "nix-config-secrets",
         "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",
