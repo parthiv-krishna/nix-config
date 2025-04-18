@@ -16,18 +16,9 @@ authentication_backend:
 access_control:
   default_policy: "deny"
   rules:
-    # admin group gets access to anything with 2FA
+    # TODO: add auth requirements per-page when exposing to internet
     - domain_regex: "[a-z0-9]*.sub0.net"
-      policy: "one_factor"
-      subject:
-        - "group:admins"
-    # per-service access groups
-    - domain_regex:
-        - '^(?P<Group>\w+)\.sub0\.net$'
-      policy: one_factor
-    # unconfigured subdomain gets denied
-    - domain_regex: "[a-z0-9]*.sub0.net"
-      policy: deny
+      policy: bypass
 session:
   secret: {{ secret "/secrets/session/secret" }}
   cookies:
