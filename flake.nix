@@ -73,7 +73,7 @@
 
       # `nix fmt`
       formatter = {
-        ${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+        ${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
       };
 
       # Pre-commit checks
