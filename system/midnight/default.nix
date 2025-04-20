@@ -46,6 +46,7 @@ in
 
     # optional system modules
     (map (helpers.relativeTo "system/common/optional") [
+      "intel-gpu.nix"
       "nvidia.nix"
       "sshd.nix"
     ])
@@ -55,6 +56,7 @@ in
       "actual"
       "authelia"
       "helloworld"
+      "immich"
       "jellyfin"
       "traefik"
     ])
