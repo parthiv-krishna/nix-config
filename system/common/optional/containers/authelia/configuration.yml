@@ -69,6 +69,20 @@ identity_providers:
           - "profile"
         userinfo_signed_response_alg: "none"
         token_endpoint_auth_method: "client_secret_basic"
+      - client_name: "Immich"
+        client_id: {{ secret "/secrets/identity_providers/oidc/clients/immich/id" }}
+        client_secret: {{ secret "/secrets/identity_providers/oidc/clients/immich/secret" }}
+        public: false
+        authorization_policy: 'one_factor'
+        redirect_uris:
+          - 'https://immich.sub0.net/auth/login'
+          - 'https://immich.sub0.net/user-settings'
+          - 'app.immich:///oauth-callback'
+        scopes:
+          - 'openid'
+          - 'profile'
+          - 'email'
+        userinfo_signed_response_alg: 'none'
       - client_name: "Jellyfin"
         client_id: {{ secret "/secrets/identity_providers/oidc/clients/jellyfin/id" }}
         client_secret: {{ secret "/secrets/identity_providers/oidc/clients/jellyfin/secret" }}
