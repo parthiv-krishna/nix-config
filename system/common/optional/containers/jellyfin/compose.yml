@@ -8,7 +8,7 @@ services:
       traefik_proxy:
     devices:
       # pass thru iGPU for quicksync
-      - /dev/dri/card0:/dev/dri/card0
+      - /dev/dri:/dev/dri
     volumes:
       - /var/lib/jellyfin/config:/config
       - /var/lib/jellyfin/cache:/cache
