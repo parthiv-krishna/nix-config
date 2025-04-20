@@ -16,7 +16,7 @@ in
 
   services.restic.backups.digitalocean = {
     paths = [
-      "/persist/home/parthiv"
+      "/persist"
       "/data"
     ];
     exclude = [ "/data/nobackup" ];
