@@ -50,6 +50,10 @@ in
       "nvidia.nix"
       "sshd.nix"
     ])
+    (import (helpers.relativeToRoot "system/common/optional/wake-on-lan.nix") {
+      inherit pkgs;
+      device = "enp2s0";
+    })
 
     # containers
     (map (helpers.relativeTo "system/common/optional/containers") [
