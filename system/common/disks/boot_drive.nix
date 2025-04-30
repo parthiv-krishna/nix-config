@@ -7,6 +7,7 @@
 
 {
   device ? throw "Set this to your disk device, e.g. /dev/sda",
+  swapSize ? "8G",
   ...
 }:
 {
@@ -35,7 +36,7 @@
             };
           };
           swap = {
-            size = "8G";
+            size = swapSize;
             content = {
               type = "swap";
               resumeDevice = true;
