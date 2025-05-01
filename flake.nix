@@ -69,6 +69,20 @@
           };
           inherit system;
         };
+        vardar = lib.nixosSystem {
+          modules = [
+            inputs.disko.nixosModules.default
+            inputs.home-manager.nixosModules.default
+            inputs.impermanence.nixosModules.impermanence
+            ./modules/unfree.nix
+            ./system/vardar
+          ];
+          specialArgs = {
+            inherit inputs;
+            inherit helpers;
+          };
+          inherit system;
+        };
       };
 
       # `nix fmt`
