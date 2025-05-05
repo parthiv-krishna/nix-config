@@ -9,7 +9,7 @@
 {
   mainDevice ? throw "Set this to your disk device, e.g. /dev/sda",
   nixDevice ? throw "Set this to your disk device, e.g. /dev/sda",
-  swapSize ? "512M",
+  swapSize ? "1G",
   ...
 }:
 {

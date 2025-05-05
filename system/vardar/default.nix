@@ -14,7 +14,7 @@
     (import (helpers.relativeToRoot "system/common/disks/boot_drive_external_nix.nix") {
       mainDevice = "/dev/disk/by-id/mmc-H8G4a__0x24d44475";
       nixDevice = "/dev/disk/by-id/usb-_USB_DISK_3.0_070002FD3A23B158-0:0";
-      swapSize = "512M";
+      swapSize = "1G";
     })
 
     # users

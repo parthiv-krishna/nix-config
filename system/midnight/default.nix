@@ -23,6 +23,7 @@ in
     # disks
     (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
+      swapSize = "8G";
     })
     (import (helpers.relativeToRoot "system/common/disks/hdd_array.nix") {
       inherit dataDevices parityDevices lib;
