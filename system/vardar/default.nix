@@ -28,6 +28,7 @@
     # optional system modules
     (map (helpers.relativeTo "system/common/optional") [
       "sshd.nix"
+      "containers/wolweb"
     ])
   ];
 
