@@ -1,0 +1,10 @@
+services:
+  wolweb:
+    image: "ghcr.io/sameerdhoot/wolweb"
+    restart: unless-stopped
+    security_opt:
+      - "no-new-privileges:true"
+    network_mode: host
+    volumes:
+      - ${out}/config.json:/wolweb/config.json
+      - ${out}/devices.json:/wolweb/devices.json
