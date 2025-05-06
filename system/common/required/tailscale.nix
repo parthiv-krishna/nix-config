@@ -1,18 +1,20 @@
 # tailscale client configuration
 
 {
-  lib,
+  config,
   ...
 }:
+let
+  secretName = "${config.networking.hostName}/tailscale/key";
+in
 {
-  services.tailscale.enable = true;
-
-  # give an abs path to fix systemd infinite symlink glitch
-  systemd.services.tailscale = {
-    serviceConfig = {
-      StateDirectory = lib.mkForce "/var/lib/tailscale";
-    };
+  services.tailscale = {
+    enable = true;
+    authKeyFile = config.sops.secrets.${secretName}.path;
+    extraUpFlags = [ "--ssh" ];
   };
+
+  sops.secrets.${secretName} = { };
 
   # persist tailscale state
   environment.persistence."/persist/system" = {
