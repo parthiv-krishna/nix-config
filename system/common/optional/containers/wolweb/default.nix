@@ -11,6 +11,6 @@ in
   ];
 
   networking.firewall.allowedTCPPorts = [
-    8089
+    443
   ];
 }
