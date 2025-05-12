@@ -53,4 +53,77 @@
       imports = [ "${generated}/compose.nix" ];
     };
 
+  # create a service user with persistent state directory
+  # the generated user, group, and home can be accessed at
+  # config.user, config.group, and config.home
+  mkServiceUser =
+    {
+      serviceName,
+      userName ? serviceName,
+      dirName ? serviceName,
+    }:
+    let
+      home = "/var/lib/${dirName}";
+      log = "/var/log/${dirName}";
+    in
+    {
+      options = {
+        user = lib.mkOption {
+          type = lib.types.str;
+          internal = true;
+          readOnly = true;
+          default = userName;
+        };
+        group = lib.mkOption {
+          type = lib.types.str;
+          internal = true;
+          readOnly = true;
+          default = userName;
+        };
+        home = lib.mkOption {
+          type = lib.types.str;
+          internal = true;
+          readOnly = true;
+          default = home;
+        };
+      };
+
+      config = {
+        users.users.${userName} = {
+          isSystemUser = true;
+          group = userName;
+          inherit home;
+          createHome = true;
+        };
+
+        users.groups.${userName} = { };
+
+        systemd.tmpfiles.rules = [
+          "d ${home} 0750 ${userName} ${userName} - -"
+        ];
+
+        systemd.services.${serviceName}.serviceConfig = {
+          User = userName;
+          DynamicUser = lib.mkForce false;
+          Group = userName;
+          StateDirectory = dirName;
+        };
+
+        environment.persistence."/persist/system".directories = [
+          {
+            directory = home;
+            user = userName;
+            group = userName;
+            mode = "0750";
+          }
+          {
+            directory = log;
+            user = userName;
+            group = userName;
+            mode = "0750";
+          }
+        ];
+      };
+    };
+
 }
