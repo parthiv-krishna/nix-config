@@ -1,9 +1,9 @@
 {
-  helpers,
+  lib,
   ...
 }:
 {
-  imports = helpers.scanPaths ./.;
+  imports = lib.custom.scanPaths ./.;
 
   # enable flakes
   nix.settings.experimental-features = [

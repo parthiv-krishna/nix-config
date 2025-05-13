@@ -1,7 +1,6 @@
 # Configuration for vardar (always-on home server)
 
 {
-  helpers,
   lib,
   ...
 }:
@@ -11,22 +10,22 @@
     ./hardware-configuration.nix
 
     # disks
-    (import (helpers.relativeToRoot "system/common/disks/boot_drive_external_nix.nix") {
+    (import (lib.custom.relativeToRoot "system/common/disks/boot_drive_external_nix.nix") {
       mainDevice = "/dev/disk/by-id/mmc-H8G4a__0x24d44475";
       nixDevice = "/dev/disk/by-id/usb-_USB_DISK_3.0_070002FD3A23B158-0:0";
       swapSize = "1G";
     })
 
     # users
-    (map (helpers.relativeTo "system/common/users/") [
+    (map (lib.custom.relativeTo "system/common/users/") [
       "parthiv.nix"
     ])
 
     # required system modules
-    (helpers.relativeToRoot "system/common/required")
+    (lib.custom.relativeToRoot "system/common/required")
 
     # optional system modules
-    (map (helpers.relativeTo "system/common/optional") [
+    (map (lib.custom.relativeTo "system/common/optional") [
       "adguard.nix"
       "containers/wolweb"
       "sshd.nix"

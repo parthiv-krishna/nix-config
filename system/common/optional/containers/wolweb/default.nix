@@ -1,10 +1,13 @@
-{ helpers, ... }:
+{
+  lib,
+  ...
+}:
 let
   name = "wolweb";
 in
 {
   imports = [
-    (helpers.mkCompose {
+    (lib.custom.mkCompose {
       inherit name;
       src = ./.;
     })
