@@ -28,6 +28,8 @@ services:
       disable: true
     environment:
       X_AUTHELIA_CONFIG_FILTERS: "template" # Enable templating filter
+    depends_on:
+      - "redis"
   redis:
     image: "redis:alpine"
     restart: "unless-stopped"
