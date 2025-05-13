@@ -1,5 +1,4 @@
 {
-  helpers,
   inputs,
   lib,
   ...
@@ -8,7 +7,7 @@
 
   imports = lib.flatten [
     inputs.nixvim.homeManagerModules.nixvim
-    (helpers.scanPaths ./.)
+    (lib.custom.scanPaths ./.)
   ];
 
   programs.nixvim.config = {

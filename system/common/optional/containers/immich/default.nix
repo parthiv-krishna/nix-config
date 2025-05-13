@@ -1,4 +1,8 @@
-{ config, helpers, ... }:
+{
+  config,
+  lib,
+  ...
+}:
 let
   name = "immich";
   secretName = "${config.networking.hostName}/${name}/environment";
@@ -8,7 +12,7 @@ let
 in
 {
   imports = [
-    (helpers.mkCompose {
+    (lib.custom.mkCompose {
       inherit name;
       src = ./.;
     })

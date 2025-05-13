@@ -1,9 +1,7 @@
 # Configuration for nimbus (Oracle Cloud server)
 
 {
-  helpers,
   lib,
-  pkgs,
   ...
 }:
 {
@@ -12,21 +10,21 @@
     ./hardware-configuration.nix
 
     # disks
-    (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
+    (import (lib.custom.relativeToRoot "system/common/disks/boot_drive.nix") {
       device = "/dev/sda";
       swapSize = "8G";
     })
 
     # users
-    (map (helpers.relativeTo "system/common/users/") [
+    (map (lib.custom.relativeTo "system/common/users/") [
       "parthiv.nix"
     ])
 
     # required system modules
-    (helpers.relativeToRoot "system/common/required")
+    (lib.custom.relativeToRoot "system/common/required")
 
     # optional system modules
-    (map (helpers.relativeTo "system/common/optional") [
+    (map (lib.custom.relativeTo "system/common/optional") [
       "sshd.nix"
     ])
   ];

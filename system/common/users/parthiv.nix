@@ -1,6 +1,6 @@
 {
   config,
-  helpers,
+  lib,
   inputs,
   ...
 }:
@@ -26,11 +26,11 @@ in
   # TODO: allow home-manager config to be used outside of NixOS
   home-manager = {
     extraSpecialArgs = {
-      inherit helpers inputs;
+      inherit inputs;
       hostname = config.networking.hostName;
     };
     users = {
-      parthiv = import (helpers.relativeToRoot "home/parthiv/${config.networking.hostName}.nix");
+      parthiv = import (lib.custom.relativeToRoot "home/parthiv/${config.networking.hostName}.nix");
     };
   };
 }

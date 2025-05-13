@@ -1,10 +1,10 @@
 {
-  helpers,
+  lib,
   pkgs,
   ...
 }:
 {
-  imports = helpers.scanPaths ./.;
+  imports = lib.custom.scanPaths ./.;
 
   home.packages = with pkgs; [
     curl

@@ -1,10 +1,13 @@
-{ helpers, ... }:
+{
+  lib,
+  ...
+}:
 let
   name = "actual";
 in
 {
   imports = [
-    (helpers.mkCompose {
+    (lib.custom.mkCompose {
       inherit name;
       src = ./.;
     })

@@ -1,6 +1,6 @@
 {
   config,
-  helpers,
+  lib,
   ...
 }:
 let
@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    (helpers.mkCompose {
+    (lib.custom.mkCompose {
       inherit name;
       src = ./.;
     })

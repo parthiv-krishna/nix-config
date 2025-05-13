@@ -1,7 +1,6 @@
 # Configuration for midnight (home server)
 
 {
-  helpers,
   lib,
   pkgs,
   ...
@@ -21,14 +20,14 @@ in
     ./hardware-configuration.nix
 
     # disks
-    (import (helpers.relativeToRoot "system/common/disks/boot_drive.nix") {
+    (import (lib.custom.relativeToRoot "system/common/disks/boot_drive.nix") {
       device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
       swapSize = "8G";
     })
-    (import (helpers.relativeToRoot "system/common/disks/hdd_array.nix") {
+    (import (lib.custom.relativeToRoot "system/common/disks/hdd_array.nix") {
       inherit dataDevices parityDevices lib;
     })
-    (import (helpers.relativeToRoot "system/common/optional/mergerfs-snapraid.nix") {
+    (import (lib.custom.relativeToRoot "system/common/optional/mergerfs-snapraid.nix") {
       inherit
         dataDevices
         parityDevices
@@ -38,26 +37,26 @@ in
     })
 
     # users
-    (map (helpers.relativeTo "system/common/users/") [
+    (map (lib.custom.relativeTo "system/common/users/") [
       "parthiv.nix"
     ])
 
     # required system modules
-    (helpers.relativeToRoot "system/common/required")
+    (lib.custom.relativeToRoot "system/common/required")
 
     # optional system modules
-    (map (helpers.relativeTo "system/common/optional") [
+    (map (lib.custom.relativeTo "system/common/optional") [
       "intel-gpu.nix"
       "nvidia.nix"
       "sshd.nix"
     ])
-    (import (helpers.relativeToRoot "system/common/optional/wake-on-lan.nix") {
+    (import (lib.custom.relativeToRoot "system/common/optional/wake-on-lan.nix") {
       inherit pkgs;
       device = "enp2s0";
     })
 
     # containers
-    (map (helpers.relativeTo "system/common/optional/containers") [
+    (map (lib.custom.relativeTo "system/common/optional/containers") [
       "actual"
       "authelia"
       "helloworld"

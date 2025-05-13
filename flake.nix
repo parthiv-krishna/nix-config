@@ -46,6 +46,7 @@
         x86 = "x86_64-linux";
         arm = "aarch64-linux";
       };
+      forEachSystem = lib.genAttrs (lib.attrValues systems);
       # Build NixOS configurations for each host
       hosts = {
         midnight = {
@@ -61,19 +62,18 @@
     in
     {
       nixosConfigurations = lib.mapAttrs (
-        hostname: hostConfig:
+        hostName: hostConfig:
         let
-          # Per-host system, pkgs, and helpers
           inherit (hostConfig) system;
           pkgs = nixpkgs.legacyPackages.${system};
-          helpers = import ./helpers {
-            inherit
-              inputs
-              lib
-              pkgs
-              system
-              ;
-          };
+          customLib = lib.extend (
+            _: super:
+            import ./lib {
+              inherit inputs;
+              inherit (super) pkgs system;
+              lib = super;
+            }
+          );
         in
         lib.nixosSystem {
           modules = [
@@ -81,22 +81,21 @@
             inputs.home-manager.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
             ./modules/unfree.nix
-            ./system/${hostname}
+            ./system/${hostName}
           ];
           specialArgs = {
-            inherit helpers inputs;
+            inherit inputs;
+            lib = customLib;
           };
           inherit system;
         }
       ) hosts;
 
       # `nix fmt`
-      formatter = lib.genAttrs (lib.attrValues systems) (
-        system: nixpkgs.legacyPackages.${system}.nixfmt-tree
-      );
+      formatter = forEachSystem (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       # Pre-commit
-      checks = lib.genAttrs (lib.attrValues systems) (
+      checks = forEachSystem (
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
@@ -105,7 +104,7 @@
       );
 
       # `nix develop`
-      devShells = lib.genAttrs (lib.attrValues systems) (
+      devShells = forEachSystem (
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};

@@ -1,4 +1,7 @@
-{ helpers, ... }:
 {
-  imports = helpers.scanPaths ./.;
+  lib,
+  ...
+}:
+{
+  imports = lib.custom.scanPaths ./.;
 }

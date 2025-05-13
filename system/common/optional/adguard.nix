@@ -1,11 +1,11 @@
 {
-  helpers,
+  lib,
   pkgs,
   ...
 }:
 {
   imports = [
-    (helpers.mkServiceUser {
+    (lib.custom.mkServiceUser {
       serviceName = "adguardhome";
       userName = "adguardhome";
       dirName = "AdGuardHome";
