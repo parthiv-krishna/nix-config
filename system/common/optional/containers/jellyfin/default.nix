@@ -1,4 +1,9 @@
-{ config, helpers, ... }:
+{
+  config,
+  helpers,
+  pkgs,
+  ...
+}:
 let
   name = "jellyfin";
 in
@@ -23,4 +28,10 @@ in
       "/var/lib/jellyfin/cache"
     ];
   };
+
+  # helpful packages for metadata editing
+  environment.systemPackages = with pkgs; [
+    exiftool
+    mkvtoolnix
+  ];
 }
