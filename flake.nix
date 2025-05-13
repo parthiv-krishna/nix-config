@@ -42,69 +42,78 @@
     { nixpkgs, self, ... }@inputs:
     let
       inherit (nixpkgs) lib; # equivalent to lib = nixpkgs.lib;
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-      helpers = import ./helpers {
-        inherit
-          inputs
-          lib
-          pkgs
-          system
-          ;
+      systems = {
+        x86 = "x86_64-linux";
+        arm = "aarch64-linux";
+      };
+      # Build NixOS configurations for each host
+      hosts = {
+        midnight = {
+          system = systems.x86;
+        };
+        vardar = {
+          system = systems.x86;
+        };
+        nimbus = {
+          system = systems.arm;
+        };
       };
     in
     {
-      nixosConfigurations = {
-        midnight = lib.nixosSystem {
+      nixosConfigurations = lib.mapAttrs (
+        hostname: hostConfig:
+        let
+          # Per-host system, pkgs, and helpers
+          inherit (hostConfig) system;
+          pkgs = nixpkgs.legacyPackages.${system};
+          helpers = import ./helpers {
+            inherit
+              inputs
+              lib
+              pkgs
+              system
+              ;
+          };
+        in
+        lib.nixosSystem {
           modules = [
             inputs.disko.nixosModules.default
             inputs.home-manager.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
             ./modules/unfree.nix
-            ./system/midnight
+            ./system/${hostname}
           ];
           specialArgs = {
-            inherit inputs;
-            inherit helpers;
+            inherit helpers inputs;
           };
           inherit system;
-        };
-        vardar = lib.nixosSystem {
-          modules = [
-            inputs.disko.nixosModules.default
-            inputs.home-manager.nixosModules.default
-            inputs.impermanence.nixosModules.impermanence
-            ./modules/unfree.nix
-            ./system/vardar
-          ];
-          specialArgs = {
-            inherit inputs;
-            inherit helpers;
-          };
-          inherit system;
-        };
-      };
+        }
+      ) hosts;
 
       # `nix fmt`
-      formatter = {
-        ${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
-      };
+      formatter = lib.genAttrs (lib.attrValues systems) (
+        system: nixpkgs.legacyPackages.${system}.nixfmt-tree
+      );
 
-      # Pre-commit checks
-      checks = {
-        ${system} =
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-          in
-          import ./tools/checks.nix { inherit inputs system pkgs; };
-      };
+      # Pre-commit
+      checks = lib.genAttrs (lib.attrValues systems) (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        import ./tools/checks.nix { inherit inputs pkgs system; }
+      );
 
       # `nix develop`
-      devShells = {
-        ${system} = import ./tools/shell.nix {
+      devShells = lib.genAttrs (lib.attrValues systems) (
+        system:
+        let
           pkgs = nixpkgs.legacyPackages.${system};
+        in
+        import ./tools/shell.nix {
+          inherit pkgs;
           checks = self.checks.${system};
-        };
-      };
+        }
+      );
     };
 }
