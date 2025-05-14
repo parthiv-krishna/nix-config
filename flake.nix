@@ -32,6 +32,10 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     sops-nix = {
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -69,8 +73,7 @@
           customLib = lib.extend (
             _: super:
             import ./lib {
-              inherit inputs;
-              inherit (super) pkgs system;
+              inherit inputs pkgs system;
               lib = super;
             }
           );
@@ -92,7 +95,20 @@
       ) hosts;
 
       # `nix fmt`
-      formatter = forEachSystem (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
+      formatter = forEachSystem (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        inputs.treefmt-nix.lib.mkWrapper pkgs {
+          projectRootFile = "flake.nix";
+          programs = {
+            deadnix.enable = true;
+            nixfmt.enable = true;
+            statix.enable = true;
+          };
+        }
+      );
 
       # Pre-commit
       checks = forEachSystem (

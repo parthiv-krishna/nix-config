@@ -31,13 +31,7 @@
       # nix formatting
       deadnix.enable = true;
       nixfmt-rfc-style.enable = true;
-      statix = {
-        enable = true;
-        # don't bother "fixing" auto-generated files
-        settings.ignore = [
-          "hardware-configuration.nix"
-        ];
-      };
+      statix.enable = true;
 
       # other formatting
       shellcheck.enable = true;
