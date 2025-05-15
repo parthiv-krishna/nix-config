@@ -12,12 +12,14 @@
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
 
-  boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "virtio_scsi"
-  ];
   boot = {
-    initrd.kernelModules = [ "dm-snapshot" ];
+    initrd = {
+      kernelModules = [ "dm-snapshot" ];
+      availableKernelModules = [
+        "xhci_pci"
+        "virtio_scsi"
+      ];
+    };
     kernelModules = [ ];
     extraModulePackages = [ ];
   };
