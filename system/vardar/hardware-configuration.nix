@@ -13,16 +13,18 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "usbhid"
-    "usb_storage"
-    "sd_mod"
-    "sdhci_pci"
-    "sdhci_acpi"
-  ];
   boot = {
-    initrd.kernelModules = [ "dm-snapshot" ];
+    initrd = {
+      kernelModules = [ "dm-snapshot" ];
+      availableKernelModules = [
+        "xhci_pci"
+        "usbhid"
+        "usb_storage"
+        "sd_mod"
+        "sdhci_pci"
+        "sdhci_acpi"
+      ];
+    };
     kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ ];
   };
