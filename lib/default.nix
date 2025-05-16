@@ -9,7 +9,8 @@ let
       fileAttrs = builtins.readDir dirPath;
       nixFileNames = builtins.attrNames (
         lib.attrsets.filterAttrs (
-          name: type: type == "regular" && lib.strings.hasSuffix ".nix" name && name != "default.nix"
+          # include all directories and .nix files (except default.nix)
+          name: type: type == "directory" || (lib.strings.hasSuffix ".nix" name && name != "default.nix")
         ) fileAttrs
       );
     in
