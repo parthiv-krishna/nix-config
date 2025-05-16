@@ -5,7 +5,7 @@
   ...
 }:
 let
-  passwordSecretName = "${config.networking.hostName}/loginPasswords/parthiv";
+  passwordSecretName = "loginPasswords/parthiv";
 in
 {
   # password needs to be generated before users are generated

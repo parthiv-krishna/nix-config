@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   ...
 }:
@@ -8,7 +9,7 @@
   ];
 
   sops = {
-    defaultSopsFile = "${inputs.nix-config-secrets}/secrets.yaml";
+    defaultSopsFile = "${inputs.nix-config-secrets}/${config.networking.hostName}.yaml";
     validateSopsFiles = false;
 
     age = {

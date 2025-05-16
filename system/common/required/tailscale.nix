@@ -5,7 +5,7 @@
   ...
 }:
 let
-  secretName = "${config.networking.hostName}/tailscale/key";
+  secretName = "tailscale/key";
 in
 {
   services.tailscale = {
