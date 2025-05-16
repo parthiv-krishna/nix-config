@@ -4,7 +4,7 @@
   ...
 }:
 let
-  secretRoot = "${config.networking.hostName}/restic";
+  secretRoot = "restic";
   secretPassword = "${secretRoot}/password";
   secretRepository = "${secretRoot}/repository";
   secretEnvironment = "${secretRoot}/environment";

@@ -5,11 +5,9 @@
 }:
 let
   name = "authelia";
-  # dummy to find path to secrets
-  secrets = "${config.networking.hostName}/${name}";
   # rootSecret is a workaround to determine the actual path of secrets
   # TODO: is there a better way to do this?
-  rootSecret = "${secrets}/root";
+  rootSecret = "${name}/root";
   secretsDir = builtins.dirOf "${config.sops.secrets.${rootSecret}.path}";
 in
 {
@@ -42,18 +40,18 @@ in
   sops.secrets = {
     "${rootSecret}" = { };
     # declare all secrets used in authelia.yml
-    "${secrets}/identity_validation/reset_password/jwt_secret" = { };
-    "${secrets}/session/secret" = { };
-    "${secrets}/session/redis/password" = { };
-    "${secrets}/storage/encryption_key" = { };
-    "${secrets}/identity_providers/oidc/hmac_secret" = { };
-    "${secrets}/identity_providers/oidc/jwks/key" = { };
-    "${secrets}/identity_providers/oidc/clients/actual/id" = { };
-    "${secrets}/identity_providers/oidc/clients/actual/secret" = { };
-    "${secrets}/identity_providers/oidc/clients/immich/id" = { };
-    "${secrets}/identity_providers/oidc/clients/immich/secret" = { };
-    "${secrets}/identity_providers/oidc/clients/jellyfin/id" = { };
-    "${secrets}/identity_providers/oidc/clients/jellyfin/secret" = { };
+    "${name}/identity_validation/reset_password/jwt_secret" = { };
+    "${name}/session/secret" = { };
+    "${name}/session/redis/password" = { };
+    "${name}/storage/encryption_key" = { };
+    "${name}/identity_providers/oidc/hmac_secret" = { };
+    "${name}/identity_providers/oidc/jwks/key" = { };
+    "${name}/identity_providers/oidc/clients/actual/id" = { };
+    "${name}/identity_providers/oidc/clients/actual/secret" = { };
+    "${name}/identity_providers/oidc/clients/immich/id" = { };
+    "${name}/identity_providers/oidc/clients/immich/secret" = { };
+    "${name}/identity_providers/oidc/clients/jellyfin/id" = { };
+    "${name}/identity_providers/oidc/clients/jellyfin/secret" = { };
   };
 
   # persist user configuration and redis data

@@ -13,7 +13,7 @@
 
   sops = {
     age.keyFile = "/home/parthiv/.age/parthiv.age";
-    defaultSopsFile = "${inputs.nix-config-secrets}/secrets.yaml";
+    defaultSopsFile = "${inputs.nix-config-secrets}/${hostname}.yaml";
     validateSopsFiles = false;
 
     secrets = {

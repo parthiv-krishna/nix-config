@@ -5,8 +5,8 @@
 }:
 let
   name = "immich";
-  secretName = "${config.networking.hostName}/${name}/environment";
-  secretNamePostgres = "${config.networking.hostName}/${name}/environment_postgres";
+  secretName = "${name}/environment";
+  secretNamePostgres = "${name}/environment_postgres";
   dbUsername = "postgres";
   dbDatabaseName = "immich";
 in

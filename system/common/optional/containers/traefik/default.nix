@@ -5,7 +5,7 @@
 }:
 let
   name = "traefik";
-  secretName = "${config.networking.hostName}/${name}/environment";
+  secretName = "${name}/environment";
 in
 {
   imports = [
