@@ -83,7 +83,7 @@
             inputs.disko.nixosModules.default
             inputs.home-manager.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
-            ./modules/unfree.nix
+            ./modules
             ./system/${hostName}
           ];
           specialArgs = {
