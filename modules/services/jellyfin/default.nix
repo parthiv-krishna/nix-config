@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   targetHost = "midnight";
 in
@@ -13,4 +13,4 @@ in
       "/var/lib/jellyfin"
     ];
   };
-} 
+}

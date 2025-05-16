@@ -1,19 +1,17 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   targetHost = "nimbus";
 in
 {
-  config = lib.mkIf (config.networking.hostName == targetHost) {
-    services.actual = {
-      enable = true;
-      dataDir = "/var/lib/actual";
-      listenAddress = "0.0.0.0";
-      port = 5006;
-      openFirewall = true;
-    };
+  config = lib.mkIf (config.networking.hostName == targetHost) (
+    {
+      services.actual = {
+        enable = true;
+        settings.port = 5006;
+        openFirewall = true;
+      };
 
-    environment.persistence."/persist".directories = lib.mkIf (config.boot.persistence ? "/persist") [
-      "/var/lib/actual"
-    ];
-  };
-} 
+    }
+    // lib.custom.mkPersistentSystemDir { directory = "/var/lib/private/actual"; }
+  );
+}
