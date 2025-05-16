@@ -1,7 +1,7 @@
 {
-    lib,
-    ...
+  lib,
+  ...
 }:
 {
   imports = lib.custom.scanPaths ./.;
-} 
+}

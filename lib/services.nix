@@ -29,6 +29,26 @@
       imports = [ "${generated}/compose.nix" ];
     };
 
+  mkPersistentSystemDir =
+    {
+      directory,
+      user ? "root",
+      group ? user,
+      mode ? "0700",
+    }:
+    {
+      environment.persistence."/persist/system".directories = [
+        {
+          inherit
+            directory
+            user
+            group
+            mode
+            ;
+        }
+      ];
+    };
+
   mkServiceUser =
     {
       serviceName,
