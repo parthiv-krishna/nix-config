@@ -57,11 +57,9 @@ in
 
     # containers
     (map (lib.custom.relativeTo "system/common/optional/containers") [
-      "actual"
       "authelia"
       "helloworld"
       "immich"
-      "jellyfin"
       "traefik"
     ])
   ];
