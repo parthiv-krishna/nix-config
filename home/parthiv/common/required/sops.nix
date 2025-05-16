@@ -18,7 +18,7 @@
 
     secrets = {
       # compute SSH private key from sops secret
-      "${hostname}/sshKeys/parthiv".path = "/home/parthiv/.ssh/id_ed25519";
+      "sshKeys/parthiv".path = "/home/parthiv/.ssh/id_ed25519";
     };
   };
 
