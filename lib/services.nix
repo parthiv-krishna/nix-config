@@ -1,6 +1,5 @@
 {
   inputs,
-  lib,
   pkgs,
   system,
   ...
@@ -49,73 +48,103 @@
       ];
     };
 
-  mkServiceUser =
+  mkSelfHostedService =
     {
-      serviceName,
-      userName ? serviceName,
-      dirName ? serviceName,
+      config,
+      lib,
+      name,
+      hostName,
+      public ? false,
+      serviceConfig,
+      ...
     }:
     let
-      home = "/var/lib/${dirName}";
-      log = "/var/log/${dirName}";
+      inherit (config.constants) domains proxyHostName;
+      inherit (config.constants.services.${name}) port;
+
+      myHostName = config.networking.hostName;
+      isTargetHost = myHostName == hostName;
+      isPublicServer = myHostName == proxyHostName;
+      isTargetPublicServer = hostName == proxyHostName;
+
+      # fully qualified domain names
+      fqdn = {
+        internal = "${name}.${hostName}.${domains.internal}";
+        public = "${name}.${domains.public}";
+      };
     in
     {
-      options = {
-        user = lib.mkOption {
-          type = lib.types.str;
-          internal = true;
-          readOnly = true;
-          default = userName;
-        };
-        group = lib.mkOption {
-          type = lib.types.str;
-          internal = true;
-          readOnly = true;
-          default = userName;
-        };
-        home = lib.mkOption {
-          type = lib.types.str;
-          internal = true;
-          readOnly = true;
-          default = home;
-        };
-      };
+      config = lib.mkMerge [
+        {
+          assertions = [
+            {
+              assertion = isTargetHost -> config.services.caddy.enable;
+              message = "Caddy must be enabled on host `${myHostName}` since it is the host for self-hosted service `${name}`.";
+            }
+            {
+              assertion = isPublicServer -> config.services.caddy.enable;
+              message = "Caddy must be enabled on host `${myHostName}` since it is the public server.";
+            }
+            {
+              assertion =
+                builtins.hasAttr name config.constants.services
+                && builtins.hasAttr "port" config.constants.services.${name};
+              message = "Port for service `${name}` is not defined in `config.constants.services.${name}.port`. Please define it in `modules/constants.nix`.";
+            }
+          ];
+        }
+        (lib.mkIf isTargetHost serviceConfig)
 
-      config = {
-        users.users.${userName} = {
-          isSystemUser = true;
-          group = userName;
-          inherit home;
-          createHome = true;
-        };
+        # target host caddy configuration. route the internal FQDN to the local port
+        (lib.mkIf isTargetHost {
+          services.caddy.virtualHosts."${fqdn.internal}" = {
+            extraConfig = ''
+              tls {
+                dns cloudflare {env.CF_API_TOKEN}
+              }
+              reverse_proxy localhost:${toString port}
+            '';
+          };
+        })
 
-        users.groups.${userName} = { };
+        # public server caddy configuration. route the public FQDN to the proxyTarget
+        (lib.mkIf isPublicServer {
+          services.caddy.virtualHosts =
+            let
+              proxyTarget =
+                if isTargetPublicServer then
+                  "http://localhost:${toString port}" # service is here
+                else
+                  "https://${fqdn.internal}"; # service is on some other internal location
+            in
+            lib.mkMerge [
+              # expose service on tailnet
+              {
+                "${fqdn.internal}" = {
+                  # TODO: Add Authelia
+                  extraConfig = ''
+                    tls {
+                      dns cloudflare {env.CF_API_TOKEN}
+                    }
+                    reverse_proxy ${proxyTarget}
+                  '';
+                };
+              }
 
-        systemd.tmpfiles.rules = [
-          "d ${home} 0750 ${userName} ${userName} - -"
-        ];
-
-        systemd.services.${serviceName}.serviceConfig = {
-          User = userName;
-          DynamicUser = lib.mkForce false;
-          Group = userName;
-          StateDirectory = dirName;
-        };
-
-        environment.persistence."/persist/system".directories = [
-          {
-            directory = home;
-            user = userName;
-            group = userName;
-            mode = "0750";
-          }
-          {
-            directory = log;
-            user = userName;
-            group = userName;
-            mode = "0750";
-          }
-        ];
-      };
+              # expose service to public internet if enabled
+              (lib.mkIf public {
+                "${fqdn.public}" = {
+                  # TODO: Add CrowdSec, Authelia, and wake on LAN
+                  extraConfig = ''
+                    tls {
+                      dns cloudflare {env.CF_API_TOKEN}
+                    }
+                    reverse_proxy ${proxyTarget}
+                  '';
+                };
+              })
+            ];
+        })
+      ];
     };
 }

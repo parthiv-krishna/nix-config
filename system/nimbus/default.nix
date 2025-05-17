@@ -37,6 +37,13 @@
 
   time.timeZone = "Etc/UTC";
 
+  custom.reverse-proxy = {
+    enable = true;
+    publicFacing = true;
+    email = "letencrypt.snowy015@passmail.net";
+    cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+  };
+
   # should not be changed until a clean install
   system.stateVersion = "24.11";
 }
