@@ -198,10 +198,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1747462511,
-        "narHash": "sha256-5mGsc1LgdY6SRzXpBO6uwyTawhNz8tcSBDFrf0+9T3M=",
+        "lastModified": 1747502402,
+        "narHash": "sha256-2+DOK483EgnLjtIrwmTwX9wGeC+uYjs8ZphzkjdIvLI=",
         "ref": "main",
-        "rev": "d4c2633c4e7e33578499e471349bcb138941e1b6",
+        "rev": "db0e847163f2b210860e3924ac3d2c8ca10391b1",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -412,11 +412,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1747417995,
-        "narHash": "sha256-3WY1yVTcS9Vi6vmBjWsNTG6IYDs/ybu2xAQykdeE22k=",
+        "lastModified": 1747469671,
+        "narHash": "sha256-bo1ptiFoNqm6m1B2iAhJmWCBmqveLVvxom6xKmtuzjg=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "42dd9289571ae3c6884af9885b1a7432e3278f92",
+        "rev": "ab0378b61b0d85e73a8ab05d5c6029b5bd58c9fb",
         "type": "github"
       },
       "original": {

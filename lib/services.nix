@@ -107,7 +107,7 @@
           };
         })
 
-        # public server caddy configuration. route the public FQDN to the proxyTarget
+        # public server caddy configuration. route the public FQDN to either local port or internal FQDN
         (lib.mkIf isPublicServer {
           services.caddy.virtualHosts =
             let
@@ -117,33 +117,18 @@
                 else
                   "https://${fqdn.internal}"; # service is on some other internal location
             in
-            lib.mkMerge [
-              # expose service on tailnet
-              {
-                "${fqdn.internal}" = {
-                  # TODO: Add Authelia
-                  extraConfig = ''
-                    tls {
-                      dns cloudflare {env.CF_API_TOKEN}
-                    }
-                    reverse_proxy ${proxyTarget}
-                  '';
-                };
-              }
-
-              # expose service to public internet if enabled
-              (lib.mkIf public {
-                "${fqdn.public}" = {
-                  # TODO: Add CrowdSec, Authelia, and wake on LAN
-                  extraConfig = ''
-                    tls {
-                      dns cloudflare {env.CF_API_TOKEN}
-                    }
-                    reverse_proxy ${proxyTarget}
-                  '';
-                };
-              })
-            ];
+            # expose service to public internet if enabled
+            lib.mkIf public {
+              "${fqdn.public}" = {
+                # TODO: Add CrowdSec, Authelia, and wake on LAN
+                extraConfig = ''
+                  tls {
+                    dns cloudflare {env.CF_API_TOKEN}
+                  }
+                  reverse_proxy ${proxyTarget}
+                '';
+              };
+            };
         })
       ];
     };
