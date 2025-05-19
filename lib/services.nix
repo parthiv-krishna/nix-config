@@ -98,6 +98,14 @@
         # target host caddy configuration. route the internal FQDN to the local port
         (lib.mkIf isTargetHost {
           services.caddy.virtualHosts."${fqdn.internal}" = {
+            logFormat = ''
+              output file ${config.services.caddy.logDir}/access-${fqdn.internal}.log {
+                roll_size 10MB
+                roll_keep 5
+                roll_keep_for 14d
+                mode 0640
+              }
+            '';
             extraConfig = ''
               tls {
                 dns cloudflare {env.CF_API_TOKEN}
@@ -120,7 +128,16 @@
             # expose service to public internet if enabled
             lib.mkIf public {
               "${fqdn.public}" = {
-                # TODO: Add CrowdSec, Authelia, and wake on LAN
+                # TODO: Authelia and wake on LAN
+                logFormat = ''
+                  output file ${config.services.caddy.logDir}/access-${fqdn.public}.log {
+                    roll_size 10MB
+                    roll_keep 5
+                    roll_keep_for 14d
+                    mode 0640
+                  }
+                  level INFO
+                '';
                 extraConfig = ''
                   tls {
                     dns cloudflare {env.CF_API_TOKEN}

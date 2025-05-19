@@ -6,6 +6,10 @@
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    crowdsec = {
+      url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -83,6 +87,8 @@
             inputs.disko.nixosModules.default
             inputs.home-manager.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
+            inputs.crowdsec.nixosModules.crowdsec
+            inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
             ./modules
             ./system/${hostName}
           ];

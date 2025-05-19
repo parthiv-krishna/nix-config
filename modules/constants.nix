@@ -1,31 +1,30 @@
 { lib, ... }:
 let
   mkPortOption =
-    name: port:
+    port:
     lib.mkOption {
       type = lib.types.port;
       default = port;
-      description = "Port for ${name} service";
       readOnly = true;
     };
 in
 {
   options.constants = {
     services = {
-      caddy = {
-        port = mkPortOption "Caddy" 2019;
+      actual = {
+        port = mkPortOption 5006;
       };
 
       authelia = {
-        port = mkPortOption "Authelia" 9091;
+        port = mkPortOption 9091;
       };
 
-      actual = {
-        port = mkPortOption "Actual" 5006;
+      crowdsec = {
+        port = mkPortOption 9090;
       };
 
       jellyfin = {
-        port = mkPortOption "Jellyfin" 8096;
+        port = mkPortOption 8096;
       };
     };
 
