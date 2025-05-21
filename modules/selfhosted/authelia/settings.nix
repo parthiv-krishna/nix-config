@@ -7,7 +7,6 @@ _: {
     file_path = "/log/authelia.log";
   };
   totp.issuer = "sub0.net";
-  identity_validation.reset_password.jwt_secret = "@jwtSecretFile@";
   authentication_backend.file.path = "/data/users_database.yml";
   access_control = {
     default_policy = "deny";
@@ -19,7 +18,6 @@ _: {
     ];
   };
   session = {
-    secret = "@sessionSecretFile@";
     cookies = [
       {
         name = "sub0_session";
@@ -32,7 +30,6 @@ _: {
     redis = {
       host = "redis";
       port = 6379;
-      password = "@redisPasswordFile@";
     };
   };
   regulation = {
@@ -41,7 +38,6 @@ _: {
     ban_time = "5 minutes";
   };
   storage = {
-    encryption_key = "@storageEncryptionKeyFile@";
     local.path = "/data/db.sqlite3";
   };
   # TODO: setup SMTP server for email
@@ -50,19 +46,15 @@ _: {
     filesystem.filename = "/data/notification.txt";
   };
   identity_providers.oidc = {
-    hmac_secret = "@oidcHmacSecretFile@";
-    jwks = [
-      {
+    jwks = {
+      main = {
         algorithm = "RS256";
         use = "sig";
-        key = "@oidcJwksKeyFile@";
-      }
-    ];
-    clients = [
-      {
+      };
+    };
+    clients = {
+      actual = {
         client_name = "Actual";
-        client_id = "@oidcClients.actual.idFile@";
-        client_secret = "@oidcClients.actual.secretFile@";
         public = false;
         authorization_policy = "one_factor";
         redirect_uris = [ "https://actual.sub0.net/openid/callback" ];
@@ -74,11 +66,9 @@ _: {
         ];
         userinfo_signed_response_alg = "none";
         token_endpoint_auth_method = "client_secret_basic";
-      }
-      {
+      };
+      immich = {
         client_name = "Immich";
-        client_id = "@oidcClients.immich.idFile@";
-        client_secret = "@oidcClients.immich.secretFile@";
         public = false;
         authorization_policy = "one_factor";
         redirect_uris = [
@@ -92,11 +82,9 @@ _: {
           "email"
         ];
         userinfo_signed_response_alg = "none";
-      }
-      {
+      };
+      jellyfin = {
         client_name = "Jellyfin";
-        client_id = "@oidcClients.jellyfin.idFile@";
-        client_secret = "@oidcClients.jellyfin.secretFile@";
         public = false;
         authorization_policy = "one_factor";
         require_pkce = true;
@@ -108,7 +96,7 @@ _: {
         ];
         userinfo_signed_response_alg = "none";
         token_endpoint_auth_method = "client_secret_post";
-      }
-    ];
+      };
+    };
   };
 }
