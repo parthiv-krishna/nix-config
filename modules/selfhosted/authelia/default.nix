@@ -10,10 +10,34 @@ let
       # path with prefix for lookup in sops file
       fullSecretPath = "authelia/${secretPath}";
       # secret template for authelia configuration
-      secretTemplate = "{{ secret ${config.sops.secrets.${fullSecretPath}.path} }}";
+      secretTemplate = "{{ secret \"${config.sops.secrets.${fullSecretPath}.path}\" }}";
     in
     {
-      sops.secrets.${fullSecretPath} = { };
+      sops.secrets.${fullSecretPath} = {
+        owner = config.services.authelia.instances.${instance}.user;
+        inherit (config.services.authelia.instances.${instance}) group;
+      };
+      # inject secret into authelia configuration
+      services.authelia.instances.${instance}.settings = lib.setAttrByPath attrPath secretTemplate;
+    };
+
+  # automatically declare secret and inject into configuration
+  mkKeySecret =
+    secretPath:
+    let
+      attrPath = lib.splitString "/" secretPath;
+      # path with prefix for lookup in sops file
+      fullSecretPath = "authelia/${secretPath}";
+      # secret template for authelia configuration
+      secretTemplate = "{{ secret \"${
+        config.sops.secrets.${fullSecretPath}.path
+      }\" | mindent 10 \"|\" | msquote }}";
+    in
+    {
+      sops.secrets.${fullSecretPath} = {
+        owner = config.services.authelia.instances.${instance}.user;
+        inherit (config.services.authelia.instances.${instance}) group;
+      };
       # inject secret into authelia configuration
       services.authelia.instances.${instance}.settings = lib.setAttrByPath attrPath secretTemplate;
     };
@@ -39,7 +63,7 @@ let
         (mkSecret "session/redis/password")
         (mkSecret "storage/encryption_key")
         (mkSecret "identity_providers/oidc/hmac_secret")
-        (mkSecret "identity_providers/oidc/jwks/main/key")
+        (mkKeySecret "identity_providers/oidc/jwks/main/key")
         (mkSecret "identity_providers/oidc/clients/actual/client_id")
         (mkSecret "identity_providers/oidc/clients/actual/client_secret")
         (mkSecret "identity_providers/oidc/clients/immich/client_id")
