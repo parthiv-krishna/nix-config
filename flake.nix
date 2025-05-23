@@ -6,6 +6,10 @@
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    colmena = {
+      url = "git+ssh://git@github.com/zhaofengli/colmena?ref=release-0.4.x";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     crowdsec = {
       url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -67,6 +71,8 @@
           system = systems.arm;
         };
       };
+      # TODO: get from ./modules/constants.nix
+      internalDomain = "ts.sub0.net";
     in
     {
       nixosConfigurations = lib.mapAttrs (
@@ -99,6 +105,52 @@
           inherit system;
         }
       ) hosts;
+
+      # remote deployment
+      colmena =
+        {
+          meta = {
+            # build host
+            nixpkgs = nixpkgs.legacyPackages.${systems.x86};
+            nodeSpecialArgs = lib.mapAttrs (
+              _hostName: hostConfig:
+              let
+                inherit (hostConfig) system;
+                pkgs = nixpkgs.legacyPackages.${system};
+                customLib = lib.extend (
+                  _: super:
+                  import ./lib {
+                    inherit inputs pkgs system;
+                    lib = super;
+                  }
+                );
+              in
+              {
+                inherit inputs;
+                lib = customLib;
+              }
+            ) hosts;
+          };
+        }
+        // lib.mapAttrs (hostName: hostConfig: {
+
+          deployment = {
+            targetHost = "${hostName}.${internalDomain}";
+            # don't cross compile on ARM machines
+            buildOnTarget = hostConfig.system != systems.x86;
+          };
+
+          imports = [
+            inputs.disko.nixosModules.default
+            inputs.home-manager.nixosModules.default
+            inputs.impermanence.nixosModules.impermanence
+            inputs.crowdsec.nixosModules.crowdsec
+            inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
+            ./modules
+            ./system/${hostName}
+          ];
+
+        }) hosts;
 
       # `nix fmt`
       formatter = forEachSystem (
