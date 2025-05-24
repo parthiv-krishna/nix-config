@@ -1,13 +1,18 @@
-_: {
-  server.address = "tcp://:9091";
+{
+  config,
+  instanceName,
+  ...
+}:
+{
+  server.address = "tcp://:${toString config.constants.services.authelia.port}";
   theme = "dark";
   log = {
     level = "warn";
     format = "text";
-    file_path = "/log/authelia.log";
+    file_path = "/var/log/authelia.log";
   };
   totp.issuer = "sub0.net";
-  authentication_backend.file.path = "/data/users_database.yml";
+  authentication_backend.file.path = "/var/lib/authelia-${instanceName}/users_database.yml";
   access_control = {
     default_policy = "deny";
     rules = [
@@ -40,63 +45,11 @@ _: {
   storage = {
     local.path = "/data/db.sqlite3";
   };
+  # see https://www.authelia.com/integration/proxies/caddy/#implementation
+  server.endpoints.authz.forward-auth.implementation = "ForwardAuth";
   # TODO: setup SMTP server for email
   notifier = {
     disable_startup_check = false;
     filesystem.filename = "/data/notification.txt";
-  };
-  identity_providers.oidc = {
-    jwks = {
-      main = {
-        algorithm = "RS256";
-        use = "sig";
-      };
-    };
-    clients = {
-      actual = {
-        client_name = "Actual";
-        public = false;
-        authorization_policy = "one_factor";
-        redirect_uris = [ "https://actual.sub0.net/openid/callback" ];
-        scopes = [
-          "email"
-          "groups"
-          "openid"
-          "profile"
-        ];
-        userinfo_signed_response_alg = "none";
-        token_endpoint_auth_method = "client_secret_basic";
-      };
-      immich = {
-        client_name = "Immich";
-        public = false;
-        authorization_policy = "one_factor";
-        redirect_uris = [
-          "https://immich.sub0.net/auth/login"
-          "https://immich.sub0.net/user-settings"
-          "app.immich:///oauth-callback"
-        ];
-        scopes = [
-          "openid"
-          "profile"
-          "email"
-        ];
-        userinfo_signed_response_alg = "none";
-      };
-      jellyfin = {
-        client_name = "Jellyfin";
-        public = false;
-        authorization_policy = "one_factor";
-        require_pkce = true;
-        redirect_uris = [ "https://jellyfin.sub0.net/sso/OID/redirect/authelia" ];
-        scopes = [
-          "groups"
-          "openid"
-          "profile"
-        ];
-        userinfo_signed_response_alg = "none";
-        token_endpoint_auth_method = "client_secret_post";
-      };
-    };
   };
 }
