@@ -13,6 +13,7 @@ lib.custom.mkSelfHostedService {
   hostName = "vardar";
   subdomain = "auth";
   public = true;
+  protected = false;
   serviceConfig = lib.mkMerge [
     {
       services.authelia.instances.${instanceName} = {
