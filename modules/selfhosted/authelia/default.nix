@@ -96,6 +96,15 @@ lib.custom.mkSelfHostedService {
           '')
         ];
       };
+      services.redis.servers."authelia-${instanceName}" = {
+        enable = true;
+        port = config.constants.services.authelia.redis-port;
+        settings = {
+          maxmemory = "128mb";
+          maxmemory-policy = "allkeys-lru";
+          protected-mode = true;
+        };
+      };
       sops.secrets =
         let
           allSecretPaths = [
@@ -123,6 +132,10 @@ lib.custom.mkSelfHostedService {
           ) allSecretPaths
         );
     }
-    (lib.custom.mkPersistentSystemDir { directory = "/var/lib/authelia-${instanceName}"; })
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/authelia-${instanceName}";
+      inherit (config.services.authelia.instances.${instanceName}) user group;
+      mode = "0750";
+    })
   ];
 }

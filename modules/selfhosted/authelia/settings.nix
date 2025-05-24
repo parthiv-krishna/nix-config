@@ -9,7 +9,7 @@
   log = {
     level = "warn";
     format = "text";
-    file_path = "/var/log/authelia.log";
+    file_path = "/var/lib/authelia-${instanceName}/authelia.log";
   };
   totp.issuer = "sub0.net";
   authentication_backend.file.path = "/var/lib/authelia-${instanceName}/users_database.yml";
@@ -34,7 +34,7 @@
     ];
     redis = {
       host = "redis";
-      port = 6379;
+      port = config.constants.services.authelia.redis-port;
     };
   };
   regulation = {
