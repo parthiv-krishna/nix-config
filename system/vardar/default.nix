@@ -26,7 +26,6 @@
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
-      "containers/wolweb"
       "sshd.nix"
     ])
   ];

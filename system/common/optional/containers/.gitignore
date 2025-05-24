@@ -1,3 +1,0 @@
-# don't check in generated compose.nix files
-# they will be auto-created during rebuild
-compose.nix

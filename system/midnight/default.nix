@@ -54,14 +54,6 @@ in
       inherit pkgs;
       device = "enp2s0";
     })
-
-    # containers
-    (map (lib.custom.relativeTo "system/common/optional/containers") [
-      "authelia"
-      "helloworld"
-      "immich"
-      "traefik"
-    ])
   ];
 
   networking.hostName = "midnight";
