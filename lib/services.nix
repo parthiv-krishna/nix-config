@@ -54,6 +54,7 @@
       lib,
       name,
       hostName,
+      subdomain ? name,
       public ? false,
       serviceConfig,
       ...
@@ -69,8 +70,8 @@
 
       # fully qualified domain names
       fqdn = {
-        internal = "${name}.${hostName}.${domains.internal}";
-        public = "${name}.${domains.public}";
+        internal = "${subdomain}.${hostName}.${domains.internal}";
+        public = "${subdomain}.${domains.public}";
       };
     in
     {
@@ -100,6 +101,25 @@
           services.caddy.virtualHosts."${fqdn.internal}" = {
             logFormat = ''
               output file ${config.services.caddy.logDir}/access-${fqdn.internal}.log {
+                roll_size 10MB
+                roll_keep 5
+                roll_keep_for 14d
+                mode 0640
+              }
+            '';
+            extraConfig = ''
+              tls {
+                dns cloudflare {env.CF_API_TOKEN}
+              }
+              reverse_proxy localhost:${toString port}
+            '';
+          };
+        })
+
+        (lib.mkIf (isTargetHost && !isPublicServer) {
+          services.caddy.virtualHosts."${fqdn.public}" = {
+            logFormat = ''
+              output file ${config.services.caddy.logDir}/access-${fqdn.public}.log {
                 roll_size 10MB
                 roll_keep 5
                 roll_keep_for 14d
