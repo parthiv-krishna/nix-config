@@ -11,6 +11,7 @@ lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "authelia";
   hostName = "vardar";
+  subdomain = "auth";
   public = true;
   serviceConfig = lib.mkMerge [
     {
