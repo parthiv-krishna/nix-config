@@ -1,4 +1,5 @@
 {
+  lib,
   config,
   instanceName,
   ...
@@ -19,9 +20,21 @@ in
   access_control = {
     default_policy = "deny";
     rules = [
+      # admins can access all domains
       {
-        domain_regex = "[a-z0-9]*.sub0.net";
-        policy = "bypass";
+        domain_regex = "[a-z0-9]*.${config.constants.domains.public}";
+        policy = "one_factor";
+        subject = [ "group:admins" ];
+      }
+      # group members can access the associated domain
+      {
+        domain_regex = "'^(?P<Group>\w+)${lib.strings.escapeRegex config.constants.domains.public}$'";
+        policy = "one_factor";
+      }
+      # deny access to non-group domains
+      {
+        domain_regex = "[a-z0-9]*.${config.constants.domains.public}";
+        policy = "deny";
       }
     ];
   };
@@ -31,8 +44,9 @@ in
         name = "sub0_session";
         domain = "sub0.net";
         authelia_url = "https://auth.sub0.net";
-        expiration = "1 hour";
-        inactivity = "5 minutes";
+        inactivity = "1 week";
+        expiration = "3 weeks";
+        remember_me = "1 month";
       }
     ];
     redis = {
