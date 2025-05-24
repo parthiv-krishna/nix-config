@@ -29,7 +29,7 @@ lib.custom.mkSelfHostedService {
           X_AUTHELIA_CONFIG_FILTERS = "template";
         };
         # initial settings before secret injection
-        settings = import ./settings.nix { inherit config instanceName; };
+        settings = import ./settings.nix { inherit lib config instanceName; };
         settingsFiles = [
           (pkgs.writeText "extra_secrets.yml" ''
             session:
