@@ -17,6 +17,7 @@ in
 
       authelia = {
         port = mkPortOption 9091;
+        redis-port = mkPortOption 6379;
       };
 
       crowdsec = {
