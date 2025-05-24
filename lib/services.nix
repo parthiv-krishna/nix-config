@@ -56,8 +56,8 @@
       hostName,
       subdomain ? name,
       public ? false,
+      protected ? true,
       serviceConfig,
-      ...
     }:
     let
       inherit (config.constants) domains proxyHostName;
@@ -144,6 +144,16 @@
                   "http://localhost:${toString port}" # service is here
                 else
                   "https://${fqdn.internal}"; # service is on some other internal location
+              forwardAuth =
+                if protected then
+                  ''
+                    forward_auth auth.${domains.public} {
+                      uri /api/authz/forward-auth
+                      copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
+                    }
+                  ''
+                else
+                  "";
             in
             # expose service to public internet if enabled
             lib.mkIf public {
@@ -162,6 +172,7 @@
                   tls {
                     dns cloudflare {env.CF_API_TOKEN}
                   }
+                  ${forwardAuth}
                   reverse_proxy ${proxyTarget}
                 '';
               };
