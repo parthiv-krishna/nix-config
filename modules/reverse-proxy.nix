@@ -46,18 +46,23 @@ in
             hash = "sha256-FIXfNZzOlGquWdQwFz+psfag09KlUZD15024M+WdfSo=";
           };
           inherit (cfg) email;
-          globalConfig = ''
-            acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
-            log stdout_logger {
-             output file /var/log/caddy/access.log {
-                roll_size 10MB
-                roll_keep 5
-                roll_keep_for 14d
-                mode 0640
-              }
-              level INFO
-             }
-          '';
+          globalConfig =
+            let
+              # acme_ca = "https://acme-staging-v02.api.letsencrypt.org/directory";
+              acme_ca = "https://acme-v02.api.letsencrypt.org/directory";
+            in
+            ''
+              acme_ca ${acme_ca}
+              log stdout_logger {
+               output file /var/log/caddy/access.log {
+                  roll_size 10MB
+                  roll_keep 5
+                  roll_keep_for 14d
+                  mode 0640
+                }
+                level INFO
+               }
+            '';
           # virtualHosts are configured by individual services or other modules (like mkSelfHostedService)
         };
 
