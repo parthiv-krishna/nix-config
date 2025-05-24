@@ -1,99 +1,128 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  instance = config.constants.domains.public;
-
-  # automatically declare secret and inject into configuration
-  mkSecret =
-    secretPath:
-    let
-      attrPath = lib.splitString "/" secretPath;
-      # path with prefix for lookup in sops file
-      fullSecretPath = "authelia/${secretPath}";
-      # secret template for authelia configuration
-      secretTemplate = "{{ secret \"${config.sops.secrets.${fullSecretPath}.path}\" }}";
-    in
-    {
-      sops.secrets.${fullSecretPath} = {
-        owner = config.services.authelia.instances.${instance}.user;
-        inherit (config.services.authelia.instances.${instance}) group;
-      };
-      # inject secret into authelia configuration
-      services.authelia.instances.${instance}.settings = lib.setAttrByPath attrPath secretTemplate;
-    };
-
-  # automatically declare secret and inject into configuration
-  mkKeySecret =
-    secretPath:
-    let
-      attrPath = lib.splitString "/" secretPath;
-      # path with prefix for lookup in sops file
-      fullSecretPath = "authelia/${secretPath}";
-      # secret template for authelia configuration
-      secretTemplate = "{{ secret \"${
-        config.sops.secrets.${fullSecretPath}.path
-      }\" | mindent 10 \"|\" | msquote }}";
-    in
-    {
-      sops.secrets.${fullSecretPath} = {
-        owner = config.services.authelia.instances.${instance}.user;
-        inherit (config.services.authelia.instances.${instance}) group;
-      };
-      # inject secret into authelia configuration
-      services.authelia.instances.${instance}.settings = lib.setAttrByPath attrPath secretTemplate;
-    };
-
-  originalAutheliaConfig =
-    builtins.foldl' lib.recursiveUpdate
-      {
-        services.authelia.instances.${instance} = {
-          enable = true;
-          secrets.manual = true;
-          environmentVariables = {
-            # enable templating filter for secrets
-            X_AUTHELIA_CONFIG_FILTERS = "template";
-          };
-          # initial settings before secret injection
-          settings = import ./settings.nix { };
-        };
-      }
-      [
-        # secrets to be injected into authelia configuration
-        (mkSecret "identity_validation/reset_password/jwt_secret")
-        (mkSecret "session/secret")
-        (mkSecret "session/redis/password")
-        (mkSecret "storage/encryption_key")
-        (mkSecret "identity_providers/oidc/hmac_secret")
-        (mkKeySecret "identity_providers/oidc/jwks/main/key")
-        (mkSecret "identity_providers/oidc/clients/actual/client_id")
-        (mkSecret "identity_providers/oidc/clients/actual/client_secret")
-        (mkSecret "identity_providers/oidc/clients/immich/client_id")
-        (mkSecret "identity_providers/oidc/clients/immich/client_secret")
-        (mkSecret "identity_providers/oidc/clients/jellyfin/client_id")
-        (mkSecret "identity_providers/oidc/clients/jellyfin/client_secret")
-        # Persistent directory configuration
-        (lib.custom.mkPersistentSystemDir { directory = "/var/lib/private/authelia"; })
-      ];
-
-  # convert oidc jwks/clients from attribute sets to lists of values
-  originalAutheliaSettings = originalAutheliaConfig.services.authelia.instances.${instance}.settings;
-  originalOidcSettings = originalAutheliaSettings.identity_providers.oidc;
-  transformedOidcSettings = lib.recursiveUpdate originalOidcSettings {
-    jwks = lib.attrValues originalOidcSettings.jwks;
-    clients = lib.attrValues originalOidcSettings.clients;
-  };
-  transformedAutheliaSettings = lib.recursiveUpdate originalAutheliaSettings {
-    identity_providers = lib.recursiveUpdate originalAutheliaSettings.identity_providers {
-      oidc = transformedOidcSettings;
-    };
-  };
-  transformedAutheliaConfig = lib.recursiveUpdate originalAutheliaConfig {
-    services.authelia.instances.${instance}.settings = transformedAutheliaSettings;
-  };
+  instanceName = config.constants.domains.public;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "authelia";
   hostName = "vardar";
   public = true;
-  serviceConfig = transformedAutheliaConfig;
+  serviceConfig = lib.mkMerge [
+    {
+      services.authelia.instances.${instanceName} = {
+        enable = true;
+        secrets = with config.sops; {
+          jwtSecretFile = secrets."authelia/identity_validation/reset_password/jwt_secret".path;
+          oidcIssuerPrivateKeyFile = secrets."authelia/identity_providers/oidc/jwks/key".path;
+          oidcHmacSecretFile = secrets."authelia/identity_providers/oidc/hmac_secret".path;
+          sessionSecretFile = secrets."authelia/session/secret".path;
+          storageEncryptionKeyFile = secrets."authelia/storage/encryption_key".path;
+        };
+        environmentVariables = {
+          # enable templating filter for secrets
+          X_AUTHELIA_CONFIG_FILTERS = "template";
+        };
+        # initial settings before secret injection
+        settings = import ./settings.nix { inherit config instanceName; };
+        settingsFiles = [
+          (pkgs.writeText "extra_secrets.yml" ''
+            session:
+              redis:
+                password: {{ secret "${config.sops.secrets."authelia/session/redis/password".path}" }}
+          '')
+          (pkgs.writeText "oidc_clients.yml" ''
+            identity_providers:
+              oidc:
+                clients:
+                  - client_name: "Actual"
+                    client_id: {{ secret "${
+                      config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_id".path
+                    }" }}
+                    client_secret: {{ secret "${
+                      config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_secret".path
+                    }" }}
+                    public: false
+                    authorization_policy: "one_factor"
+                    redirect_uris:
+                      - "https://actual.sub0.net/openid/callback"
+                    scopes:
+                      - "email"
+                      - "groups"
+                      - "openid"
+                      - "profile"
+                    userinfo_signed_response_alg: "none"
+                    token_endpoint_auth_method: "client_secret_basic"
+                  - client_name: "Immich"
+                    client_id: {{ secret "${
+                      config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_id".path
+                    }" }}
+                    client_secret: {{ secret "${
+                      config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_secret".path
+                    }" }}
+                    public: false
+                    authorization_policy: 'one_factor'
+                    redirect_uris:
+                      - 'https://immich.sub0.net/auth/login'
+                      - 'https://immich.sub0.net/user-settings'
+                      - 'app.immich:///oauth-callback'
+                    scopes:
+                      - 'openid'
+                      - 'profile'
+                      - 'email'
+                    userinfo_signed_response_alg: 'none'
+                  - client_name: "Jellyfin"
+                    client_id: {{ secret "${
+                      config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_id".path
+                    }" }}
+                    client_secret: {{ secret "${
+                      config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_secret".path
+                    }" }}
+                    public: false
+                    authorization_policy: "one_factor"
+                    require_pkce: true
+                    redirect_uris:
+                      - "https://jellyfin.sub0.net/sso/OID/redirect/authelia"
+                    scopes:
+                      - "groups"
+                      - "openid"
+                      - "profile"
+                    userinfo_signed_response_alg: "none"
+                    token_endpoint_auth_method: "client_secret_post"
+          '')
+        ];
+      };
+      sops.secrets =
+        let
+          allSecretPaths = [
+            "authelia/identity_validation/reset_password/jwt_secret"
+            "authelia/identity_providers/oidc/jwks/key"
+            "authelia/identity_providers/oidc/hmac_secret"
+            "authelia/session/secret"
+            "authelia/session/redis/password"
+            "authelia/storage/encryption_key"
+            "authelia/identity_providers/oidc/clients/actual/client_id"
+            "authelia/identity_providers/oidc/clients/actual/client_secret"
+            "authelia/identity_providers/oidc/clients/immich/client_id"
+            "authelia/identity_providers/oidc/clients/immich/client_secret"
+            "authelia/identity_providers/oidc/clients/jellyfin/client_id"
+            "authelia/identity_providers/oidc/clients/jellyfin/client_secret"
+          ];
+        in
+        lib.listToAttrs (
+          map (
+            secretPath:
+            lib.nameValuePair secretPath {
+              owner = config.services.authelia.instances.${instanceName}.user;
+              inherit (config.services.authelia.instances.${instanceName}) group;
+            }
+          ) allSecretPaths
+        );
+    }
+    (lib.custom.mkPersistentSystemDir { directory = "/var/lib/authelia-${instanceName}"; })
+  ];
 }
