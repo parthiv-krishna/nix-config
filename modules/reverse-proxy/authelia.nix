@@ -31,7 +31,7 @@ in
             settings = {
               server.address = "tcp://:${toString config.constants.ports.authelia}";
               theme = "dark";
-              log.level = "info";
+              log.level = "debug";
               totp.issuer = config.constants.domains.public;
               authentication_backend.file.path = "${cfg.autheliaStateDir}/users_database.yml";
               access_control = {
@@ -46,11 +46,11 @@ in
                   {
                     domain_regex = "[a-z0-9]*\.${config.constants.domains.public}";
                     policy = "one_factor";
-                    subject = [ "group:admins" ];
+                    subject = [ "group:admin" ];
                   }
                   # group members can access the associated domain
                   {
-                    domain_regex = "^(?P<Group>\\w+)${lib.strings.escapeRegex config.constants.domains.public}$";
+                    domain_regex = "^(?P<Group>\\w+)\\.${lib.escapeRegex config.constants.domains.public}$";
                     policy = "one_factor";
                   }
                   # deny access to non-group domains
@@ -100,6 +100,7 @@ in
                   redis:
                     password: {{ secret "${config.sops.secrets."authelia/session/redis/password".path}" }}
               '')
+              # TODO: auto generate the openid callback urls based on the subdomains
               (pkgs.writeText "oidc_clients.yml" ''
                 identity_providers:
                   oidc:
@@ -132,8 +133,8 @@ in
                         public: false
                         authorization_policy: 'one_factor'
                         redirect_uris:
-                          - 'https://immich.sub0.net/auth/login'
-                          - 'https://immich.sub0.net/user-settings'
+                          - 'https://photos.sub0.net/auth/login'
+                          - 'https://photos.sub0.net/user-settings'
                           - 'app.immich:///oauth-callback'
                         scopes:
                           - 'openid'
@@ -151,7 +152,7 @@ in
                         authorization_policy: "one_factor"
                         require_pkce: true
                         redirect_uris:
-                          - "https://jellyfin.sub0.net/sso/OID/redirect/authelia"
+                          - "http://tv.sub0.net/sso/OID/redirect/authelia"
                         scopes:
                           - "groups"
                           - "openid"

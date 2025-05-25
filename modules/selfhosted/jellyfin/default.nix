@@ -3,6 +3,7 @@ lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "jellyfin";
   hostName = "midnight";
+  subdomain = "tv";
   public = true;
   serviceConfig = lib.mkMerge [
     {
