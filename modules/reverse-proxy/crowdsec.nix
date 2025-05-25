@@ -32,13 +32,13 @@ in
             {
               labels.type = "syslog";
               source = "journalctl";
-              journalctl_filter = [ "_SYSTEMD_UNIT=ssh.service" ];
+              journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
             }
             # monitor Authelia logs
             {
               labels.type = "syslog";
               source = "journalctl";
-              journalctl_filter = [ "_SYSTEMD_UNIT=authelia.service" ];
+              journalctl_filter = [ "_SYSTEMD_UNIT=authelia-${cfg.autheliaInstanceName}.service" ];
             }
           ];
         };
