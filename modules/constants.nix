@@ -1,55 +1,30 @@
 { lib, ... }:
 let
-  mkPortOption =
-    port:
+  mkConstant =
+    type: value:
     lib.mkOption {
-      type = lib.types.port;
-      default = port;
+      inherit type;
+      default = value;
       readOnly = true;
     };
+  mkPortConstant = mkConstant lib.types.port;
+  mkStringConstant = mkConstant lib.types.str;
 in
 {
   options.constants = {
-    services = {
-      actual = {
-        port = mkPortOption 5006;
-      };
-
-      authelia = {
-        port = mkPortOption 9091;
-        redis-port = mkPortOption 6379;
-      };
-
-      crowdsec = {
-        port = mkPortOption 9090;
-      };
-
-      jellyfin = {
-        port = mkPortOption 8096;
-      };
+    ports = {
+      actual = mkPortConstant 5006;
+      authelia = mkPortConstant 9091;
+      authelia-redis = mkPortConstant 6379;
+      crowdsec = mkPortConstant 9090;
+      jellyfin = mkPortConstant 8096;
     };
 
-    proxyHostName = lib.mkOption {
-      type = lib.types.str;
-      default = "nimbus";
-      description = "Hostname of the public-facing proxy server";
-      readOnly = true;
-    };
+    proxyHostName = mkStringConstant "nimbus";
 
     domains = {
-      public = lib.mkOption {
-        type = lib.types.str;
-        default = "sub0.net";
-        description = "Public domain name";
-        readOnly = true;
-      };
-
-      internal = lib.mkOption {
-        type = lib.types.str;
-        default = "ts.sub0.net";
-        description = "Internal domain name";
-        readOnly = true;
-      };
+      public = mkStringConstant "sub0.net";
+      internal = mkStringConstant "ts.sub0.net";
     };
   };
 }

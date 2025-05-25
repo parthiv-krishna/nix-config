@@ -9,7 +9,7 @@ lib.custom.mkSelfHostedService {
       services.actual = {
         enable = true;
         settings = {
-          inherit (config.constants.services.actual) port;
+          port = config.constants.ports.actual;
         };
       };
     }

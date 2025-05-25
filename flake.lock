@@ -291,10 +291,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1748065959,
-        "narHash": "sha256-WnTd0mtuI1u2itkYXdmjUrt/T1su22JxCYTMMgGcTRU=",
+        "lastModified": 1748115523,
+        "narHash": "sha256-wRUTy3DmdyXEZIF6088X8BMbvF0YFHXCS44KupARM00=",
         "ref": "main",
-        "rev": "fed5f700d854d58466702e721d5bdc124a923c6c",
+        "rev": "19713fce46b6a47f65c179b5964829f64c87c6c4",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -331,11 +331,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1747744144,
-        "narHash": "sha256-W7lqHp0qZiENCDwUZ5EX/lNhxjMdNapFnbErcbnP11Q=",
+        "lastModified": 1748026106,
+        "narHash": "sha256-6m1Y3/4pVw1RWTsrkAK2VMYSzG4MMIj7sqUy7o8th1o=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "2795c506fe8fb7b03c36ccb51f75b6df0ab2553f",
+        "rev": "063f43f2dbdef86376cc29ad646c45c46e93234c",
         "type": "github"
       },
       "original": {
@@ -354,11 +354,11 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1748034126,
-        "narHash": "sha256-7nPv+Qi3PKxgeE4i9c4ErMCaBjVhnVYEzDmWA+8Kalw=",
+        "lastModified": 1748088865,
+        "narHash": "sha256-xfAT2ykSAWcYgxkyZN5n6xRHab93u56zbBjuhoDFKFg=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "2f610f97541a9cdebcdb485fe8f41e09bd46420d",
+        "rev": "2c0a9ff1e2bcc6aab15caa504a7c9670f6e0a929",
         "type": "github"
       },
       "original": {

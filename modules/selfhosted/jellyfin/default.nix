@@ -10,6 +10,9 @@ lib.custom.mkSelfHostedService {
         enable = true;
       };
     }
-    (lib.custom.mkPersistentSystemDir { directory = "/var/lib/jellyfin"; })
+    (lib.custom.mkPersistentSystemDir {
+      directory = config.services.jellyfin.dataDir;
+      inherit (config.services.jellyfin) user group;
+    })
   ];
 }
