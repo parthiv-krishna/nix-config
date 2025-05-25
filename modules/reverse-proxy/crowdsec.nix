@@ -24,8 +24,8 @@ in
             {
               labels.type = "caddy";
               filenames = [
-                "/var/log/caddy/access.log"
-                "/var/log/caddy/access-*.log"
+                "${config.services.caddy.logDir}/access.log"
+                "${config.services.caddy.logDir}/access-*.log"
               ];
             }
             # monitor SSH logs
@@ -33,6 +33,12 @@ in
               labels.type = "syslog";
               source = "journalctl";
               journalctl_filter = [ "_SYSTEMD_UNIT=ssh.service" ];
+            }
+            # monitor Authelia logs
+            {
+              labels.type = "syslog";
+              source = "journalctl";
+              journalctl_filter = [ "_SYSTEMD_UNIT=authelia.service" ];
             }
           ];
         };
@@ -78,6 +84,11 @@ in
                   # For SSH
                   if ! cscli collections list | grep -q "linux"; then
                       cscli collections install crowdsecurity/linux
+                  fi
+
+                  # For Authelia
+                  if ! cscli collections list | grep -q "authelia"; then
+                      cscli collections install LePresidente/authelia
                   fi
 
                   # Include SSH successful logins

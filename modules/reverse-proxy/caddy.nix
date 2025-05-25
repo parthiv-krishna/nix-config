@@ -31,7 +31,7 @@ in
             ''
               acme_ca ${acme_ca}
               log stdout_logger {
-               output file /var/log/caddy/access.log {
+               output file ${config.services.caddy.logDir}/access.log {
                   roll_size 10MB
                   roll_keep 5
                   roll_keep_for 14d
