@@ -17,7 +17,9 @@ in
       authelia = mkPortConstant 9091;
       authelia-redis = mkPortConstant 6379;
       crowdsec = mkPortConstant 9090;
+      immich = mkPortConstant 2283;
       jellyfin = mkPortConstant 8096;
+      ollama = mkPortConstant 11434;
     };
 
     proxyHostName = mkStringConstant "nimbus";

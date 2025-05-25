@@ -132,12 +132,12 @@
             ) hosts;
           };
         }
-        // lib.mapAttrs (hostName: hostConfig: {
+        // lib.mapAttrs (hostName: _hostConfig: {
 
           deployment = {
             targetHost = "${hostName}.${internalDomain}";
             # don't cross compile on ARM machines
-            buildOnTarget = hostConfig.system != systems.x86;
+            buildOnTarget = hostName != "vardar";
           };
 
           imports = [
