@@ -46,7 +46,7 @@ A user visits `service.sub0.net` on the public internet. Traffic is received by 
 - Authenticated traffic is `forward_auth`'d via `vardar` which runs the wake on LAN server. If the service is hosted on `midnight`, `vardar` will send a wake on LAN packet if one hasn't been sent somewhat recently.
 - The query is `reverse_proxy`'d to the appropriate target machine.
     - If the service is hosted on `nimbus`, this'll just be a localhost:port.
-    - Otherwise, it'll reverse proxy via a tailnet URL (e.g. `service.midnight.alpine-aeolian.ts.net`)
+    - Otherwise, it'll reverse proxy via a tailnet URL (e.g. `service.midnight.ts.sub0.net`)
         - On the machine hosting the service, another instance of Caddy will receive the request and `reverse_proxy` it to localhost:port.
 
 ### Internal Traffic
