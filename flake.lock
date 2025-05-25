@@ -34,15 +34,15 @@
       "locked": {
         "lastModified": 1741059482,
         "narHash": "sha256-584l9FkfHpvN11sX3UhC4ve/32XZ8da/aEJ+I3BCFH4=",
-        "owner": "aksiksi",
-        "repo": "compose2nix",
+        "ref": "refs/heads/main",
         "rev": "10519ebbd0a47db8f332e1ee114b1df74d0eb45a",
-        "type": "github"
+        "revCount": 240,
+        "type": "git",
+        "url": "ssh://git@github.com/aksiksi/compose2nix"
       },
       "original": {
-        "owner": "aksiksi",
-        "repo": "compose2nix",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/aksiksi/compose2nix"
       }
     },
     "crowdsec": {
@@ -75,15 +75,15 @@
       "locked": {
         "lastModified": 1747742835,
         "narHash": "sha256-kYL4GCwwznsypvsnA20oyvW8zB/Dvn6K5G/tgMjVMT4=",
-        "owner": "nix-community",
-        "repo": "disko",
+        "ref": "refs/heads/master",
         "rev": "df522e787fdffc4f32ed3e1fca9ed0968a384d62",
-        "type": "github"
+        "revCount": 1244,
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/disko"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "disko",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/disko"
       }
     },
     "flake-compat": {
@@ -204,6 +204,24 @@
         "type": "github"
       }
     },
+    "flake-utils_5": {
+      "inputs": {
+        "systems": "systems_4"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "gitignore": {
       "inputs": {
         "nixpkgs": [
@@ -232,32 +250,32 @@
         ]
       },
       "locked": {
-        "lastModified": 1747978958,
-        "narHash": "sha256-pQQnbxWpY3IiZqgelXHIe/OAE/Yv4NSQq7fch7M6nXQ=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "7419250703fd5eb50e99bdfb07a86671939103ea",
-        "type": "github"
+        "lastModified": 1748182899,
+        "narHash": "sha256-r6MHSalDFydlUmjorVTSsyhLjIt8VWNtGc5+mffXvFQ=",
+        "ref": "refs/heads/master",
+        "rev": "901f8fef7f349cf8a8e97b3230b22fd592df9160",
+        "revCount": 4789,
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/home-manager"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/home-manager"
       }
     },
     "impermanence": {
       "locked": {
         "lastModified": 1737831083,
         "narHash": "sha256-LJggUHbpyeDvNagTUrdhe/pRVp4pnS6wVKALS782gRI=",
-        "owner": "nix-community",
-        "repo": "impermanence",
+        "ref": "refs/heads/master",
         "rev": "4b3e914cdf97a5b536a889e939fb2fd2b043a170",
-        "type": "github"
+        "revCount": 179,
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/impermanence"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "impermanence",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/impermanence"
       }
     },
     "ixx": {
@@ -354,17 +372,17 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1748088865,
-        "narHash": "sha256-xfAT2ykSAWcYgxkyZN5n6xRHab93u56zbBjuhoDFKFg=",
-        "owner": "nix-community",
-        "repo": "nixvim",
-        "rev": "2c0a9ff1e2bcc6aab15caa504a7c9670f6e0a929",
-        "type": "github"
+        "lastModified": 1748197130,
+        "narHash": "sha256-WkUknPbMYFeusz3GKkhnklGF0r9bz4Z4bpU8h0t1Ddc=",
+        "ref": "refs/heads/main",
+        "rev": "b37d429468c1f5133743e967caf97d92dc35ef5b",
+        "revCount": 3386,
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/nixvim"
       },
       "original": {
-        "owner": "nix-community",
-        "repo": "nixvim",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/nix-community/nixvim"
       }
     },
     "nuschtosSearch": {
@@ -423,15 +441,15 @@
       "locked": {
         "lastModified": 1747372754,
         "narHash": "sha256-2Y53NGIX2vxfie1rOW0Qb86vjRZ7ngizoo+bnXU9D9k=",
-        "owner": "cachix",
-        "repo": "git-hooks.nix",
+        "ref": "refs/heads/master",
         "rev": "80479b6ec16fefd9c1db3ea13aeb038c60530f46",
-        "type": "github"
+        "revCount": 1026,
+        "type": "git",
+        "url": "ssh://git@github.com/cachix/git-hooks.nix"
       },
       "original": {
-        "owner": "cachix",
-        "repo": "git-hooks.nix",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/cachix/git-hooks.nix"
       }
     },
     "root": {
@@ -447,7 +465,8 @@
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",
         "sops-nix": "sops-nix",
-        "treefmt-nix": "treefmt-nix"
+        "thaw": "thaw",
+        "treefmt-nix": "treefmt-nix_2"
       }
     },
     "sops-nix": {
@@ -459,15 +478,15 @@
       "locked": {
         "lastModified": 1747603214,
         "narHash": "sha256-lAblXm0VwifYCJ/ILPXJwlz0qNY07DDYdLD+9H+Wc8o=",
-        "owner": "mic92",
-        "repo": "sops-nix",
+        "ref": "refs/heads/master",
         "rev": "8d215e1c981be3aa37e47aeabd4e61bb069548fd",
-        "type": "github"
+        "revCount": 999,
+        "type": "git",
+        "url": "ssh://git@github.com/mic92/sops-nix"
       },
       "original": {
-        "owner": "mic92",
-        "repo": "sops-nix",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/mic92/sops-nix"
       }
     },
     "stable": {
@@ -531,9 +550,47 @@
         "type": "github"
       }
     },
+    "systems_4": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "thaw": {
+      "inputs": {
+        "flake-utils": "flake-utils_5",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1748208324,
+        "narHash": "sha256-+LHkJpAdZ+y8AWFOc4qY5ogZdr7k1q7XF1/bmuc+hu4=",
+        "ref": "refs/heads/main",
+        "rev": "0137757cdc4471898c874d30fcad14fc1d71c2e1",
+        "revCount": 9,
+        "type": "git",
+        "url": "ssh://git@github.com/parthiv-krishna/thaw"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/parthiv-krishna/thaw"
+      }
+    },
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
+          "thaw",
           "nixpkgs"
         ]
       },
@@ -549,6 +606,26 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1747912973,
+        "narHash": "sha256-XgxghfND8TDypxsMTPU2GQdtBEsHTEc3qWE6RVEk8O0=",
+        "ref": "refs/heads/main",
+        "rev": "020cb423808365fa3f10ff4cb8c0a25df35065a3",
+        "revCount": 445,
+        "type": "git",
+        "url": "ssh://git@github.com/numtide/treefmt-nix"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/numtide/treefmt-nix"
       }
     }
   },
