@@ -101,65 +101,70 @@ in
                     password: {{ secret "${config.sops.secrets."authelia/session/redis/password".path}" }}
               '')
               # TODO: auto generate the openid callback urls based on the subdomains
-              (pkgs.writeText "oidc_clients.yml" ''
-                identity_providers:
-                  oidc:
-                    clients:
-                      - client_name: "Actual"
-                        client_id: {{ secret "${
-                          config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_id".path
-                        }" }}
-                        client_secret: {{ secret "${
-                          config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_secret".path
-                        }" }}
-                        public: false
-                        authorization_policy: "one_factor"
-                        redirect_uris:
-                          - "https://actual.sub0.net/openid/callback"
-                        scopes:
-                          - "email"
-                          - "groups"
-                          - "openid"
-                          - "profile"
-                        userinfo_signed_response_alg: "none"
-                        token_endpoint_auth_method: "client_secret_basic"
-                      - client_name: "Immich"
-                        client_id: {{ secret "${
-                          config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_id".path
-                        }" }}
-                        client_secret: {{ secret "${
-                          config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_secret".path
-                        }" }}
-                        public: false
-                        authorization_policy: 'one_factor'
-                        redirect_uris:
-                          - 'https://photos.sub0.net/auth/login'
-                          - 'https://photos.sub0.net/user-settings'
-                          - 'app.immich:///oauth-callback'
-                        scopes:
-                          - 'openid'
-                          - 'profile'
-                          - 'email'
-                        userinfo_signed_response_alg: 'none'
-                      - client_name: "Jellyfin"
-                        client_id: {{ secret "${
-                          config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_id".path
-                        }" }}
-                        client_secret: {{ secret "${
-                          config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_secret".path
-                        }" }}
-                        public: false
-                        authorization_policy: "one_factor"
-                        require_pkce: true
-                        redirect_uris:
-                          - "http://tv.sub0.net/sso/OID/redirect/authelia"
-                        scopes:
-                          - "groups"
-                          - "openid"
-                          - "profile"
-                        userinfo_signed_response_alg: "none"
-                        token_endpoint_auth_method: "client_secret_post"
-              '')
+              (
+                let
+                  fqdn = "${subdomain}.${config.constants.domains.public}";
+                in
+                pkgs.writeText "oidc_clients.yml" ''
+                  identity_providers:
+                    oidc:
+                      clients:
+                        - client_name: "Actual"
+                          client_id: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_id".path
+                          }" }}
+                          client_secret: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_secret".path
+                          }" }}
+                          public: false
+                          authorization_policy: "one_factor"
+                          redirect_uris:
+                            - "https://actual.${fqdn}/openid/callback"
+                          scopes:
+                            - "email"
+                            - "groups"
+                            - "openid"
+                            - "profile"
+                          userinfo_signed_response_alg: "none"
+                          token_endpoint_auth_method: "client_secret_basic"
+                        - client_name: "Immich"
+                          client_id: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_id".path
+                          }" }}
+                          client_secret: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_secret".path
+                          }" }}
+                          public: false
+                          authorization_policy: 'one_factor'
+                          redirect_uris:
+                            - 'https://photos.${fqdn}/auth/login'
+                            - 'https://photos.${fqdn}/user-settings'
+                            - 'app.immich:///oauth-callback'
+                          scopes:
+                            - 'openid'
+                            - 'profile'
+                            - 'email'
+                          userinfo_signed_response_alg: 'none'
+                        - client_name: "Jellyfin"
+                          client_id: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_id".path
+                          }" }}
+                          client_secret: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_secret".path
+                          }" }}
+                          public: false
+                          authorization_policy: "one_factor"
+                          require_pkce: true
+                          redirect_uris:
+                            - "https://tv.${fqdn}/sso/OID/redirect/authelia"
+                          scopes:
+                            - "groups"
+                            - "openid"
+                            - "profile"
+                          userinfo_signed_response_alg: "none"
+                          token_endpoint_auth_method: "client_secret_post"
+                ''
+              )
             ];
           };
 
