@@ -7,7 +7,6 @@
 let
   cfg = config.custom.reverse-proxy;
   instanceName = config.constants.domains.public;
-  stateDir = "/var/lib/authelia-${instanceName}";
   subdomain = "auth";
 in
 {
@@ -32,13 +31,9 @@ in
             settings = {
               server.address = "tcp://:${toString config.constants.ports.authelia}";
               theme = "dark";
-              log = {
-                level = "warn";
-                format = "text";
-                file_path = "${stateDir}/authelia.log";
-              };
+              log.level = "info";
               totp.issuer = config.constants.domains.public;
-              authentication_backend.file.path = "${stateDir}/users_database.yml";
+              authentication_backend.file.path = "${cfg.autheliaStateDir}/users_database.yml";
               access_control = {
                 default_policy = "deny";
                 rules = [
@@ -55,7 +50,7 @@ in
                   }
                   # group members can access the associated domain
                   {
-                    domain_regex = "'^(?P<Group>\w+)${lib.strings.escapeRegex config.constants.domains.public}$'";
+                    domain_regex = "^(?P<Group>\\w+)${lib.strings.escapeRegex config.constants.domains.public}$";
                     policy = "one_factor";
                   }
                   # deny access to non-group domains
@@ -87,14 +82,14 @@ in
                 ban_time = "5 minutes";
               };
               storage = {
-                local.path = "${stateDir}/db.sqlite3";
+                local.path = "${cfg.autheliaStateDir}/db.sqlite3";
               };
               # see https://www.authelia.com/integration/proxies/caddy/#implementation
               server.endpoints.authz.forward-auth.implementation = "ForwardAuth";
               # TODO: setup SMTP server for email
               notifier = {
                 disable_startup_check = false;
-                filesystem.filename = "${stateDir}/notification.txt";
+                filesystem.filename = "${cfg.autheliaStateDir}/notification.txt";
               };
             };
 
@@ -172,7 +167,7 @@ in
             enable = true;
             port = config.constants.ports.authelia-redis;
             settings = {
-              maxmemory = "128mb";
+              maxmemory = "512mb";
               maxmemory-policy = "allkeys-lru";
               protected-mode = true;
             };
@@ -243,7 +238,7 @@ in
           );
       }
       (lib.custom.mkPersistentSystemDir {
-        directory = stateDir;
+        directory = cfg.autheliaStateDir;
         inherit (config.services.authelia.instances.${instanceName}) user group;
         mode = "0750";
       })
