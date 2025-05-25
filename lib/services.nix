@@ -61,8 +61,8 @@
     }:
     let
       inherit (config.constants) domains proxyHostName;
-      inherit (config.constants.services.${name}) port;
 
+      port = config.constants.ports.${name};
       myHostName = config.networking.hostName;
       isTargetHost = myHostName == hostName;
       isPublicServer = myHostName == proxyHostName;
@@ -87,53 +87,43 @@
               message = "Caddy must be enabled on host `${myHostName}` since it is the public server.";
             }
             {
-              assertion =
-                builtins.hasAttr name config.constants.services
-                && builtins.hasAttr "port" config.constants.services.${name};
-              message = "Port for service `${name}` is not defined in `config.constants.services.${name}.port`. Please define it in `modules/constants.nix`.";
+              assertion = builtins.hasAttr name config.constants.ports;
+              message = "Port for service `${name}` is not defined in `config.constants.ports.${name}`. Please define it in `modules/constants.nix`.";
             }
           ];
         }
         (lib.mkIf isTargetHost serviceConfig)
 
         # target host caddy configuration. route the internal FQDN to the local port
-        (lib.mkIf isTargetHost {
-          services.caddy.virtualHosts."${fqdn.internal}" = {
-            logFormat = ''
-              output file ${config.services.caddy.logDir}/access-${fqdn.internal}.log {
-                roll_size 10MB
-                roll_keep 5
-                roll_keep_for 14d
-                mode 0640
-              }
-            '';
-            extraConfig = ''
-              tls {
-                dns cloudflare {env.CF_API_TOKEN}
-              }
-              reverse_proxy localhost:${toString port}
-            '';
-          };
-        })
-
-        (lib.mkIf (isTargetHost && !isPublicServer) {
-          services.caddy.virtualHosts."${fqdn.public}" = {
-            logFormat = ''
-              output file ${config.services.caddy.logDir}/access-${fqdn.public}.log {
-                roll_size 10MB
-                roll_keep 5
-                roll_keep_for 14d
-                mode 0640
-              }
-            '';
-            extraConfig = ''
-              tls {
-                dns cloudflare {env.CF_API_TOKEN}
-              }
-              reverse_proxy localhost:${toString port}
-            '';
-          };
-        })
+        (lib.mkIf (isTargetHost && !isPublicServer) (
+          let
+            virtualHostConfig = logName: {
+              logFormat = ''
+                output file ${config.services.caddy.logDir}/access-${logName}.log {
+                  roll_size 10MB
+                  roll_keep 5
+                  roll_keep_for 14d
+                  mode 0640
+                }
+                level DEBUG
+              '';
+              extraConfig = ''
+                tls {
+                  dns cloudflare {env.CF_API_TOKEN}
+                }
+                reverse_proxy localhost:${toString port}
+              '';
+            };
+          in
+          {
+            services.caddy.virtualHosts = {
+              # route both internal and public FQDN to the local port
+              # this allows for routing from public relay and on local network
+              "${fqdn.internal}" = virtualHostConfig fqdn.internal;
+              "${fqdn.public}" = virtualHostConfig fqdn.public;
+            };
+          }
+        ))
 
         # public server caddy configuration. route the public FQDN to either local port or internal FQDN
         (lib.mkIf isPublicServer {
@@ -144,21 +134,12 @@
                   "http://localhost:${toString port}" # service is here
                 else
                   "https://${fqdn.internal}"; # service is on some other internal location
-              forwardAuth =
-                if protected then
-                  ''
-                    forward_auth auth.${domains.public} {
-                      uri /api/authz/forward-auth
-                      copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
-                    }
-                  ''
-                else
-                  "";
+              forwardAuth = if protected then "import auth" else "";
             in
             # expose service to public internet if enabled
             lib.mkIf public {
               "${fqdn.public}" = {
-                # TODO: Authelia and wake on LAN
+                # TODO: wake on LAN
                 logFormat = ''
                   output file ${config.services.caddy.logDir}/access-${fqdn.public}.log {
                     roll_size 10MB
@@ -166,7 +147,7 @@
                     roll_keep_for 14d
                     mode 0640
                   }
-                  level INFO
+                  level DEBUG
                 '';
                 extraConfig = ''
                   tls {

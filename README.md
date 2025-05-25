@@ -42,7 +42,7 @@ The machines are connected together using Tailscale, and all inter-machine traff
 ### External Traffic
 A user visits `service.sub0.net` on the public internet. Traffic is received by Caddy on `nimbus`.
 - CrowdSec bounces suspicious traffic.
-- Non-suspicious traffic is `forward_auth`'d via `vardar` which runs Authelia as an authentication service at `auth.sub0.net`.
+- Non-suspicious traffic is `forward_auth` via Authelia as an authentication service at `auth.sub0.net`.
 - Authenticated traffic is `forward_auth`'d via `vardar` which runs the wake on LAN server. If the service is hosted on `midnight`, `vardar` will send a wake on LAN packet if one hasn't been sent somewhat recently.
 - The query is `reverse_proxy`'d to the appropriate target machine.
     - If the service is hosted on `nimbus`, this'll just be a localhost:port.
