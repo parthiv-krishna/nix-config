@@ -16,7 +16,7 @@
   ];
 
   # MergerFS configuration
-  fileSystems."/data" = {
+  fileSystems."/persist" = {
     device = lib.strings.concatStringsSep ":" (
       lib.lists.imap0 (i: _disk: "/hdd/data${toString i}") dataDevices
     );
@@ -32,6 +32,18 @@
       "fsname=mergerfs"
     ];
   };
+
+  boot =
+    let
+      modules = [
+        "dm_cache"
+        "dm_cache_smq"
+      ];
+    in
+    {
+      initrd.kernelModules = modules;
+      kernelModules = modules;
+    };
 
   # SnapRAID configuration
   services.snapraid = {
