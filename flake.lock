@@ -574,11 +574,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1748208324,
-        "narHash": "sha256-+LHkJpAdZ+y8AWFOc4qY5ogZdr7k1q7XF1/bmuc+hu4=",
+        "lastModified": 1748214871,
+        "narHash": "sha256-U4wqZCMCHwuN+zKQNp/qhl4/DAnMDfNPQk/iFM9Ssso=",
         "ref": "refs/heads/main",
-        "rev": "0137757cdc4471898c874d30fcad14fc1d71c2e1",
-        "revCount": 9,
+        "rev": "3b18215d33c1cc2084c95da2c55834f4480887fd",
+        "revCount": 10,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/thaw"
       },

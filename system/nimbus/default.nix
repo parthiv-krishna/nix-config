@@ -40,7 +40,7 @@
   custom.reverse-proxy = {
     enable = true;
     publicFacing = true;
-    email = "letencrypt.snowy015@passmail.net";
+    email = "letsencrypt.snowy015@passmail.net";
     cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
   };
 

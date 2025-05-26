@@ -127,6 +127,14 @@
 
         # public server caddy configuration. route the public FQDN to either local port or internal FQDN
         (lib.mkIf isPublicServer {
+          services.authelia.instances.${config.custom.reverse-proxy.autheliaInstanceName}.settings.access_control.rules =
+            lib.mkIf public [
+              {
+                domain_regex = "${subdomain}.${config.constants.domains.public}";
+                policy = if protected then "one_factor" else "bypass";
+                subject = lib.mkIf protected [ "group:${name}" ];
+              }
+            ];
           services.caddy.virtualHosts =
             let
               proxyTarget =
@@ -134,7 +142,6 @@
                   "http://localhost:${toString port}" # service is here
                 else
                   "https://${fqdn.internal}"; # service is on some other internal location
-              forwardAuth = if protected then "import auth" else "";
             in
             # expose service to public internet if enabled
             lib.mkIf public {
@@ -153,7 +160,7 @@
                   tls {
                     dns cloudflare {env.CF_API_TOKEN}
                   }
-                  ${forwardAuth}
+                  import auth
                   reverse_proxy ${proxyTarget}
                 '';
               };

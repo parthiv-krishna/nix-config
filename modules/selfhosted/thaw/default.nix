@@ -15,7 +15,7 @@ lib.custom.mkSelfHostedService {
           mac = "a8:b8:e0:04:4a:57";
           display_name = "Main Server";
           timeout_seconds = 1;
-          broadcast_ip = "192.168.255.255";
+          broadcast_ip = "192.168.4.255";
           wake_port = 9;
         };
       };

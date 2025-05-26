@@ -5,6 +5,7 @@ lib.custom.mkSelfHostedService {
   hostName = "midnight";
   subdomain = "tv";
   public = true;
+  protected = false;
   serviceConfig = lib.mkMerge [
     {
       services.jellyfin = {
