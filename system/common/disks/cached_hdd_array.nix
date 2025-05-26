@@ -102,13 +102,21 @@
           name = "cache_vg";
           value = {
             type = "lvm_vg";
+            # may need to adjust this section if your cache disk is much smaller than 4TB (or you have many data disks)
             lvs = builtins.listToAttrs (
-              lib.lists.imap0 (i: _: {
+              (lib.lists.imap0 (i: _: {
                 name = "cache${toString i}";
                 value = {
-                  size = "${toString (builtins.floor (100 / (builtins.length dataDevices)))}%VG";
+                  # -1% to account for metadata, ends up wasting a bit with 4TB cache and 2 data disks
+                  size = "${toString (builtins.floor (100 / (builtins.length dataDevices)) - 1)}%VG";
                 };
-              }) dataDevices
+              }) dataDevices)
+              ++ (lib.lists.imap0 (i: _: {
+                name = "cache_metadata${toString i}";
+                value = {
+                  size = "16G";
+                };
+              }) dataDevices)
             );
           };
         }
