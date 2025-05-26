@@ -112,7 +112,8 @@ in
               type = "lvm_vg";
               lvs = {
                 data = {
-                  size = "100%FREE";
+                  # reserve 1% otherwise lvconvert will fail
+                  size = "99%FREE";
                   content = {
                     type = "filesystem";
                     format = "btrfs";
