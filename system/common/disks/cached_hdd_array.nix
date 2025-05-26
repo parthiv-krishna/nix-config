@@ -4,7 +4,6 @@
 
 {
   cacheDevice ? throw "Set this to your cache device, e.g. /dev/nvme0n1",
-  cacheSize ? throw "Set this to the size of the cache partition per data device",
   dataDevices ? throw "Set this to a list of data devices to mount",
   parityDevices ? throw "Set this to a list of parity devices to mount",
   lib,
@@ -23,19 +22,16 @@
             type = "disk";
             content = {
               type = "gpt";
-              partitions = builtins.listToAttrs (
-                lib.lists.imap0 (i: _: {
-                  name = "cache${toString i}";
-                  value = {
-                    name = "cache${toString i}";
-                    size = cacheSize;
-                    content = {
-                      type = "lvm_pv";
-                      vg = "cache_vg";
-                    };
+              partitions = {
+                cache = {
+                  name = "cache";
+                  size = "100%";
+                  content = {
+                    type = "lvm_pv";
+                    vg = "cache_vg";
                   };
-                }) dataDevices
-              );
+                };
+              };
             };
           };
         }
