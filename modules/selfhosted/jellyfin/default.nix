@@ -8,8 +8,11 @@ lib.custom.mkSelfHostedService {
   protected = false;
   serviceConfig = lib.mkMerge [
     {
-      services.jellyfin = {
-        enable = true;
+      services = {
+        jellyfin.enable = true;
+
+        # don't back up media
+        restic.backups.digitalocean.exclude = [ "/var/lib/jellyfin/media" ];
       };
     }
     (lib.custom.mkPersistentSystemDir {
