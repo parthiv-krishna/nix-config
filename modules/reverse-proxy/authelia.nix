@@ -6,7 +6,6 @@
 }:
 let
   cfg = config.custom.reverse-proxy;
-  instanceName = config.constants.domains.public;
   subdomain = "auth";
 in
 {
@@ -14,7 +13,7 @@ in
     lib.mkMerge [
       {
         services = {
-          authelia.instances.${instanceName} = {
+          authelia.instances.${cfg.autheliaInstanceName} = {
             enable = true;
             secrets = with config.sops; {
               jwtSecretFile = secrets."authelia/identity_validation/reset_password/jwt_secret".path;
@@ -36,7 +35,8 @@ in
               authentication_backend.file.path = "${cfg.autheliaStateDir}/users_database.yml";
               access_control = {
                 default_policy = "deny";
-                rules = [
+                rules = lib.mkAfter [
+                  # domain-specific rules are managed by lib.custom.mkSelfHostedService
                   # anyone can access the auth portal
                   {
                     domain_regex = "${subdomain}.${config.constants.domains.public}";
@@ -47,11 +47,6 @@ in
                     domain_regex = "[a-z0-9]*\.${config.constants.domains.public}";
                     policy = "one_factor";
                     subject = [ "group:admin" ];
-                  }
-                  # group members can access the associated domain
-                  {
-                    domain_regex = "^(?P<Group>\\w+)\\.${lib.escapeRegex config.constants.domains.public}$";
-                    policy = "one_factor";
                   }
                   # deny access to non-group domains
                   {
@@ -103,7 +98,7 @@ in
               # TODO: auto generate the openid callback urls based on the subdomains
               (
                 let
-                  fqdn = "${subdomain}.${config.constants.domains.public}";
+                  domain = config.constants.domains.public;
                 in
                 pkgs.writeText "oidc_clients.yml" ''
                   identity_providers:
@@ -119,7 +114,7 @@ in
                           public: false
                           authorization_policy: "one_factor"
                           redirect_uris:
-                            - "https://actual.${fqdn}/openid/callback"
+                            - "https://actual.${domain}/openid/callback"
                           scopes:
                             - "email"
                             - "groups"
@@ -137,8 +132,8 @@ in
                           public: false
                           authorization_policy: 'one_factor'
                           redirect_uris:
-                            - 'https://photos.${fqdn}/auth/login'
-                            - 'https://photos.${fqdn}/user-settings'
+                            - 'https://photos.${domain}/auth/login'
+                            - 'https://photos.${domain}/user-settings'
                             - 'app.immich:///oauth-callback'
                           scopes:
                             - 'openid'
@@ -156,7 +151,7 @@ in
                           authorization_policy: "one_factor"
                           require_pkce: true
                           redirect_uris:
-                            - "https://tv.${fqdn}/sso/OID/redirect/authelia"
+                            - "https://tv.${domain}/sso/OID/redirect/authelia"
                           scopes:
                             - "groups"
                             - "openid"
@@ -169,7 +164,7 @@ in
           };
 
           # redis server for session storage
-          redis.servers."authelia-${instanceName}" = {
+          redis.servers."authelia-${cfg.autheliaInstanceName}" = {
             enable = true;
             port = config.constants.ports.authelia-redis;
             settings = {
@@ -237,15 +232,15 @@ in
             map (
               secretPath:
               lib.nameValuePair secretPath {
-                owner = config.services.authelia.instances.${instanceName}.user;
-                inherit (config.services.authelia.instances.${instanceName}) group;
+                owner = config.services.authelia.instances.${cfg.autheliaInstanceName}.user;
+                inherit (config.services.authelia.instances.${cfg.autheliaInstanceName}) group;
               }
             ) allSecretPaths
           );
       }
       (lib.custom.mkPersistentSystemDir {
         directory = cfg.autheliaStateDir;
-        inherit (config.services.authelia.instances.${instanceName}) user group;
+        inherit (config.services.authelia.instances.${cfg.autheliaInstanceName}) user group;
         mode = "0750";
       })
     ]

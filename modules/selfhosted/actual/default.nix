@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedService {
   name = "actual";
   hostName = "nimbus";
   public = true;
+  protected = false;
   serviceConfig = lib.mkMerge [
     {
       services.actual = {
