@@ -4,12 +4,16 @@
 
 {
   cacheDevice ? throw "Set this to your cache device, e.g. /dev/nvme0n1",
+  cacheSizeGB ? throw "Set this to the total cache size in GB",
   dataDevices ? throw "Set this to a list of data devices to mount",
   parityDevices ? throw "Set this to a list of parity devices to mount",
   lib,
   ...
 }:
-
+let
+  metadataGBPerDisk = 16;
+  cacheGBPerDisk = builtins.floor ((cacheSizeGB - metadataGBPerDisk) / builtins.length dataDevices);
+in
 {
   disko.devices = {
     disk = builtins.listToAttrs (
@@ -22,16 +26,19 @@
             type = "disk";
             content = {
               type = "gpt";
-              partitions = {
-                cache = {
-                  name = "cache";
-                  size = "100%";
-                  content = {
-                    type = "lvm_pv";
-                    vg = "cache_vg";
+              partitions = builtins.listToAttrs (
+                lib.lists.imap0 (i: _: {
+                  name = "cache${toString i}";
+                  value = {
+                    name = "cache${toString i}";
+                    size = "${toString cacheGBPerDisk}G";
+                    content = {
+                      type = "lvm_pv";
+                      vg = "data_vg${toString i}";
+                    };
                   };
-                };
-              };
+                }) dataDevices
+              );
             };
           };
         }
@@ -95,50 +102,32 @@
         ) parityDevices)
     );
 
-    lvm_vg = builtins.listToAttrs (
-      # Cache VG
-      [
-        {
-          name = "cache_vg";
-          value = {
-            type = "lvm_vg";
-            # may need to adjust this section if your cache disk is much smaller than 4TB (or you have many data disks)
-            lvs = builtins.listToAttrs (
-              (lib.lists.imap0 (i: _: {
-                name = "cache${toString i}";
-                value = {
-                  # -1% to account for metadata, ends up wasting a bit with 4TB cache and 2 data disks
-                  size = "${toString (builtins.floor (100 / (builtins.length dataDevices)) - 1)}%VG";
+    lvm_vg =
+      builtins.listToAttrs
+        # Data VGs with cache and metadata
+        (
+          lib.lists.imap0 (i: _: {
+            name = "data_vg${toString i}";
+            value = {
+              type = "lvm_vg";
+              lvs = {
+                data = {
+                  size = "100%FREE";
+                  content = {
+                    type = "filesystem";
+                    format = "btrfs";
+                    mountpoint = "/hdd/data${toString i}";
+                  };
                 };
-              }) dataDevices)
-              ++ (lib.lists.imap0 (i: _: {
-                name = "cache_metadata${toString i}";
-                value = {
-                  size = "16G";
+                cache = {
+                  size = "${toString cacheGBPerDisk}G";
                 };
-              }) dataDevices)
-            );
-          };
-        }
-      ]
-      ++
-        # Data VGs
-        (lib.lists.imap0 (i: _: {
-          name = "data_vg${toString i}";
-          value = {
-            type = "lvm_vg";
-            lvs = {
-              data = {
-                size = "100%FREE";
-                content = {
-                  type = "filesystem";
-                  format = "btrfs";
-                  mountpoint = "/hdd/data${toString i}";
+                cache_metadata = {
+                  size = "${toString metadataGBPerDisk}G";
                 };
               };
             };
-          };
-        }) dataDevices)
-    );
+          }) dataDevices
+        );
   };
 }
