@@ -1,300 +1,124 @@
-# Mounts an array of HDDs with btrfs using dm-cache acceleration
-# setup for mergerfs/snapraid with data and parity disks
-# Each data disk has a cache partition on the cache device using dm-cache
-
 {
+  hddDevices ? [
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE"
+  ],
+  cacheDevice ? "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116",
+  cacheMetadataSize ? "16G",
+  bootDevice ? "/dev/disk/by-id/ata-ADATA_SP610_1F1220031635",
+  swapSize ? "8G",
   lib,
   ...
 }:
-let
-  cacheDevice = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
-  cacheSizeGB = 3726;
-  dataDevices = [
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
-  ];
-  parityDevices = [ "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE" ];
-  device = "/dev/disk/by-id/ata-ADATA_SP610_1F1220031635";
-  swapSize = "8G";
-
-  cacheGBPerDisk = builtins.floor (cacheSizeGB / (builtins.length dataDevices));
-  metadataGB = 16;
-
-  # Helper function to create dm-cache setup
-  createDmCacheHook = i: ''
-    # Wait for devices to be ready
-    sleep 2
-
-    echo "Setting up dm-cache for data${toString i}"
-
-    # Use by-id paths for stability
-    CACHE_PARTITION="/dev/disk/by-id/${builtins.baseNameOf cacheDevice}-part$((${toString i} + 1))"
-    DATA_DEVICE="${builtins.elemAt dataDevices i}"
-    DATA_PARTITION="/dev/disk/by-id/$(ls /dev/disk/by-id/ | grep $(basename $DATA_DEVICE) | head -1)-part1"
-
-    echo "Using cache partition: $CACHE_PARTITION"
-    echo "Using data partition: $DATA_PARTITION"
-
-    # Debug: Check what's using the devices
-    echo "=== DIAGNOSTIC INFO ==="
-    echo "Checking if devices are mounted:"
-    mount | grep "$CACHE_PARTITION" || echo "Cache partition not mounted"
-    mount | grep "$DATA_PARTITION" || echo "Data partition not mounted"
-
-    echo "Checking for existing dm devices:"
-    dmsetup ls | grep data${toString i} || echo "No existing dm devices for data${toString i}"
-
-    echo "Checking what processes are using the cache partition:"
-    fuser -v "$CACHE_PARTITION" 2>/dev/null || echo "No processes using cache partition"
-    lsof "$CACHE_PARTITION" 2>/dev/null || echo "No open files on cache partition"
-
-    echo "Current block device info:"
-    lsblk | grep $(basename "$CACHE_PARTITION") || echo "Cache partition not in lsblk"
-
-    # More aggressive cleanup
-    echo "=== AGGRESSIVE CLEANUP ==="
-
-    # Force unmount if mounted
-    umount "$CACHE_PARTITION" 2>/dev/null || true
-    umount "$DATA_PARTITION" 2>/dev/null || true
-
-    # Remove any existing dm devices (more comprehensive)
-    for dm_name in data${toString i}-cached data${toString i}-cache data${toString i}-meta; do
-      if dmsetup info "$dm_name" >/dev/null 2>&1; then
-        echo "Removing existing dm device: $dm_name"
-        dmsetup remove "$dm_name" --force 2>/dev/null || true
-      fi
-    done
-
-    # Kill any processes using the devices
-    fuser -km "$CACHE_PARTITION" 2>/dev/null || true
-    fuser -km "$DATA_PARTITION" 2>/dev/null || true
-
-    # Wait longer for cleanup
-    sleep 3
-
-    # More thorough signature wiping
-    echo "Wiping signatures and headers..."
-    wipefs -af "$CACHE_PARTITION" 2>/dev/null || true
-    wipefs -af "$DATA_PARTITION" 2>/dev/null || true
-
-    # Clear more of the beginning of the device
-    dd if=/dev/zero of="$CACHE_PARTITION" bs=1M count=100 2>/dev/null || true
-    dd if=/dev/zero of="$DATA_PARTITION" bs=1M count=100 2>/dev/null || true
-
-    # Force kernel to re-read partition table
-    partprobe "$CACHE_PARTITION" 2>/dev/null || true
-    partprobe "$DATA_PARTITION" 2>/dev/null || true
-
-    # Flush and settle
-    sync
-    echo 3 > /proc/sys/vm/drop_caches 2>/dev/null || true
-    udevadm settle --timeout 60
-
-    # Wait even longer
-    sleep 5
-
-    echo "=== ATTEMPTING DM-CACHE CREATION ==="
-
-    # Calculate sizes in sectors (fix the calculation)
-    CACHE_SECTORS=$(blockdev --getsz "$CACHE_PARTITION")
-    DATA_SECTORS=$(blockdev --getsz "$DATA_PARTITION")
-    METADATA_SECTORS=$((${toString metadataGB} * 1024 * 1024 * 2))  # 16GB in 512-byte sectors
-    CACHE_DATA_SECTORS=$((CACHE_SECTORS - METADATA_SECTORS))
-
-    echo "Cache sectors: $CACHE_SECTORS, Data sectors: $DATA_SECTORS"
-    echo "Metadata sectors: $METADATA_SECTORS, Cache data sectors: $CACHE_DATA_SECTORS"
-
-    # Verify we have enough space
-    if [ $CACHE_DATA_SECTORS -le 0 ]; then
-      echo "ERROR: Not enough cache space for metadata!"
-      exit 1
-    fi
-
-    # Create metadata device with error checking
-    echo "Creating metadata device..."
-    if ! dmsetup create data${toString i}-meta --table "0 $METADATA_SECTORS linear $CACHE_PARTITION 0"; then
-      echo "FAILED to create metadata device!"
-      echo "Checking device status:"
-      ls -la "$CACHE_PARTITION"
-      file "$CACHE_PARTITION"
-      exit 1
-    fi
-
-    # Create cache data device
-    echo "Creating cache data device..."
-    if ! dmsetup create data${toString i}-cache --table "0 $CACHE_DATA_SECTORS linear $CACHE_PARTITION $METADATA_SECTORS"; then
-      echo "FAILED to create cache data device!"
-      dmsetup remove data${toString i}-meta 2>/dev/null || true
-      exit 1
-    fi
-
-    # Wait for devices to appear
-    udevadm settle --timeout 30
-
-    # Create the cached device with mq policy
-    echo "Creating dm-cache device..."
-    if ! dmsetup create data${toString i}-cached --table "0 $DATA_SECTORS cache /dev/mapper/data${toString i}-meta /dev/mapper/data${toString i}-cache $DATA_PARTITION 256 1 writeback mq 0"; then
-      echo "FAILED to create cached device!"
-      dmsetup remove data${toString i}-cache 2>/dev/null || true
-      dmsetup remove data${toString i}-meta 2>/dev/null || true
-      exit 1
-    fi
-
-    # Wait for device to be ready
-    udevadm settle --timeout 30
-
-    echo "Successfully created cached device /dev/mapper/data${toString i}-cached"
-
-    # Create filesystem on the cached device
-    if ! blkid "/dev/mapper/data${toString i}-cached" | grep -q 'TYPE='; then
-      echo "Creating btrfs filesystem..."
-      mkfs.btrfs "/dev/mapper/data${toString i}-cached"
-    fi
-
-    # Mount the cached device
-    mkdir -p "/mnt/hdd/data${toString i}"
-    mount "/dev/mapper/data${toString i}-cached" "/mnt/hdd/data${toString i}" \
-      -t btrfs \
-      -o noatime,compress=zstd:1
-
-    echo "Successfully mounted /dev/mapper/data${toString i}-cached at /mnt/hdd/data${toString i}"
-  '';
-in
 {
   disko.devices = {
-    disk = builtins.listToAttrs (
-      # Cache device configuration - split into partitions for each data disk
-      [
-        {
-          name = "cache_${builtins.baseNameOf cacheDevice}";
-          value = {
-            device = cacheDevice;
-            type = "disk";
-            content = {
-              type = "gpt";
-              partitions = builtins.listToAttrs (
-                lib.lists.imap0 (i: _: {
-                  name = "cache${toString i}";
-                  value = {
-                    name = "cache${toString i}";
-                    size = "${toString cacheGBPerDisk}G";
-                    # No content - will be used as raw device for dm-cache
-                  };
-                }) dataDevices
-              );
+    disk =
+      {
+        # boot drive
+        boot = {
+          device = bootDevice;
+          type = "disk";
+          content = {
+            type = "gpt";
+            partitions = {
+              boot = {
+                name = "boot";
+                size = "1M";
+                type = "EF02";
+              };
+              esp = {
+                name = "ESP";
+                size = "500M";
+                type = "EF00";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  mountpoint = "/boot";
+                  # fix warning about /boot being world-readable
+                  mountOptions = [ "umask=0077" ];
+                };
+              };
+              swap = {
+                size = swapSize;
+                content = {
+                  type = "swap";
+                  resumeDevice = true;
+                };
+              };
+              root = {
+                name = "root";
+                size = "100%";
+                content = {
+                  type = "lvm_pv";
+                  vg = "root_vg";
+                };
+              };
             };
           };
-        }
-      ]
-      ++
-        # Data devices configuration - simple partitions, no LVM
-        (lib.lists.imap0 (
-          i: device:
-          let
-            name = "data_${builtins.baseNameOf device}";
-          in
-          {
-            inherit name;
-            value = {
-              inherit device;
-              type = "disk";
-              content = {
-                type = "gpt";
-                partitions = {
-                  data = {
-                    name = "data${toString i}";
-                    size = "100%";
-                    # No content - will be used as raw device for dm-cache
-                  };
-                };
-              };
-              # Set up dm-cache after disk is created
-              postCreateHook = createDmCacheHook i;
-            };
-          }
-        ) dataDevices)
-      ++
-        # Parity devices configuration - simple btrfs mounts (unchanged)
-        (lib.lists.imap0 (
-          i: device:
-          let
-            name = "parity_${builtins.baseNameOf device}";
-          in
-          {
-            inherit name;
-            value = {
-              inherit device;
-              type = "disk";
-              content = {
-                type = "gpt";
-                partitions = {
-                  parity = {
-                    name = "parity${toString i}";
-                    size = "100%";
-                    content = {
-                      type = "filesystem";
-                      format = "btrfs";
-                      mountpoint = "/hdd/parity${toString i}";
-                      mountOptions = [
-                        "noatime"
-                        "compress=zstd:1"
-                      ];
-                    };
-                  };
+        };
+
+        # cache drive for array0
+        cache0 = {
+          device = cacheDevice;
+          type = "disk";
+          content = {
+            type = "gpt";
+            partitions = {
+              cache = {
+                size = "100%";
+                content = {
+                  type = "lvm_pv";
+                  vg = "cache_vg";
                 };
               };
             };
-          }
-        ) parityDevices)
-      ++ [
-        {
-          name = "main";
+          };
+        };
+      }
+
+      # hdd array
+      // (lib.listToAttrs (
+        lib.imap0 (i: device: {
+          name = "hdd${toString (i + 1)}";
           value = {
             inherit device;
             type = "disk";
             content = {
               type = "gpt";
               partitions = {
-                boot = {
-                  name = "boot";
-                  size = "1M";
-                  type = "EF02";
-                };
-                esp = {
-                  name = "ESP";
-                  size = "500M";
-                  type = "EF00";
-                  content = {
-                    type = "filesystem";
-                    format = "vfat";
-                    mountpoint = "/boot";
-                    # fix warning about /boot being world-readable
-                    mountOptions = [ "umask=0077" ];
-                  };
-                };
-                swap = {
-                  size = swapSize;
-                  content = {
-                    type = "swap";
-                    resumeDevice = true;
-                  };
-                };
-                root = {
-                  name = "root";
+                raid = {
                   size = "100%";
                   content = {
-                    type = "lvm_pv";
-                    vg = "root_vg";
+                    type = "mdraid";
+                    name = "array0";
                   };
                 };
               };
             };
           };
-        }
-      ]
-    );
+        }) hddDevices
+      ));
+
+    # raid 5 with LUKS encryption
+    mdadm.array0 = {
+      type = "mdadm";
+      level = 5;
+      content = {
+        type = "luks";
+        name = "crypted_raid";
+        settings = {
+          keyFile = "/tmp/secret.key";
+        };
+        content = {
+          type = "lvm_pv";
+          vg = "data_vg";
+        };
+      };
+    };
+
     lvm_vg = {
+      # boot drive LVM setup
       root_vg = {
         type = "lvm_vg";
         lvs = {
@@ -303,12 +127,10 @@ in
             content = {
               type = "btrfs";
               extraArgs = [ "-f" ];
-
               subvolumes = {
                 "/root" = {
                   mountpoint = "/";
                 };
-
                 "/nix" = {
                   mountOptions = [
                     "subvol=nix"
@@ -321,6 +143,66 @@ in
           };
         };
       };
+
+      # cache drive LVM setup
+      cache_vg = {
+        type = "lvm_vg";
+        lvs = {
+          cache_meta = {
+            size = cacheMetadataSize;
+          };
+          cache_data = {
+            size = "100%FREE";
+          };
+        };
+      };
+
+      # HDD array LVM setup
+      data_vg = {
+        type = "lvm_vg";
+        lvs = {
+          data = {
+            size = "100%FREE";
+          };
+        };
+        postCreateHook = ''
+          # Wait for all devices to be ready
+          udevadm settle
+
+          # Load required kernel modules
+          modprobe dm-cache
+          modprobe dm-cache-smq
+
+          # Set up dmcache
+          echo "Setting up dmcache..."
+
+          # Calculate block sizes (in 512-byte sectors)
+          CACHE_DATA_SIZE=$(blockdev --getsz /dev/cache_vg/cache_data)
+          DATA_SIZE=$(blockdev --getsz /dev/data_vg/data)
+
+          # Data block size for cache (128KB = 256 sectors)
+          DATA_BLOCK_SIZE=256
+
+          echo "Cache data size: $CACHE_DATA_SIZE sectors"
+          echo "Data size: $DATA_SIZE sectors"
+          echo "Using block size: $DATA_BLOCK_SIZE sectors"
+
+          # Create cached device using dm-cache target directly
+          # Format: cache <metadata dev> <cache dev> <origin dev> <block size> <#feature args> [<feature arg>]* <policy> <#policy args> [<policy arg>]*
+          dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writethrough default 0"
+
+          # Format the cached device with btrfs
+          mkfs.btrfs -f /dev/mapper/cached_data
+
+          echo "dmcache setup complete"
+        '';
+      };
+    };
+
+    # mount the cached raid array at /persist
+    nodev."/persist" = {
+      fsType = "btrfs";
+      device = "/dev/mapper/cached_data";
     };
   };
 }
