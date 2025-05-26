@@ -36,8 +36,10 @@
   boot =
     let
       modules = [
-        "dm_cache"
-        "dm_cache_smq"
+        "dm-mod"
+        "dm-cache"
+        "dm-cache-smq"
+        "dm-cache-mq"
       ];
     in
     {
