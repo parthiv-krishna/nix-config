@@ -102,20 +102,13 @@ in
         }) hddDevices
       ));
 
-    # raid 5 with LUKS encryption
+    # raid 5
     mdadm.array0 = {
       type = "mdadm";
       level = 5;
       content = {
-        type = "luks";
-        name = "crypted_array0";
-        settings = {
-          keyFile = "/persist/luks/array0.key";
-        };
-        content = {
-          type = "lvm_pv";
-          vg = "data_vg";
-        };
+        type = "lvm_pv";
+        vg = "data_vg";
       };
     };
 
