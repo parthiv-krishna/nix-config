@@ -67,7 +67,7 @@
         CACHE_DATA_SIZE=$(blockdev --getsz /dev/cache_vg/cache_data)
         DATA_SIZE=$(blockdev --getsz /dev/data_vg/data)
         DATA_BLOCK_SIZE=256
-        dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writethrough default 0"
+        dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writeback default 0"
       fi
     '';
   };
