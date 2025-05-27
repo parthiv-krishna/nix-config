@@ -102,13 +102,20 @@ in
         }) hddDevices
       ));
 
-    # raid 5
+    # raid 5 with LUKS encryption
     mdadm.array0 = {
       type = "mdadm";
       level = 5;
       content = {
-        type = "lvm_pv";
-        vg = "data_vg";
+        type = "luks";
+        name = "crypted_array0";
+        settings = {
+          keyFile = "/persist/luks/array0.key";
+        };
+        content = {
+          type = "lvm_pv";
+          vg = "data_vg";
+        };
       };
     };
 
@@ -132,6 +139,13 @@ in
                     "noatime"
                   ];
                   mountpoint = "/nix";
+                };
+                "/persist" = {
+                  mountOptions = [
+                    "subvol=persist"
+                    "noatime"
+                  ];
+                  mountpoint = "/persist";
                 };
               };
             };
@@ -158,6 +172,10 @@ in
         lvs = {
           data = {
             size = "100%FREE";
+            content = {
+              type = "btrfs";
+              extraArgs = [ "-f" ];
+            };
           };
         };
         postCreateHook = ''
@@ -168,7 +186,6 @@ in
           modprobe dm-cache
           modprobe dm-cache-smq
 
-          # Set up dmcache
           echo "Setting up dmcache..."
 
           # Calculate block sizes (in 512-byte sectors)
@@ -183,7 +200,6 @@ in
           echo "Using block size: $DATA_BLOCK_SIZE sectors"
 
           # Create cached device using dm-cache target directly
-          # Format: cache <metadata dev> <cache dev> <origin dev> <block size> <#feature args> [<feature arg>]* <policy> <#policy args> [<policy arg>]*
           dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writethrough default 0"
 
           # Format the cached device with btrfs
