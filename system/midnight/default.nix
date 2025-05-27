@@ -40,50 +40,43 @@
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     # suppress raid warnings
+
+    # raid setup
+    initrd.luks.devices."crypted_array0".keyFile = "/persist/luks/array0.key";
     swraid.mdadmConf = ''
       MAILADDR nobody@nowhere
     '';
   };
 
-  # setup dm-cache
+  # setup cached device on boot
   systemd.services.setup-dmcache = {
-    description = "Setup dmcache for /persist";
+    description = "Setup dmcache for /data";
     wantedBy = [ "local-fs-pre.target" ];
     before = [ "local-fs-pre.target" ];
-    after = [ "lvm2-activation.service" ];
+    after = [
+      "lvm2-activation.service"
+      "systemd-cryptsetup@crypted_array0.service"
+    ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
     };
     script = ''
-      # Load required kernel modules
-      modprobe dm-cache
-      modprobe dm-cache-smq
-
-      # Wait for devices to be ready
+      modprobe dm-cache dm-cache-smq
       udevadm settle
-
-      # Check if dmcache device already exists
       if [ ! -e /dev/mapper/cached_data ]; then
-        # Calculate block sizes (in 512-byte sectors)
         CACHE_DATA_SIZE=$(blockdev --getsz /dev/cache_vg/cache_data)
         DATA_SIZE=$(blockdev --getsz /dev/data_vg/data)
         DATA_BLOCK_SIZE=256
-
-        # Create cached device
         dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writethrough default 0"
-        echo "dmcache device created"
-      else
-        echo "dmcache device already exists"
       fi
     '';
   };
 
-  # /persist required for boot
-  fileSystems."/persist" = {
+  # Filesystem mount
+  fileSystems."/data" = {
     device = "/dev/mapper/cached_data";
     fsType = "btrfs";
-    neededForBoot = true;
     options = [ "noatime" ];
   };
 
