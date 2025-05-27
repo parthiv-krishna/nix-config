@@ -45,6 +45,14 @@
     '';
   };
 
+  # /persist required for boot
+  fileSystems."/persist" = {
+    device = "/dev/mapper/cached_data";
+    fsType = "btrfs";
+    neededForBoot = true;
+    options = [ "noatime" ];
+  };
+
   time.timeZone = "Etc/UTC";
 
   custom.reverse-proxy = {

@@ -194,10 +194,5 @@ in
       };
     };
 
-    # mount the cached raid array at /persist
-    nodev."/persist" = {
-      fsType = "btrfs";
-      device = "/dev/mapper/cached_data";
-    };
   };
 }
