@@ -107,15 +107,8 @@ in
       type = "mdadm";
       level = 5;
       content = {
-        type = "luks";
-        name = "crypted_raid";
-        settings = {
-          keyFile = "/tmp/secret.key";
-        };
-        content = {
-          type = "lvm_pv";
-          vg = "data_vg";
-        };
+        type = "lvm_pv";
+        vg = "data_vg";
       };
     };
 
