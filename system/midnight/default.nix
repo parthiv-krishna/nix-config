@@ -52,9 +52,15 @@ in
 
   networking.hostName = "midnight";
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    # Use the systemd-boot EFI boot loader.
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+    # suppress raid warnings
+    swraid.mdadmConf = ''
+      MAILADDR nobody@nowhere
+    '';
+  };
 
   time.timeZone = "Etc/UTC";
 
