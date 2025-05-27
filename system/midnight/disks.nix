@@ -1,16 +1,18 @@
 {
-  hddDevices ? [
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE"
-  ],
-  cacheDevice ? "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116",
-  cacheMetadataSize ? "16G",
-  bootDevice ? "/dev/disk/by-id/ata-ADATA_SP610_1F1220031635",
-  swapSize ? "8G",
   lib,
   ...
 }:
+let
+  hddDevices = [
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE"
+  ];
+  cacheDevice = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
+  cacheMetadataSize = "16G";
+  bootDevice = "/dev/disk/by-id/ata-ADATA_SP610_1F1220031635";
+  swapSize = "8G";
+in
 {
   disko.devices = {
     disk =
