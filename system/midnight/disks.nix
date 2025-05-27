@@ -102,7 +102,7 @@ in
         }) hddDevices
       ));
 
-    # raid 5 with LUKS encryption
+    # raid 5
     mdadm.array0 = {
       type = "mdadm";
       level = 5;
