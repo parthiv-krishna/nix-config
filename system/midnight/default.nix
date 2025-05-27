@@ -42,7 +42,6 @@
     # suppress raid warnings
 
     # raid setup
-    initrd.luks.devices."crypted_array0".keyFile = "/persist/luks/array0.key";
     swraid.mdadmConf = ''
       MAILADDR nobody@nowhere
     '';
