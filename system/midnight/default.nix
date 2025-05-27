@@ -5,15 +5,6 @@
   pkgs,
   ...
 }:
-let
-  dataDevices = [
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
-  ];
-  parityDevices = [
-    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE"
-  ];
-in
 {
   imports = lib.flatten [
     # Include the results of the hardware scan.
@@ -21,14 +12,6 @@ in
 
     # disks
     ./disks.nix
-    (import (lib.custom.relativeToRoot "system/common/optional/mergerfs-snapraid.nix") {
-      inherit
-        dataDevices
-        parityDevices
-        lib
-        pkgs
-        ;
-    })
 
     # users
     (map (lib.custom.relativeTo "system/common/users/") [
