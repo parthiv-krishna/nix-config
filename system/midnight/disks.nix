@@ -193,7 +193,7 @@ in
           echo "Using block size: $DATA_BLOCK_SIZE sectors"
 
           # Create cached device using dm-cache target directly
-          dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writethrough default 0"
+          dmsetup create cached_data --table "0 $DATA_SIZE cache /dev/cache_vg/cache_meta /dev/cache_vg/cache_data /dev/data_vg/data $DATA_BLOCK_SIZE 1 writeback default 0"
 
           # Format the cached device with btrfs
           mkfs.btrfs -f /dev/mapper/cached_data
