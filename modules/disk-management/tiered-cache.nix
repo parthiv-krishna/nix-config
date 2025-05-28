@@ -12,106 +12,90 @@ let
 
   # detailed status webhook script
   detailedWebhookScript = pkgs.writeShellScript "send-detailed-webhook.sh" ''
-    set -euo pipefail
+        set -euo pipefail
 
-    STATUS="$1"
-    MESSAGE="$2"
-    WEBHOOK_FILE="${webhookFile}"
+        STATUS="$1"
+        MESSAGE="$2"
+        WEBHOOK_FILE="${webhookFile}"
 
-    if [ ! -f "$WEBHOOK_FILE" ]; then
-      echo "Webhook file not found: $WEBHOOK_FILE"
-      exit 1
-    fi
-
-    WEBHOOK_URL=$(cat "$WEBHOOK_FILE")
-
-    # set color and emoji based on status
-    local color emoji
-    case "$STATUS" in
-      "success") color=65280; emoji="✅" ;;    # green
-      "error") color=16711680; emoji="❌" ;;   # red
-      "info") color=3447003; emoji="ℹ️" ;;     # blue
-      *) color=16776960; emoji="⚠️" ;;         # yellow
-    esac
-
-    echo "Collecting system status information..."
-
-    # cache usage
-    CACHE_USAGE=$(${pkgs.coreutils}/bin/df -h "${cfg.cacheDevice}" | tail -1 | awk '{print $3 "/" $2 " (" $5 ")"}')
-
-    # disk usage for each data and parity device
-    DISK_FIELDS=""
-    ${lib.concatStringsSep "\n" (
-      map (disk: ''
-        USAGE=$(${pkgs.coreutils}/bin/df -h "${disk}" | tail -1 | awk '{print $3 "/" $2 " (" $5 ")"}')
-        DISK_NAME="${builtins.baseNameOf disk}"
-        DISK_FIELDS="$DISK_FIELDS{\"name\": \"💾 $DISK_NAME\", \"value\": \"\`$USAGE\`\", \"inline\": true},"
-      '') (cfg.dataDevices ++ cfg.parityDevices)
-    )}
-    DISK_FIELDS="[''${DISK_FIELDS%,}]"
-
-    # snapraid status
-    echo "Getting SnapRAID status..."
-    SNAPRAID_STATUS=$(${pkgs.snapraid}/bin/snapraid status 2>/dev/null | head -10 | ${pkgs.coreutils}/bin/tr '\n' ' ' | head -c 1000 || echo "Failed to get SnapRAID status")
-
-    # restic repository information
-    echo "Getting restic repository information..."
-    RESTIC_FIELDS=""
-    ${lib.concatStringsSep "\n" (
-      map (repo: ''
-        echo "Checking restic repository: ${repo}"
-        REPO_SIZE="unknown"
-        if systemctl is-enabled --quiet restic-backups-${repo}.service 2>/dev/null; then
-          # try to get repository size with timeout
-          REPO_SIZE=$(timeout 30 ${pkgs.restic}/bin/restic -r "$(systemctl show restic-backups-${repo}.service -p Environment --value 2>/dev/null | grep -o 'RESTIC_REPOSITORY=[^[:space:]]*' | cut -d= -f2)" stats --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.total_size // "unknown"' || echo "unknown")
+        if [ ! -f "$WEBHOOK_FILE" ]; then
+          echo "Webhook file not found: $WEBHOOK_FILE"
+          exit 1
         fi
-        RESTIC_FIELDS="$RESTIC_FIELDS{\"name\": \"📦 ${repo}\", \"value\": \"\`$REPO_SIZE\`\", \"inline\": true},"
-      '') cfg.resticRepositories
-    )}
 
-    if [ -z "$RESTIC_FIELDS" ]; then
-      RESTIC_FIELDS="{\"name\": \"📦 Restic\", \"value\": \"No repositories configured\", \"inline\": true},"
-    fi
-    RESTIC_FIELDS="[''${RESTIC_FIELDS%,}]"
+        WEBHOOK_URL=$(cat "$WEBHOOK_FILE")
 
-    echo "Sending detailed Discord webhook..."
+        # set emoji based on status
+        emoji=""
+        case "$STATUS" in
+          "success") emoji="✅" ;;
+          "error") emoji="❌" ;;
+          "info") emoji="ℹ️" ;;
+          *) emoji="⚠️" ;;
+        esac
 
-    ${pkgs.curl}/bin/curl -X POST "$WEBHOOK_URL" \
-      -H "Content-Type: application/json" \
-      -d "{
-        \"embeds\": [{
-          \"title\": \"$emoji Tiered Cache Manager\",
-          \"description\": \"$MESSAGE\",
-          \"color\": $color,
-          \"timestamp\": \"$(date -Iseconds)\",
-          \"fields\": [
-            {
-              \"name\": \"🚀 Cache Usage\",
-              \"value\": \"\`$CACHE_USAGE\`\",
-              \"inline\": false
-            },
-            {
-              \"name\": \"💽 Disk Usage\",
-              \"value\": \"Individual disk statistics\",
-              \"inline\": false
-            }
-          ].concat($DISK_FIELDS).concat([
-            {
-              \"name\": \"🔄 SnapRAID Status\",
-              \"value\": \"\`\`\`$SNAPRAID_STATUS...\`\`\`\",
-              \"inline\": false
-            },
-            {
-              \"name\": \"📋 Backup Repositories\",
-              \"value\": \"Repository sizes and status\",
-              \"inline\": false
-            }
-          ]).concat($RESTIC_FIELDS)
-        }]
-      }" \
-      || echo "Failed to send detailed webhook notification"
+        echo "Collecting system status information..."
 
-    echo "Detailed webhook sent successfully"
+        # cache usage
+        CACHE_USAGE=$(${pkgs.coreutils}/bin/df -h "${cfg.cacheDevice}" | tail -1 | ${pkgs.gawk}/bin/awk '{print $3 "/" $2 " (" $5 ")"}')
+
+        # disk usage for each data and parity device
+        DISK_INFO=""
+        ${lib.concatStringsSep "\n" (
+          map (disk: ''
+            USAGE=$(${pkgs.coreutils}/bin/df -h "${disk}" | tail -1 | ${pkgs.gawk}/bin/awk '{print $3 "/" $2 " (" $5 ")"}')
+            DISK_NAME="${builtins.baseNameOf disk}"
+            DISK_INFO="$DISK_INFO💾 $DISK_NAME: \`$USAGE\`\n"
+          '') (cfg.dataDevices ++ cfg.parityDevices)
+        )}
+
+        # snapraid status
+        echo "Getting SnapRAID status..."
+        SNAPRAID_STATUS=$(${pkgs.snapraid}/bin/snapraid status 2>/dev/null | head -5 | ${pkgs.coreutils}/bin/tr '\n' ' ' | head -c 500 || echo "Failed to get SnapRAID status")
+
+        # restic repository information
+        echo "Getting restic repository information..."
+        RESTIC_INFO=""
+        ${lib.concatStringsSep "\n" (
+          map (repo: ''
+            echo "Checking restic repository: ${repo}"
+            REPO_SIZE="unknown"
+            if systemctl is-enabled --quiet restic-backups-${repo}.service 2>/dev/null; then
+              # try to get repository size with timeout
+              REPO_SIZE=$(timeout 30 ${pkgs.restic}/bin/restic -r "$(systemctl show restic-backups-${repo}.service -p Environment --value 2>/dev/null | grep -o 'RESTIC_REPOSITORY=[^[:space:]]*' | cut -d= -f2)" stats --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.total_size // "unknown"' || echo "unknown")
+            fi
+            RESTIC_INFO="$RESTIC_INFO📦 ${repo}: \`$REPO_SIZE\`\n"
+          '') cfg.resticRepositories
+        )}
+
+        if [ -z "$RESTIC_INFO" ]; then
+          RESTIC_INFO="📦 No repositories configured\n"
+        fi
+
+        echo "Sending detailed Discord webhook..."
+
+        # build the message content
+        DISCORD_MESSAGE="$emoji **Tiered Cache Manager**
+    $MESSAGE
+
+    🚀 **Cache Usage:** \`$CACHE_USAGE\`
+
+    💽 **Disk Usage:**
+    $DISK_INFO
+    🔄 **SnapRAID Status:**
+    \`\`\`
+    $SNAPRAID_STATUS
+    \`\`\`
+
+    📋 **Backup Repositories:**
+    $RESTIC_INFO"
+
+        ${pkgs.curl}/bin/curl -X POST "$WEBHOOK_URL" \
+          -H "Content-Type: application/json" \
+          -d "{\"content\": $(echo "$DISCORD_MESSAGE" | ${pkgs.jq}/bin/jq -Rs .)}" \
+          || echo "Failed to send detailed webhook notification"
+
+        echo "Detailed webhook sent successfully"
   '';
 
   # cache flush script
@@ -130,25 +114,18 @@ let
       if [ -f "$WEBHOOK_FILE" ]; then
         WEBHOOK_URL=$(cat "$WEBHOOK_FILE")
 
-        # set color based on status
-        local color
+        # set emoji based on status
+        local emoji
         case "$status" in
-          "success") color=65280 ;;  # green
-          "error") color=16711680 ;;  # red
-          "info") color=3447003 ;;   # blue
-          *) color=16776960 ;;       # yellow
+          "success") emoji="✅" ;;
+          "error") emoji="❌" ;;
+          "info") emoji="ℹ️" ;;
+          *) emoji="⚠️" ;;
         esac
 
         ${pkgs.curl}/bin/curl -X POST "$WEBHOOK_URL" \
           -H "Content-Type: application/json" \
-          -d "{
-            \"embeds\": [{
-              \"title\": \"Tiered Cache Manager\",
-              \"description\": \"$message\",
-              \"color\": $color,
-              \"timestamp\": \"$(date -Iseconds)\"
-            }]
-          }" \
+          -d "{\"content\": \"$emoji **Tiered Cache Manager:** $message\"}" \
           || echo "Failed to send webhook notification"
       fi
     }
@@ -219,25 +196,18 @@ let
       if [ -f "$WEBHOOK_FILE" ]; then
         WEBHOOK_URL=$(cat "$WEBHOOK_FILE")
 
-        # set color based on status
-        local color
+        # set emoji based on status
+        local emoji
         case "$status" in
-          "success") color=65280 ;;  # green
-          "error") color=16711680 ;;  # red
-          "info") color=3447003 ;;   # blue
-          *) color=16776960 ;;       # yellow
+          "success") emoji="✅" ;;
+          "error") emoji="❌" ;;
+          "info") emoji="ℹ️" ;;
+          *) emoji="⚠️" ;;
         esac
 
         ${pkgs.curl}/bin/curl -X POST "$WEBHOOK_URL" \
           -H "Content-Type: application/json" \
-          -d "{
-            \"embeds\": [{
-              \"title\": \"Tiered Cache Manager\",
-              \"description\": \"$message\",
-              \"color\": $color,
-              \"timestamp\": \"$(date -Iseconds)\"
-            }]
-          }" \
+          -d "{\"content\": \"$emoji **Tiered Cache Manager:** $message\"}" \
           || echo "Failed to send webhook notification"
       fi
     }
@@ -284,30 +254,23 @@ let
     WEBHOOK_FILE="${webhookFile}"
 
     send_webhook() {
-      local status="$1"
-      local message="$2"
+      status="$1"
+      message="$2"
       if [ -f "$WEBHOOK_FILE" ]; then
         WEBHOOK_URL=$(cat "$WEBHOOK_FILE")
 
-        # set color based on status
-        local color
+        # set emoji based on status
+        emoji=""
         case "$status" in
-          "success") color=65280 ;;  # green
-          "error") color=16711680 ;;  # red
-          "info") color=3447003 ;;   # blue
-          *) color=16776960 ;;       # yellow
+          "success") emoji="✅" ;;
+          "error") emoji="❌" ;;
+          "info") emoji="ℹ️" ;;
+          *) emoji="⚠️" ;;
         esac
 
         ${pkgs.curl}/bin/curl -X POST "$WEBHOOK_URL" \
           -H "Content-Type: application/json" \
-          -d "{
-            \"embeds\": [{
-              \"title\": \"Tiered Cache Manager\",
-              \"description\": \"$message\",
-              \"color\": $color,
-              \"timestamp\": \"$(date -Iseconds)\"
-            }]
-          }" \
+          -d "{\"content\": \"$emoji **Tiered Cache Manager:** $message\"}" \
           || echo "Failed to send webhook notification"
       fi
     }
