@@ -84,7 +84,7 @@ in
       minCacheUsage = 70;
       timerSchedule = "07:00";
       webhookSecretName = "tiered-cache/webhook";
-      resticRepositories = [ ]; # Add your restic repository names here
+      resticRepositories = [ "digitalocean" ];
     };
 
     # seagate spindown for all drives
