@@ -5,6 +5,13 @@
   pkgs,
   ...
 }:
+let
+  dataDisks = [
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
+    "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
+  ];
+  parityDisks = [ "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE" ];
+in
 {
   imports = lib.flatten [
     # Include the results of the hardware scan.
@@ -12,15 +19,14 @@
 
     # disks
     (import (lib.custom.relativeToRoot "system/common/disks/boot_drive.nix") {
+      inherit lib;
       device = "/dev/disk/by-id/ata-ADATA_SP610_1F1220031635";
       swapSize = "8G";
     })
     (import (lib.custom.relativeToRoot "system/common/disks/cached_hdd_array.nix") {
-      dataDevices = [
-        "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
-        "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ"
-      ];
-      parityDevices = [ "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE" ];
+      inherit lib;
+      dataDevices = dataDisks;
+      parityDevices = parityDisks;
       cacheDevice = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
     })
 
@@ -54,12 +60,39 @@
 
   time.timeZone = "Etc/UTC";
 
-  custom.reverse-proxy = {
-    enable = true;
-    email = "letsencrypt.snowy015@passmail.net";
-    cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
-  };
+  custom = {
+    reverse-proxy = {
+      enable = true;
+      email = "letsencrypt.snowy015@passmail.net";
+      cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+    };
 
+    # tiered cache storage system
+    tiered-cache = {
+      enable = true;
+      cacheDevice = "/array/disk/cache";
+      dataDevices = [
+        "/array/disk/data0"
+        "/array/disk/data1"
+      ];
+      parityDevices = [
+        "/array/disk/parity0"
+      ];
+      cacheMountPoint = "/array/merge/cache";
+      baseMountPoint = "/array/merge/base";
+      maxCacheUsage = 90;
+      minCacheUsage = 70;
+      timerSchedule = "07:00";
+      webhookSecretName = "tiered-cache/webhook";
+      resticRepositories = [ ]; # Add your restic repository names here
+    };
+
+    # seagate spindown for all drives
+    seagate-spindown = {
+      enable = true;
+      disks = dataDisks ++ parityDisks;
+    };
+  };
   # should not be changed until a clean install
   system.stateVersion = "24.11";
 }
