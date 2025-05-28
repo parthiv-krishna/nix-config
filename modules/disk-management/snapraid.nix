@@ -97,9 +97,9 @@ in
         olderThan = cfg.scrubOlderThan;
       };
 
-      environment.systemPackages = with pkgs; [
-        snapraid
-      ];
     };
+    environment.systemPackages = with pkgs; [
+      snapraid
+    ];
   };
 }
