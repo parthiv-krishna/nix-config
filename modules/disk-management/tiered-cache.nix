@@ -361,13 +361,11 @@ in
 
     cacheMountPoint = lib.mkOption {
       type = lib.types.str;
-      default = "/array/merge/cache";
       description = "Mount point for cache + data drives mergerfs pool";
     };
 
     baseMountPoint = lib.mkOption {
       type = lib.types.str;
-      default = "/array/merge/base";
       description = "Mount point for data drives only mergerfs pool";
     };
 
@@ -467,6 +465,14 @@ in
       }) cfg.resticRepositories
     );
 
+    # backup base array
+    services.restic.backups = lib.listToAttrs (
+      map (repo: {
+        name = repo;
+        value.paths = [ cfg.baseMountPoint ];
+      }) cfg.resticRepositories
+    );
+
     # tiered cache manager service
     systemd.services."tiered-cache-manager" = {
       description = "Tiered Cache Manager";
@@ -485,5 +491,6 @@ in
     };
 
     sops.secrets.${cfg.webhookSecretName} = { };
+
   };
 }

@@ -1,6 +1,7 @@
 # Configuration for midnight (home server)
 
 {
+  config,
   lib,
   pkgs,
   ...
@@ -78,8 +79,8 @@ in
       parityDevices = [
         "/array/disk/parity0"
       ];
-      cacheMountPoint = "/array/merge/cache";
-      baseMountPoint = "/array/merge/base";
+      cacheMountPoint = config.constants.tieredCache.cachePool;
+      baseMountPoint = config.constants.tieredCache.basePool;
       maxCacheUsage = 90;
       minCacheUsage = 70;
       timerSchedule = "07:00";
