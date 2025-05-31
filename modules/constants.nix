@@ -29,5 +29,9 @@ in
       public = mkStringConstant "sub0.net";
       internal = mkStringConstant "ts.sub0.net";
     };
+    tieredCache = {
+      cachePool = mkStringConstant "/array/merge/cache";
+      basePool = mkStringConstant "/array/merge/base";
+    };
   };
 }

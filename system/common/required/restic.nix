@@ -17,9 +17,7 @@ in
   services.restic.backups.digitalocean = {
     paths = [
       "/persist"
-      "/data"
     ];
-    exclude = [ "/data/nobackup" ];
     passwordFile = config.sops.secrets."${secretPassword}".path;
     repositoryFile = config.sops.secrets."${secretRepository}".path;
     environmentFile = config.sops.secrets."${secretEnvironment}".path;
