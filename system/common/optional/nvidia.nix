@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -10,11 +9,11 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
-    modesetting.enable = lib.mkDefault true;
+    modesetting.enable = true;
 
-    open = lib.mkDefault true;
+    open = true;
 
-    package = lib.mkDefault config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
   unfree.allowedPackages = [
@@ -50,9 +49,23 @@
 
   nixpkgs.config = {
     cudaSupport = true;
-    cudaCapability = lib.mkDefault "8.6"; # 3060Ti
+    cudaCapability = "8.6"; # 3060
   };
 
   hardware.nvidia-container-toolkit.enable = true;
+
+  # fixes GPU disappearing after suspend/resume
+  systemd.services."nvidia-uvm-reload" = {
+    description = "Reload nvidia_uvm after resume";
+    wantedBy = [ "sleep.target" ];
+    after = [ "sleep.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = ''
+        modprobe -r nvidia_uvm
+        modprobe nvidia_uvm
+      '';
+    };
+  };
 
 }
