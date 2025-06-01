@@ -18,6 +18,7 @@ in
       authelia-redis = mkPortConstant 6379;
       crowdsec = mkPortConstant 9090;
       immich = mkPortConstant 2283;
+      immich-redis = mkPortConstant 6378;
       jellyfin = mkPortConstant 8096;
       ollama = mkPortConstant 11434;
       thaw = mkPortConstant 8301;
