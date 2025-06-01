@@ -54,5 +54,17 @@ lib.custom.mkSelfHostedService {
         "libcusparse_lt"
       ];
     }
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/postgresql";
+      user = "postgresql";
+      group = "postgresql";
+      mode = "0755";
+    })
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/redis-immich";
+      user = "redis-immich";
+      group = "redis-immich";
+      mode = "0700";
+    })
   ];
 }
