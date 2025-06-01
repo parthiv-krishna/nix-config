@@ -26,7 +26,7 @@ lib.custom.mkSelfHostedService {
         };
 
         # models are very large and not worth backing up
-        restic.backups.digitalocean.exclude = [ "${tieredCache.basePool}/ollama/models" ];
+        restic.backups.digitalocean.exclude = [ "${tieredCache.basePool}/ollama/blobs" ];
       };
     }
     (lib.custom.mkPersistentSystemDir {
