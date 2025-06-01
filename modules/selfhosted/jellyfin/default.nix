@@ -18,7 +18,10 @@ lib.custom.mkSelfHostedService {
           cacheDir = "${tieredCache.cachePool}/jellyfin/cache";
         };
         # don't back up media
-        restic.backups.digitalocean.exclude = [ "${tieredCache.basePool}/jellyfin/media" ];
+        restic.backups.digitalocean.exclude = [
+          "${tieredCache.cachePool}/jellyfin/cache"
+          "${tieredCache.basePool}/jellyfin/media"
+        ];
       };
     }
   ];
