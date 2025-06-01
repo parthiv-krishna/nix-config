@@ -140,6 +140,7 @@ in
                             - 'profile'
                             - 'email'
                           userinfo_signed_response_alg: 'none'
+                          token_endpoint_auth_method: 'client_secret_post'
                         - client_name: "Jellyfin"
                           client_id: {{ secret "${
                             config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_id".path
