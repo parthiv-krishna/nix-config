@@ -81,11 +81,14 @@ in
       ];
       cacheMountPoint = config.constants.tieredCache.cachePool;
       baseMountPoint = config.constants.tieredCache.basePool;
-      maxCacheUsage = 90;
-      minCacheUsage = 70;
+      targetCacheUsage = 80;
       timerSchedule = "07:00";
       webhookSecretName = "tiered-cache/webhook";
       resticRepositories = [ "digitalocean" ];
+      aiSummary = {
+        enable = true;
+        model = "qwen3:30b-a3b";
+      };
     };
 
     # seagate spindown for all drives

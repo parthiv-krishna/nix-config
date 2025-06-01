@@ -10,11 +10,10 @@ let
 
   # function to generate content file paths
   mkContentFiles =
-    dataDisks: map (disk: "${disk}/snapraid-${builtins.baseNameOf disk}.content") dataDisks;
+    dataDisks: map (disk: "${disk}/.snapraid/${builtins.baseNameOf disk}.content") dataDisks;
 
   # function to generate parity file paths
-  mkParityFiles =
-    parityDisks: map (disk: "${disk}/snapraid-${builtins.baseNameOf disk}.parity") parityDisks;
+  mkParityFiles = parityDisks: map (disk: "${disk}/${builtins.baseNameOf disk}.parity") parityDisks;
 
   # function to convert data disk list to attrset format expected by nixpkgs
   mkDataDisks =
