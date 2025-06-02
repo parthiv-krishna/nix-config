@@ -82,7 +82,7 @@ in
       cacheMountPoint = config.constants.tieredCache.cachePool;
       baseMountPoint = config.constants.tieredCache.basePool;
       targetCacheUsage = 80;
-      timerSchedule = "07:00";
+      timerSchedule = "Sun *-*-* 07:00";
       webhookSecretName = "tiered-cache/webhook";
       resticRepositories = [ "digitalocean" ];
       aiSummary = {
