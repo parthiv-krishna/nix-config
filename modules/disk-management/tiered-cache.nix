@@ -208,7 +208,7 @@ in
       dataDisks = cfg.dataDevices;
       parityDisks = cfg.parityDevices;
       exclude = cfg.snapraidExclude;
-      scrubInterval = "Sun *-*-* ${cfg.timerSchedule}";
+      scrubInterval = "weekly";
     };
 
     # disable restic timers (we manage them manually)
