@@ -32,6 +32,12 @@ lib.custom.mkSelfHostedService {
           # allow access to all acceleration devices
           accelerationDevices = null;
         };
+
+        # don't backup transcoded videos or thumbnails
+        restic.backups.digitalocean.exclude = [
+          "${tieredCache.basePool}/immich/encoded-video"
+          "${tieredCache.basePool}/immich/thumbs"
+        ];
       };
 
       users.users.immich.extraGroups = [
