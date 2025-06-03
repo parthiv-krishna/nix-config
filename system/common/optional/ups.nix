@@ -1,8 +1,15 @@
 {
+  config,
   pkgs,
   ...
 }:
-
+let
+  name = "ups";
+  user = "upsmon";
+  monitor = "mon";
+  passwordKey = "ups/password";
+  passwordFile = config.sops.secrets.${passwordKey}.path;
+in
 {
   environment.systemPackages = with pkgs; [
     nut
@@ -11,28 +18,26 @@
   power.ups = {
     enable = true;
     mode = "netserver";
-    ups = {
-      ups = {
-        driver = "usbhid-ups";
-        port = "auto";
-        description = "USB HID UPS";
-      };
+    ups.${name} = {
+      driver = "usbhid-ups";
+      port = "auto";
+      description = "USB HID UPS";
     };
-    users = {
-      upsmon = {
-        passwordFile = "/tmp/upsmon-password";
-        upsmon = "primary";
-      };
+    users.${user} = {
+      inherit passwordFile;
+      upsmon = "primary";
     };
-    upsmon.monitor = {
-      mon = {
-        system = "ups@localhost";
-        user = "upsmon";
-        passwordFile = "/tmp/upsmon-password";
+    upsmon = {
+      enable = true;
+      monitor.${monitor} = {
+        system = "${name}@localhost";
+        inherit user passwordFile;
         type = "primary";
         powerValue = 1;
       };
     };
     openFirewall = true;
   };
+
+  sops.secrets.${passwordKey} = { };
 }
