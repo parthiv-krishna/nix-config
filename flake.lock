@@ -250,11 +250,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1748830238,
-        "narHash": "sha256-EB+LzYHK0D5aqxZiYoPeoZoOzSAs8eqBDxm3R+6wMKU=",
+        "lastModified": 1748979197,
+        "narHash": "sha256-mKYwYcO9RmA2AcAFIXGDBOw5iv/fbjw6adWvMbnfIuk=",
         "ref": "refs/heads/master",
-        "rev": "c7fdb7e90bff1a51b79c1eed458fb39e6649a82a",
-        "revCount": 4831,
+        "rev": "34a13086148cbb3ae65a79f753eb451ce5cac3d3",
+        "revCount": 4838,
         "type": "git",
         "url": "ssh://git@github.com/nix-community/home-manager"
       },
@@ -309,10 +309,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1748902704,
-        "narHash": "sha256-SJ/e74zN4LOurwCB+G0OxDwMEVVhCHJD7mjasnzcu2o=",
+        "lastModified": 1748906696,
+        "narHash": "sha256-o11iG2wt2JFiOTLVzOm1CVloK6o8pG/6KpTTA3EvYKE=",
         "ref": "main",
-        "rev": "b1e3a047b39acf6a3fb2722d2800e142599f01d4",
+        "rev": "58ade1d4e11344fd0530b627e590a08cae08bd1e",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -349,11 +349,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1747744144,
-        "narHash": "sha256-W7lqHp0qZiENCDwUZ5EX/lNhxjMdNapFnbErcbnP11Q=",
+        "lastModified": 1748693115,
+        "narHash": "sha256-StSrWhklmDuXT93yc3GrTlb0cKSS0agTAxMGjLKAsY8=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "2795c506fe8fb7b03c36ccb51f75b6df0ab2553f",
+        "rev": "910796cabe436259a29a72e8d3f5e180fc6dfacc",
         "type": "github"
       },
       "original": {
@@ -372,11 +372,11 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1748884506,
-        "narHash": "sha256-P/ldKE0SCGKH6pEVJoW2MJJo2dZCZe10d/h1ree66c0=",
+        "lastModified": 1748942960,
+        "narHash": "sha256-gJf3WxvDbvCpzIBVju/5GY/olW7zs/B1zDmB52AWMUM=",
         "ref": "refs/heads/main",
-        "rev": "d063d0dd5e0b82d8be4dd4bc00b887ac1f92e4b2",
-        "revCount": 3403,
+        "rev": "9328f4437d5f788d1c066b274a0aea492dc5fde2",
+        "revCount": 3407,
         "type": "git",
         "url": "ssh://git@github.com/nix-community/nixvim"
       },
