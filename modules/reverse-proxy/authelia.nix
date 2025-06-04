@@ -36,21 +36,24 @@ in
               access_control = {
                 default_policy = "deny";
                 rules = lib.mkAfter [
-                  # domain-specific rules are managed by lib.custom.mkSelfHostedService
+                  # service-specific rules are managed by lib.custom.mkSelfHostedService
                   # anyone can access the auth portal
                   {
                     domain_regex = "${subdomain}.${config.constants.domains.public}";
                     policy = "bypass";
                   }
-                  # admins can access all domains
+                  # admins and users can access all domains
                   {
-                    domain_regex = "[a-z0-9]*\.${config.constants.domains.public}";
+                    domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
                     policy = "one_factor";
-                    subject = [ "group:admin" ];
+                    subject = [
+                      "group:admin"
+                      "group:user"
+                    ];
                   }
                   # deny access to non-group domains
                   {
-                    domain_regex = "[a-z0-9]*\.${config.constants.domains.public}";
+                    domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
                     policy = "deny";
                   }
                 ];

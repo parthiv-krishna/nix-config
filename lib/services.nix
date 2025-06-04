@@ -70,8 +70,12 @@
 
       # fully qualified domain names
       fqdn = {
-        internal = "${subdomain}.${hostName}.${domains.internal}";
-        public = "${subdomain}.${domains.public}";
+        internal =
+          if subdomain == "" then
+            "${hostName}.${domains.internal}"
+          else
+            "${subdomain}.${hostName}.${domains.internal}";
+        public = if subdomain == "" then domains.public else "${subdomain}.${domains.public}";
       };
     in
     {
@@ -130,7 +134,7 @@
           services.authelia.instances.${config.custom.reverse-proxy.autheliaInstanceName}.settings.access_control.rules =
             lib.mkIf public [
               {
-                domain_regex = "${subdomain}.${config.constants.domains.public}";
+                domain_regex = "^${fqdn.public}$";
                 policy = if protected then "one_factor" else "bypass";
                 subject = lib.mkIf protected [ "group:${name}" ];
               }
