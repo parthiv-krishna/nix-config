@@ -41,6 +41,7 @@ in
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
+      "glances.nix"
       "intel-gpu.nix"
       "nvidia.nix"
       "sshd.nix"
