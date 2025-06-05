@@ -105,12 +105,12 @@ lib.custom.mkSelfHostedService {
                   "Systems" = [
                     {
                       "Nimbus" = {
-                        widgets = [
-                          (mkGlances "nimbus" "info")
-                          (mkGlances "nimbus" "cpu")
-                          (mkGlances "nimbus" "memory")
-                          (mkGlances "nimbus" "network:enp0s6")
-                          (mkGlances "nimbus" "fs:/")
+                        widgets = map (mkGlances "nimbus") [
+                          "info"
+                          "cpu"
+                          "memory"
+                          "network:enp0s6"
+                          "fs:/"
                         ];
                       };
                     }
@@ -131,7 +131,7 @@ lib.custom.mkSelfHostedService {
                           "info"
                           "cpu"
                           "memory"
-                          "network:enp2s0"
+                          "network:enp1s0"
                           "fs:/"
                         ];
                       };
@@ -177,6 +177,11 @@ lib.custom.mkSelfHostedService {
         };
 
         widgets = [
+          {
+            search = {
+              provider = [ "brave" ];
+            };
+          }
           {
             datetime = {
               text_size = "xl";
