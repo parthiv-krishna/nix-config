@@ -81,7 +81,7 @@ lib.custom.mkSelfHostedService {
               let
                 mkGlances = machine: metric: {
                   type = "glances";
-                  url = "http://${machine}.${domains.internal}:${toString config.constants.ports.glances}";
+                  url = "https://glances.${machine}.${domains.internal}";
                   version = 4;
                   inherit metric;
                 };
