@@ -25,6 +25,7 @@
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
+      "glances.nix"
       "sshd.nix"
     ])
   ];
