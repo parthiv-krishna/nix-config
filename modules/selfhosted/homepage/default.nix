@@ -20,56 +20,125 @@ lib.custom.mkSelfHostedService {
         enable = true;
         listenPort = config.constants.ports.homepage;
         allowedHosts = domains.public;
+        environmentFile = config.sops.templates."homepage/environment".path;
 
-        # TODO: generate names in a better way. constants?
+        # TODO: generate names in a better way. move subdomain to constants?
         services = [
           {
-            "Media" = [
+            "Services" = [
               {
-                "Jellyfin: tv.${domains.public}" = {
-                  description = "Movies and Shows";
-                  href = "https://tv.${domains.public}";
-                  icon = "sh-jellyfin";
-                  ping = "midnight.${domains.internal}";
-                };
+                "Media" = [
+                  {
+                    "Jellyfin: tv.${domains.public}" = {
+                      description = "Movies and Shows";
+                      href = "https://tv.${domains.public}";
+                      icon = "sh-jellyfin";
+                      ping = "midnight.${domains.internal}";
+                    };
+                  }
+                ];
+              }
+              {
+                "Storage" = [
+                  {
+                    "Immich: photos.${domains.public}" = {
+                      description = "Photo Storage";
+                      href = "https://photos.${domains.public}";
+                      icon = "sh-immich";
+                      ping = "midnight.${domains.internal}";
+                    };
+                  }
+                ];
+              }
+              {
+                "Productivity" = [
+                  {
+                    "Actual: actual.${domains.public}" = {
+                      description = "Budget App";
+                      href = "https://actual.${domains.public}";
+                      icon = "sh-actual-budget";
+                      ping = "nimbus.${domains.internal}";
+                    };
+                  }
+                ];
+              }
+              {
+                "Network" = [
+                  {
+                    "Thaw: thaw.${domains.public}" = {
+                      description = "Wake up sleeping servers";
+                      href = "https://thaw.${domains.public}";
+                      icon = "mdi-snowflake-melt";
+                      ping = "vardar.${domains.internal}";
+                    };
+                  }
+                ];
               }
             ];
           }
           {
-            "Storage" = [
-              {
-                "Immich: photos.${domains.public}" = {
-                  description = "Photo Storage";
-                  href = "https://photos.${domains.public}";
-                  icon = "sh-immich";
-                  ping = "midnight.${domains.internal}";
+            "Metrics" =
+              let
+                mkGlances = machine: metric: {
+                  type = "glances";
+                  url = "http://${machine}.${domains.internal}:${toString config.constants.ports.glances}";
+                  version = 4;
+                  inherit metric;
                 };
-              }
-            ];
-          }
-          {
-            "Productivity" = [
-              {
-                "Actual: actual.${domains.public}" = {
-                  description = "Budget App";
-                  href = "https://actual.${domains.public}";
-                  icon = "sh-actual-budget";
-                  ping = "nimbus.${domains.internal}";
-                };
-              }
-            ];
-          }
-          {
-            "Network" = [
-              {
-                "Thaw: thaw.${domains.public}" = {
-                  description = "Wake up sleeping servers";
-                  href = "https://thaw.${domains.public}";
-                  icon = "mdi-snowflake-melt";
-                  ping = "vardar.${domains.internal}";
-                };
-              }
-            ];
+              in
+              [
+                {
+                  "Crowdsec" = {
+                    description = "Malicious Traffic Bouncer";
+                    icon = "sh-crowdsec";
+                    widgets = [
+                      {
+                        type = "crowdsec";
+                        url = "http://localhost:${toString config.constants.ports.crowdsec}";
+                        username = "{{HOMEPAGE_VAR_CROWDSEC_USERNAME}}";
+                        password = "{{HOMEPAGE_VAR_CROWDSEC_PASSWORD}}";
+                      }
+                    ];
+                  };
+                }
+                {
+                  "Systems" = [
+                    {
+                      "Nimbus" = {
+                        widgets = [
+                          (mkGlances "nimbus" "info")
+                          (mkGlances "nimbus" "cpu")
+                          (mkGlances "nimbus" "memory")
+                          (mkGlances "nimbus" "network:enp0s6")
+                          (mkGlances "nimbus" "fs:/")
+                        ];
+                      };
+                    }
+                    {
+                      "Midnight" = {
+                        widgets = map (mkGlances "midnight") [
+                          "info"
+                          "cpu"
+                          "memory"
+                          "network:enp2s0"
+                          "fs:/"
+                        ];
+                      };
+                    }
+                    {
+                      "Vardar" = {
+                        widgets = map (mkGlances "vardar") [
+                          "info"
+                          "cpu"
+                          "memory"
+                          "network:enp2s0"
+                          "fs:/"
+                        ];
+                      };
+                    }
+                  ];
+                }
+              ];
           }
         ];
 
@@ -87,14 +156,43 @@ lib.custom.mkSelfHostedService {
           theme = "dark";
           color = "sky";
           hideVersion = true;
+
+          layout = [
+            {
+              "Services" = {
+                style = "row";
+                columns = 4;
+              };
+            }
+            {
+              "Metrics" = {
+                style = "row";
+                "Systems" = {
+                  style = "row";
+                  columns = 3;
+                };
+              };
+            }
+          ];
         };
 
         widgets = [
           {
-            resources = {
-              cpu = true;
-              disk = "/";
-              memory = true;
+            datetime = {
+              text_size = "xl";
+              format = {
+                timeZone = "US/Pacific";
+              };
+            };
+          }
+          {
+            openmeteo = {
+              label = "Santa Clara, CA";
+              latitude = 37.342095;
+              longitude = -121.975512;
+              units = "imperial";
+              timezone = "US/Pacific";
+              cache = 5;
             };
           }
         ];
@@ -110,6 +208,22 @@ lib.custom.mkSelfHostedService {
         pkgs.gnused
         pkgs.systemd
       ]}";
+      systemd.services.homepage-dashboard.environment.LOG_LEVEL = "debug";
+
+      sops = {
+        templates."homepage/environment" = {
+          content = ''
+            HOMEPAGE_VAR_CROWDSEC_USERNAME="${config.sops.placeholder."homepage/crowdsec_username"}"
+            HOMEPAGE_VAR_CROWDSEC_PASSWORD="${config.sops.placeholder."homepage/crowdsec_password"}"
+          '';
+          mode = "0444";
+        };
+
+        secrets = {
+          "homepage/crowdsec_username" = { };
+          "homepage/crowdsec_password" = { };
+        };
+      };
     }
   ];
 }
