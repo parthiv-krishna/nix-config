@@ -98,7 +98,6 @@ in
                   redis:
                     password: {{ secret "${config.sops.secrets."authelia/session/redis/password".path}" }}
               '')
-              # TODO: auto generate the openid callback urls based on the subdomains
               (
                 let
                   domain = config.constants.domains.public;

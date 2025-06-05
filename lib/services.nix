@@ -150,7 +150,6 @@
             # expose service to public internet if enabled
             lib.mkIf public {
               "${fqdn.public}" = {
-                # TODO: wake on LAN
                 logFormat = ''
                   output file ${config.services.caddy.logDir}/access-${fqdn.public}.log {
                     roll_size 10MB
