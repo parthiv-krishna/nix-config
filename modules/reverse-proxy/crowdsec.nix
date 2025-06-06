@@ -19,6 +19,10 @@ in
           allowLocalJournalAccess = true;
           enrollKeyFile = config.sops.secrets."crowdsec/enroll_key".path;
           settings.api.server.listen_uri = "127.0.0.1:${toString config.constants.ports.crowdsec}";
+          settings.prometheus = {
+            enabled = true;
+            listen_port = config.constants.ports.prometheus-crowdsec;
+          };
           acquisitions = [
             # monitor Caddy logs
             {

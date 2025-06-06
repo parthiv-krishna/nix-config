@@ -23,6 +23,8 @@ in
       jellyfin = mkPortConstant 8096;
       ollama = mkPortConstant 11434;
       prometheus = mkPortConstant 9092;
+      prometheus-crowdsec = mkPortConstant 9200;
+      prometheus-nut = mkPortConstant 9201;
       thaw = mkPortConstant 8301;
     };
 
