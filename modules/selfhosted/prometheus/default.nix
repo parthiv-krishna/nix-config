@@ -36,6 +36,22 @@ lib.custom.mkSelfHostedService {
             scrape_interval = "10s";
             scrape_timeout = "10s";
           }
+          {
+            job_name = "node";
+            static_configs = [
+              {
+                targets = [
+                  "prometheus-node.midnight.${config.constants.domains.internal}"
+                  "prometheus-node.nimbus.${config.constants.domains.internal}"
+                  "prometheus-node.vardar.${config.constants.domains.internal}"
+                ];
+              }
+            ];
+            metrics_path = "/metrics";
+            scheme = "https";
+            scrape_interval = "10s";
+            scrape_timeout = "10s";
+          }
         ];
       };
     }

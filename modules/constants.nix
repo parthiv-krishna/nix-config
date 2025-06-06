@@ -24,7 +24,8 @@ in
       ollama = mkPortConstant 11434;
       prometheus = mkPortConstant 9092;
       prometheus-crowdsec = mkPortConstant 9200;
-      prometheus-nut = mkPortConstant 9201;
+      prometheus-node = mkPortConstant 9201;
+      prometheus-nut = mkPortConstant 9202;
       thaw = mkPortConstant 8301;
     };
 
