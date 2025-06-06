@@ -25,120 +25,52 @@ lib.custom.mkSelfHostedService {
         # TODO: generate names in a better way. move subdomain to constants?
         services = [
           {
-            "Services" = [
+            "Media" = [
               {
-                "Media" = [
-                  {
-                    "Jellyfin: tv.${domains.public}" = {
-                      description = "Movies and Shows";
-                      href = "https://tv.${domains.public}";
-                      icon = "sh-jellyfin";
-                      ping = "midnight.${domains.internal}";
-                    };
-                  }
-                ];
-              }
-              {
-                "Storage" = [
-                  {
-                    "Immich: photos.${domains.public}" = {
-                      description = "Photo Storage";
-                      href = "https://photos.${domains.public}";
-                      icon = "sh-immich";
-                      ping = "midnight.${domains.internal}";
-                    };
-                  }
-                ];
-              }
-              {
-                "Productivity" = [
-                  {
-                    "Actual: actual.${domains.public}" = {
-                      description = "Budget App";
-                      href = "https://actual.${domains.public}";
-                      icon = "sh-actual-budget";
-                      ping = "nimbus.${domains.internal}";
-                    };
-                  }
-                ];
-              }
-              {
-                "Network" = [
-                  {
-                    "Thaw: thaw.${domains.public}" = {
-                      description = "Wake up sleeping servers";
-                      href = "https://thaw.${domains.public}";
-                      icon = "mdi-snowflake-melt";
-                      ping = "vardar.${domains.internal}";
-                    };
-                  }
-                ];
+                "Jellyfin: tv.${domains.public}" = {
+                  description = "Movies and Shows";
+                  href = "https://tv.${domains.public}";
+                  icon = "sh-jellyfin";
+                  ping = "midnight.${domains.internal}";
+                };
               }
             ];
           }
           {
-            "Metrics" =
-              let
-                mkGlances = machine: metric: {
-                  type = "glances";
-                  url = "https://glances.${machine}.${domains.internal}";
-                  version = 4;
-                  inherit metric;
+            "Storage" = [
+              {
+                "Immich: photos.${domains.public}" = {
+                  description = "Photo Storage";
+                  href = "https://photos.${domains.public}";
+                  icon = "sh-immich";
+                  ping = "midnight.${domains.internal}";
                 };
-              in
-              [
-                {
-                  "Crowdsec" = {
-                    description = "Malicious Traffic Bouncer";
-                    icon = "sh-crowdsec";
-                    widgets = [
-                      {
-                        type = "crowdsec";
-                        url = "http://localhost:${toString config.constants.ports.crowdsec}";
-                        username = "{{HOMEPAGE_VAR_CROWDSEC_USERNAME}}";
-                        password = "{{HOMEPAGE_VAR_CROWDSEC_PASSWORD}}";
-                      }
-                    ];
-                  };
-                }
-                {
-                  "Systems" = [
-                    {
-                      "Nimbus" = {
-                        widgets = map (mkGlances "nimbus") [
-                          "info"
-                          "cpu"
-                          "memory"
-                          "network:enp0s6"
-                          "fs:/"
-                        ];
-                      };
-                    }
-                    {
-                      "Midnight" = {
-                        widgets = map (mkGlances "midnight") [
-                          "info"
-                          "cpu"
-                          "memory"
-                          "network:enp2s0"
-                          "fs:/"
-                        ];
-                      };
-                    }
-                    {
-                      "Vardar" = {
-                        widgets = map (mkGlances "vardar") [
-                          "info"
-                          "cpu"
-                          "memory"
-                          "network:enp1s0"
-                          "fs:/"
-                        ];
-                      };
-                    }
-                  ];
-                }
-              ];
+              }
+            ];
+          }
+          {
+            "Productivity" = [
+              {
+                "Actual: actual.${domains.public}" = {
+                  description = "Budget App";
+                  href = "https://actual.${domains.public}";
+                  icon = "sh-actual-budget";
+                  ping = "nimbus.${domains.internal}";
+                };
+              }
+            ];
+          }
+          {
+            "Network" = [
+              {
+                "Thaw: thaw.${domains.public}" = {
+                  description = "Wake up sleeping servers";
+                  href = "https://thaw.${domains.public}";
+                  icon = "mdi-snowflake-melt";
+                  ping = "vardar.${domains.internal}";
+                };
+              }
+            ];
           }
         ];
 
