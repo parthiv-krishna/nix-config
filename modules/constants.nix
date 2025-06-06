@@ -22,6 +22,7 @@ in
       immich = mkPortConstant 2283;
       jellyfin = mkPortConstant 8096;
       ollama = mkPortConstant 11434;
+      prometheus = mkPortConstant 9092;
       thaw = mkPortConstant 8301;
     };
 
