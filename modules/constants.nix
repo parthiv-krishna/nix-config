@@ -17,7 +17,7 @@ in
       authelia = mkPortConstant 9091;
       authelia-redis = mkPortConstant 6379;
       crowdsec = mkPortConstant 9090;
-      glances = mkPortConstant 61208;
+      grafana = mkPortConstant 3000;
       homepage = mkPortConstant 8082;
       immich = mkPortConstant 2283;
       jellyfin = mkPortConstant 8096;

@@ -89,23 +89,6 @@ lib.custom.mkSelfHostedService {
           color = "sky";
           hideVersion = true;
 
-          layout = [
-            {
-              "Services" = {
-                style = "row";
-                columns = 4;
-              };
-            }
-            {
-              "Metrics" = {
-                style = "row";
-                "Systems" = {
-                  style = "row";
-                  columns = 3;
-                };
-              };
-            }
-          ];
         };
 
         widgets = [
