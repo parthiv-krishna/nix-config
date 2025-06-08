@@ -28,7 +28,7 @@ lib.custom.mkSelfHostedService {
             "Media" = [
               {
                 "Jellyfin: tv.${domains.public}" = {
-                  description = "Movies and Shows";
+                  description = "Movies and TV";
                   href = "https://tv.${domains.public}";
                   icon = "sh-jellyfin";
                   ping = "midnight.${domains.internal}";
@@ -40,7 +40,7 @@ lib.custom.mkSelfHostedService {
             "Storage" = [
               {
                 "Immich: photos.${domains.public}" = {
-                  description = "Photo Storage";
+                  description = "Photo storage";
                   href = "https://photos.${domains.public}";
                   icon = "sh-immich";
                   ping = "midnight.${domains.internal}";
@@ -52,7 +52,7 @@ lib.custom.mkSelfHostedService {
             "Productivity" = [
               {
                 "Actual: actual.${domains.public}" = {
-                  description = "Budget App";
+                  description = "Budgeting";
                   href = "https://actual.${domains.public}";
                   icon = "sh-actual-budget";
                   ping = "nimbus.${domains.internal}";
@@ -68,6 +68,14 @@ lib.custom.mkSelfHostedService {
                   href = "https://thaw.${domains.public}";
                   icon = "mdi-snowflake-melt";
                   ping = "vardar.${domains.internal}";
+                };
+              }
+              {
+                "Grafana: stats.${domains.public}" = {
+                  description = "Charts and metrics";
+                  href = "https://stats.${domains.public}";
+                  icon = "sh-grafana";
+                  ping = "nimbus.${domains.internal}";
                 };
               }
             ];

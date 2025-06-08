@@ -124,6 +124,26 @@ in
                             - "profile"
                           userinfo_signed_response_alg: "none"
                           token_endpoint_auth_method: "client_secret_basic"
+                        - client_name: "Grafana"
+                          client_id: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/grafana/client_id".path
+                          }" }}
+                          client_secret: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/grafana/client_secret".path
+                          }" }}
+                          public: false
+                          authorization_policy: "one_factor"
+                          require_pkce: true
+                          pkce_challenge_method: "S256"
+                          redirect_uris:
+                            - "https://stats.${domain}/login/generic_oauth"
+                          scopes:
+                            - "openid"
+                            - "profile"
+                            - "groups"
+                            - "email"
+                          userinfo_signed_response_alg: "none"
+                          token_endpoint_auth_method: "client_secret_basic"
                         - client_name: "Immich"
                           client_id: {{ secret "${
                             config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_id".path
@@ -132,17 +152,17 @@ in
                             config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_secret".path
                           }" }}
                           public: false
-                          authorization_policy: 'one_factor'
+                          authorization_policy: "one_factor"
                           redirect_uris:
-                            - 'https://photos.${domain}/auth/login'
-                            - 'https://photos.${domain}/user-settings'
-                            - 'app.immich:///oauth-callback'
+                            - "https://photos.${domain}/auth/login"
+                            - "https://photos.${domain}/user-settings"
+                            - "app.immich:///oauth-callback"
                           scopes:
-                            - 'openid'
-                            - 'profile'
-                            - 'email'
-                          userinfo_signed_response_alg: 'none'
-                          token_endpoint_auth_method: 'client_secret_post'
+                            - "openid"
+                            - "profile"
+                            - "email"
+                          userinfo_signed_response_alg: "none"
+                          token_endpoint_auth_method: "client_secret_post"
                         - client_name: "Jellyfin"
                           client_id: {{ secret "${
                             config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_id".path
@@ -225,6 +245,8 @@ in
               "authelia/storage/encryption_key"
               "authelia/identity_providers/oidc/clients/actual/client_id"
               "authelia/identity_providers/oidc/clients/actual/client_secret"
+              "authelia/identity_providers/oidc/clients/grafana/client_id"
+              "authelia/identity_providers/oidc/clients/grafana/client_secret"
               "authelia/identity_providers/oidc/clients/immich/client_id"
               "authelia/identity_providers/oidc/clients/immich/client_secret"
               "authelia/identity_providers/oidc/clients/jellyfin/client_id"
@@ -236,7 +258,6 @@ in
               secretPath:
               lib.nameValuePair secretPath {
                 owner = config.services.authelia.instances.${cfg.autheliaInstanceName}.user;
-                inherit (config.services.authelia.instances.${cfg.autheliaInstanceName}) group;
               }
             ) allSecretPaths
           );
