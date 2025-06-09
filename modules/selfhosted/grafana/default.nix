@@ -72,9 +72,14 @@ lib.custom.mkSelfHostedService {
             kubernetesDashboards = true;
             apiserver = true;
           };
+          "auth.anonymous" = {
+            enabled = true;
+            org_name = config.constants.domains.public;
+            org_role = "Viewer";
+          };
           "auth.generic_oauth" = {
             enabled = true;
-            name = "sub0.net SSO";
+            name = "${config.constants.domains.public} SSO";
             icon = "signin";
             client_id = "$__file{${config.sops.secrets."${secretsRoot}/client_id".path}}";
             client_secret = "$__file{${config.sops.secrets."${secretsRoot}/client_secret_orig".path}}";
@@ -87,16 +92,9 @@ lib.custom.mkSelfHostedService {
             groups_attribute_path = "groups";
             name_attribute_path = "name";
             use_pkce = true;
-            # admin group becomes grafana Admin, grafana group becomes grafana Editor, and everyone else is a grafana Viewer
-            role_attribute_path = "contains(groups, 'admin') && 'Admin' || contains(groups, 'grafana') && 'Editor' || 'Viewer'";
-            role_attribute_strict = true;
-            allow_assign_grafana_admin = true;
-            skip_org_role_sync = false;
+            # users are Viewer by default, but can be promoted by admin account
+            skip_org_role_sync = true;
             auto_login = false;
-          };
-          log = {
-            format = "console";
-            level = "debug";
           };
         };
       };
