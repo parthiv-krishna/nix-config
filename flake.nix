@@ -3,11 +3,11 @@
 
   inputs = {
     compose2nix = {
-      url = "git+ssh://git@github.com/aksiksi/compose2nix";
+      url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     colmena = {
-      url = "git+ssh://git@github.com/zhaofengli/colmena?ref=release-0.4.x";
+      url = "github:zhaofengli/colmena?ref=release-0.4.x";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     crowdsec = {
@@ -15,44 +15,44 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
-      url = "git+ssh://git@github.com/nix-community/disko";
+      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "git+ssh://git@github.com/nix-community/home-manager";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence = {
-      url = "git+ssh://git@github.com/nix-community/impermanence";
+      url = "github:nix-community/impermanence";
     };
     nix-config-secrets = {
       url = "git+ssh://git@github.com/parthiv-krishna/nix-config-secrets.git?ref=main&shallow=1";
       flake = false;
     };
     nixos-hardware = {
-      url = "git+ssh://git@github.com/NixOS/nixos-hardware.git";
+      url = "github:NixOS/nixos-hardware";
     };
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
     nixvim = {
-      url = "git+ssh://git@github.com/nix-community/nixvim";
+      url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     pre-commit-hooks = {
-      url = "git+ssh://git@github.com/cachix/git-hooks.nix";
+      url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     thaw = {
-      url = "git+ssh://git@github.com/parthiv-krishna/thaw";
+      url = "github:parthiv-krishna/thaw";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     treefmt-nix = {
-      url = "git+ssh://git@github.com/numtide/treefmt-nix";
+      url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
-      url = "git+ssh://git@github.com/mic92/sops-nix";
+      url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
