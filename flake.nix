@@ -68,14 +68,17 @@
       forEachSystem = lib.genAttrs (lib.attrValues systems);
       # Build NixOS configurations for each host
       hosts = {
-        midnight = {
+        icicle = {
           system = systems.x86;
         };
-        vardar = {
+        midnight = {
           system = systems.x86;
         };
         nimbus = {
           system = systems.arm;
+        };
+        vardar = {
+          system = systems.x86;
         };
       };
       # TODO: get from ./modules/constants.nix
