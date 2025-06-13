@@ -29,6 +29,9 @@
       url = "git+ssh://git@github.com/parthiv-krishna/nix-config-secrets.git?ref=main&shallow=1";
       flake = false;
     };
+    nixos-hardware = {
+      url = "git+ssh://git@github.com/NixOS/nixos-hardware.git";
+    };
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
