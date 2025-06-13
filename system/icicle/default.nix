@@ -5,6 +5,9 @@
   lib,
   ...
 }:
+let
+  disk = "/dev/disk/by-id/nvme-nvme.1c5c-414442394e37303139313037303951304f-5348475033312d32303030474d-00000001";
+in
 {
   imports = lib.flatten [
     # Include the results of the hardware scan.
@@ -15,7 +18,7 @@
 
     # disks
     (import (lib.custom.relativeToRoot "system/common/disks/boot_drive_luks_interactive.nix") {
-      device = "/dev/disk/by-id/nvme-nvme.1c5c-414442394e37303139313037303951304f-5348475033312d32303030474d-00000001";
+      device = disk;
       swapSize = "40G"; # 32G RAM + some extra. not scientific
     })
 
@@ -36,8 +39,18 @@
   networking.hostName = "icicle";
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      grub = {
+        enable = true;
+        device = "nodev";
+        efiSupport = true;
+      };
+    };
+    initrd.luks.devices.cryptroot.device = disk;
+  };
 
   time.timeZone = "America/Los_Angeles";
 
