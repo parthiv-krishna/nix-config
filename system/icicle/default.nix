@@ -18,6 +18,7 @@ in
 
     # disks
     (import (lib.custom.relativeToRoot "system/common/disks/boot_drive_luks_interactive.nix") {
+      inherit lib;
       device = disk;
       swapSize = "40G"; # 32G RAM + some extra. not scientific
     })
@@ -43,11 +44,6 @@ in
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
-      grub = {
-        enable = true;
-        device = "nodev";
-        efiSupport = true;
-      };
     };
     initrd.luks.devices.cryptroot.device = disk;
   };
