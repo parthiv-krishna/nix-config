@@ -27,7 +27,6 @@ in
         };
       };
       vt = 7; # graphical login
-
     };
 
     environment.systemPackages = with pkgs; [

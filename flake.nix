@@ -100,12 +100,6 @@
         in
         lib.nixosSystem {
           modules = [
-            inputs.crowdsec.nixosModules.crowdsec
-            inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
-            inputs.disko.nixosModules.default
-            inputs.home-manager.nixosModules.default
-            inputs.impermanence.nixosModules.impermanence
-            inputs.thaw.nixosModules.thaw
             ./modules
             ./system/${hostName}
           ];
@@ -152,12 +146,6 @@
           };
 
           imports = [
-            inputs.crowdsec.nixosModules.crowdsec
-            inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
-            inputs.disko.nixosModules.default
-            inputs.home-manager.nixosModules.default
-            inputs.impermanence.nixosModules.impermanence
-            inputs.thaw.nixosModules.thaw
             ./modules
             ./system/${hostName}
           ];
