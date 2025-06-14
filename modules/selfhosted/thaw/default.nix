@@ -1,5 +1,15 @@
-{ config, lib, ... }:
-lib.custom.mkSelfHostedService {
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
+{
+  imports = [
+    inputs.thaw.nixosModules.thaw
+  ];
+}
+// (lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "thaw";
   hostName = "vardar";
@@ -21,4 +31,4 @@ lib.custom.mkSelfHostedService {
       };
     };
   };
-}
+})

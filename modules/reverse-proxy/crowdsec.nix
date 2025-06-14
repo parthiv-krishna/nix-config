@@ -9,6 +9,10 @@ let
   cfg = config.custom.reverse-proxy;
 in
 {
+  imports = [
+    inputs.crowdsec.nixosModules.crowdsec
+    inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
+  ];
   config = lib.mkIf (cfg.enable && cfg.publicFacing) (
     lib.mkMerge [
       {

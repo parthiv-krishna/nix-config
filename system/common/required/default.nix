@@ -1,9 +1,14 @@
 {
+  inputs,
   lib,
   ...
 }:
 {
-  imports = lib.custom.scanPaths ./.;
+  imports = lib.flatten [
+    inputs.disko.nixosModules.default
+    inputs.home-manager.nixosModules.default
+    (lib.custom.scanPaths ./.)
+  ];
 
   # enable flakes
   nix.settings = {

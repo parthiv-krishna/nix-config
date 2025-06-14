@@ -1,11 +1,15 @@
 # impermanence-related configuration
 
 {
+  inputs,
   lib,
   ...
 }:
 
 {
+  imports = [
+    inputs.impermanence.nixosModules.impermanence
+  ];
   # startup script from https://github.com/nix-community/impermanence
   # 1. backup current state of root
   # 2. clear out backups older than 30d
