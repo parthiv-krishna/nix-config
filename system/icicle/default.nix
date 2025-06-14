@@ -30,6 +30,7 @@
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
+      "hyprland.nix"
       "wifi.nix"
     ])
   ];
