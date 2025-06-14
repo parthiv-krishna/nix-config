@@ -7,6 +7,7 @@
 {
   imports = [
     ./common/required
+    ./common/optional/hyprland
   ];
 
   home.stateVersion = "24.11";
