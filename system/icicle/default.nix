@@ -30,7 +30,6 @@
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
-      "hyprland.nix"
       "wifi.nix"
     ])
   ];
@@ -43,8 +42,12 @@
     loader.efi.canTouchEfiVariables = true;
   };
 
+  # enable desktop environment
+  custom.desktop.enable = true;
+
   time.timeZone = "America/Los_Angeles";
 
   # should not be changed until a clean install
+
   system.stateVersion = "24.11";
 }
