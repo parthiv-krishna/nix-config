@@ -29,9 +29,15 @@ in
       vt = 7; # graphical login
     };
 
+    fonts.packages = with pkgs; [
+      font-awesome
+    ];
+
     environment.systemPackages = with pkgs; [
+      kdePackages.dolphin
       kitty
       waybar
+      wofi
     ];
   };
 }
