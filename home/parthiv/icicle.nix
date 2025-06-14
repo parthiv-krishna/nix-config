@@ -1,4 +1,4 @@
-# home-manager config for parthiv@midnight
+# home-manager config for parthiv@icicle
 
 {
   ...
@@ -7,6 +7,7 @@
 {
   imports = [
     ./common/required
+    ./common/optional/gui-apps
     ./common/optional/hyprland
   ];
 
