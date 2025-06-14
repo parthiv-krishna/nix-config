@@ -30,7 +30,7 @@
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
-      "sshd.nix"
+      "wifi.nix"
     ])
   ];
 
