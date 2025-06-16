@@ -21,11 +21,12 @@ in
       homepage = mkPortConstant 8082;
       immich = mkPortConstant 2283;
       jellyfin = mkPortConstant 8096;
+      ocis = mkPortConstant 9200;
       ollama = mkPortConstant 11434;
       prometheus = mkPortConstant 9092;
-      prometheus-crowdsec = mkPortConstant 9200;
-      prometheus-node = mkPortConstant 9201;
-      prometheus-nut = mkPortConstant 9202;
+      prometheus-crowdsec = mkPortConstant 9100;
+      prometheus-node = mkPortConstant 9101;
+      prometheus-nut = mkPortConstant 9102;
       thaw = mkPortConstant 8301;
     };
 
