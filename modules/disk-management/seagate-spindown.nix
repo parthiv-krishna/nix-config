@@ -60,7 +60,7 @@ in
       script = ''
         ${builtins.concatStringsSep "\n" (
           map (dev: ''
-              ${pkgs.openseachest}/bin/openSeaChest_PowerControl -d ${dev} \
+              ${pkgs.openseachest}/bin/openSeaChest_PowerControl -d `realpath ${dev}` \
                 --idle_a ${toString cfg.timers.idleA} \
                 --idle_b ${toString cfg.timers.idleB} \
                 --idle_c ${toString cfg.timers.idleC} \
