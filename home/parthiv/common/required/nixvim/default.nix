@@ -43,7 +43,7 @@
     };
 
     colorschemes = {
-      one.enable = true;
+      onedark.enable = true;
     };
 
     globals = {

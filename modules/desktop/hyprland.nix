@@ -34,8 +34,11 @@ in
     ];
 
     environment.systemPackages = with pkgs; [
+      brightnessctl
+      dunst
       kdePackages.dolphin
       kitty
+      playerctl
       waybar
       wofi
     ];

@@ -43,7 +43,14 @@
   };
 
   # enable desktop environment
-  custom.desktop.enable = true;
+  custom.desktop = {
+    enable = true;
+    idleMinutes = {
+      lock = 1;
+      screenOff = 2;
+      suspend = 3;
+    };
+  };
 
   time.timeZone = "America/Los_Angeles";
 
