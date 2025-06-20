@@ -10,17 +10,18 @@ _: {
       };
       listener = [
         {
-          timeout = 30;
+          timeout = 240;
           on-timeout = "brightnessctl -s set 10";
+          on-resume = "brightnessctl -r";
           ignore_inhibit = true;
         }
         {
-          timeout = 45;
+          timeout = 300;
           on-timeout = "hyprlock && hyprctl dispatch dpms off";
           on-resume = "hyprctl dispatch dpms on";
         }
         {
-          timeout = 60;
+          timeout = 600;
           on-timeout = "systemctl suspend";
         }
       ];

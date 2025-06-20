@@ -40,6 +40,7 @@ in
       kitty
       playerctl
       waybar
+      wl-clipboard-rs
       wofi
     ];
   };
