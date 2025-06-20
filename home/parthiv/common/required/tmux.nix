@@ -10,7 +10,7 @@
 
     plugins = with pkgs.tmuxPlugins; [
       fuzzback
-      nord
+      onedark-theme
       resurrect
       sensible
       sessionist
