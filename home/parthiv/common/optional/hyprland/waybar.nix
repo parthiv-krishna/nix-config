@@ -36,7 +36,7 @@ in
         ];
 
         "hyprland/workspaces" = {
-          format = "{id} {name}";
+          format = "{name}";
         };
 
         network = {
@@ -97,9 +97,25 @@ in
       #workspaces button {
         background: transparent;
         color: ${onedark.fg};
+        padding: 0 10px;
+        margin-right: 4px;
+        border-radius: 6px;
+        min-width: 32px;
+        min-height: 24px;
+        font-weight: bold;
+        font-size: 14px;
+        transition: background 0.2s, color 0.2s;
       }
       #workspaces button.active {
         background: ${onedark.blue};
+        color: ${onedark.bg};
+      }
+      #workspaces button.urgent {
+        background: ${onedark.red};
+        color: ${onedark.bg};
+      }
+      #workspaces button:hover {
+        background: ${onedark.cyan};
         color: ${onedark.bg};
       }
 
