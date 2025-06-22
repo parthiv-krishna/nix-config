@@ -52,6 +52,20 @@ lib.custom.mkSelfHostedService {
             scrape_interval = "10s";
             scrape_timeout = "10s";
           }
+          {
+            job_name = "caddy";
+            static_configs = [
+              {
+                targets = [
+                  "localhost:2019"
+                ];
+              }
+            ];
+            metrics_path = "/metrics";
+            scheme = "http";
+            scrape_interval = "10s";
+            scrape_timeout = "10s";
+          }
         ];
       };
     }
