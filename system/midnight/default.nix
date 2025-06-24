@@ -42,7 +42,6 @@ in
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
       "intel-gpu.nix"
-      "nvidia.nix"
       "sshd.nix"
     ])
     (import (lib.custom.relativeToRoot "system/common/optional/wake-on-lan.nix") {
@@ -95,6 +94,12 @@ in
     seagate-spindown = {
       enable = true;
       disks = dataDisks ++ parityDisks;
+    };
+
+    # nvidia drivers
+    hardware.nvidia = {
+      enable = true;
+      cudaCapability = "8.6"; # RTX 3060
     };
   };
   # should not be changed until a clean install

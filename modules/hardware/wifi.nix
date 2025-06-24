@@ -13,6 +13,7 @@ in
     driver = lib.mkOption {
       type = lib.types.str;
       description = "wifi driver, will be reloaded upon resume from suspend";
+      example = "mt7921e";
     };
   };
 
@@ -23,6 +24,7 @@ in
           enable = true;
         };
 
+        # fixes wifi disappearing after suspend/resume
         systemd.services."wifi-reload" = {
           description = "Reload ${cfg.driver} wifi driver after resume";
           wantedBy = [ "sleep.target" ];
