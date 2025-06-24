@@ -27,11 +27,6 @@
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
-
-    # optional system modules
-    (map (lib.custom.relativeTo "system/common/optional") [
-      "wifi.nix"
-    ])
   ];
 
   networking.hostName = "icicle";
@@ -43,12 +38,20 @@
   };
 
   # enable desktop environment
-  custom.desktop = {
-    enable = true;
-    idleMinutes = {
-      lock = 1;
-      screenOff = 2;
-      suspend = 3;
+  custom = {
+    desktop = {
+      enable = true;
+      # TODO: make this work
+      idleMinutes = {
+        lock = 1;
+        screenOff = 2;
+        suspend = 3;
+      };
+    };
+
+    hardware.wifi = {
+      enable = true;
+      driver = "mt7921e";
     };
   };
 
