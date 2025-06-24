@@ -5,11 +5,11 @@
   ...
 }:
 let
-  cfg = config.custom.hardware.nvidia;
+  cfg = config.custom.nvidia;
 in
 {
-  options.custom.hardware.nvidia = {
-    enable = lib.mkEnableOption "custom.nvidia";
+  options.custom.nvidia = {
+    enable = lib.mkEnableOption "NVIDIA drivers";
     cudaCapability = lib.mkOption {
       type = lib.types.str;
       description = "CUDA capability level for the installed GPU";

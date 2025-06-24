@@ -49,7 +49,7 @@
       };
     };
 
-    hardware.wifi = {
+    wifi = {
       enable = true;
       driver = "mt7921e";
     };
