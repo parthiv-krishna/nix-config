@@ -71,18 +71,22 @@
         icicle = {
           system = systems.x86;
           buildOnTarget = true;
+          allowLocalDeployment = true;
         };
         midnight = {
           system = systems.x86;
           buildOnTarget = true;
+          allowLocalDeployment = false;
         };
         nimbus = {
           system = systems.arm;
           buildOnTarget = true;
+          allowLocalDeployment = false;
         };
         vardar = {
           system = systems.x86;
           buildOnTarget = false;
+          allowLocalDeployment = false;
         };
       };
       # TODO: get from ./modules/constants.nix
@@ -145,7 +149,7 @@
 
           deployment = {
             targetHost = "${hostName}.${internalDomain}";
-            inherit (hostConfig) buildOnTarget;
+            inherit (hostConfig) buildOnTarget allowLocalDeployment;
           };
 
           imports = [
