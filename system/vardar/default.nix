@@ -23,12 +23,6 @@
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
-
-    # optional system modules
-    (map (lib.custom.relativeTo "system/common/optional") [
-      "sshd.nix"
-      "ups.nix"
-    ])
   ];
 
   networking.hostName = "vardar";
@@ -48,10 +42,15 @@
 
   time.timeZone = "Etc/UTC";
 
-  custom.reverse-proxy = {
-    enable = true;
-    email = "letsencrypt.snowy015@passmail.net";
-    cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+  custom = {
+    reverse-proxy = {
+      enable = true;
+      email = "letsencrypt.snowy015@passmail.net";
+      cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+    };
+
+    sshd.enable = true;
+    ups.enable = true;
   };
 
   # should not be changed until a clean install

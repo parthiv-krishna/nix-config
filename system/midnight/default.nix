@@ -38,15 +38,6 @@ in
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
-
-    # optional system modules
-    (map (lib.custom.relativeTo "system/common/optional") [
-      "sshd.nix"
-    ])
-    (import (lib.custom.relativeToRoot "system/common/optional/wake-on-lan.nix") {
-      inherit pkgs;
-      device = "enp2s0";
-    })
   ];
 
   networking.hostName = "midnight";
@@ -95,16 +86,23 @@ in
       disks = dataDisks ++ parityDisks;
     };
 
-    hardware = {
-      # nvidia drivers
-      nvidia = {
-        enable = true;
-        cudaCapability = "8.6"; # RTX 3060
-      };
+    # ssh server
+    sshd.enable = true;
 
-      # intel gpu drivers
-      intel-gpu.enable = true;
+    # wake on LAN support
+    wake-on-lan = {
+      enable = true;
+      device = "enp2s0";
     };
+
+    # nvidia drivers
+    nvidia = {
+      enable = true;
+      cudaCapability = "8.6"; # RTX 3060
+    };
+
+    # intel gpu drivers
+    intel-gpu.enable = true;
   };
   # should not be changed until a clean install
   system.stateVersion = "24.11";

@@ -5,11 +5,11 @@
   ...
 }:
 let
-  cfg = config.custom.hardware.wifi;
+  cfg = config.custom.wifi;
 in
 {
-  options.custom.hardware.wifi = {
-    enable = lib.mkEnableOption "custom.wifi";
+  options.custom.wifi = {
+    enable = lib.mkEnableOption "WiFi support";
     driver = lib.mkOption {
       type = lib.types.str;
       description = "wifi driver, will be reloaded upon resume from suspend";

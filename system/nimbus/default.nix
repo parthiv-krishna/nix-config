@@ -22,11 +22,6 @@
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
-
-    # optional system modules
-    (map (lib.custom.relativeTo "system/common/optional") [
-      "sshd.nix"
-    ])
   ];
 
   networking.hostName = "nimbus";
@@ -37,11 +32,15 @@
 
   time.timeZone = "Etc/UTC";
 
-  custom.reverse-proxy = {
-    enable = true;
-    publicFacing = true;
-    email = "letsencrypt.snowy015@passmail.net";
-    cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+  custom = {
+    reverse-proxy = {
+      enable = true;
+      publicFacing = true;
+      email = "letsencrypt.snowy015@passmail.net";
+      cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+    };
+
+    sshd.enable = true;
   };
 
   # should not be changed until a clean install

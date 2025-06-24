@@ -5,11 +5,11 @@
   ...
 }:
 let
-  cfg = config.custom.hardware.intel-gpu;
+  cfg = config.custom.intel-gpu;
 in
 {
-  options.custom.hardware.intel-gpu = {
-    enable = lib.mkEnableOption "custom.intel-gpu";
+  options.custom.intel-gpu = {
+    enable = lib.mkEnableOption "Intel GPU drivers";
   };
 
   config = lib.mkIf cfg.enable (

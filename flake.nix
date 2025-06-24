@@ -70,15 +70,19 @@
       hosts = {
         icicle = {
           system = systems.x86;
+          buildOnTarget = true;
         };
         midnight = {
           system = systems.x86;
+          buildOnTarget = true;
         };
         nimbus = {
           system = systems.arm;
+          buildOnTarget = true;
         };
         vardar = {
           system = systems.x86;
+          buildOnTarget = false;
         };
       };
       # TODO: get from ./modules/constants.nix
@@ -137,12 +141,11 @@
             ) hosts;
           };
         }
-        // lib.mapAttrs (hostName: _hostConfig: {
+        // lib.mapAttrs (hostName: hostConfig: {
 
           deployment = {
             targetHost = "${hostName}.${internalDomain}";
-            # don't cross compile on ARM machines
-            buildOnTarget = hostName != "vardar";
+            inherit (hostConfig) buildOnTarget;
           };
 
           imports = [
