@@ -41,7 +41,6 @@ in
 
     # optional system modules
     (map (lib.custom.relativeTo "system/common/optional") [
-      "intel-gpu.nix"
       "sshd.nix"
     ])
     (import (lib.custom.relativeToRoot "system/common/optional/wake-on-lan.nix") {
@@ -96,10 +95,15 @@ in
       disks = dataDisks ++ parityDisks;
     };
 
-    # nvidia drivers
-    hardware.nvidia = {
-      enable = true;
-      cudaCapability = "8.6"; # RTX 3060
+    hardware = {
+      # nvidia drivers
+      nvidia = {
+        enable = true;
+        cudaCapability = "8.6"; # RTX 3060
+      };
+
+      # intel gpu drivers
+      intel-gpu.enable = true;
     };
   };
   # should not be changed until a clean install
