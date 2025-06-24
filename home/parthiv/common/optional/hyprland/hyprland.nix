@@ -133,10 +133,10 @@ in
 
       bind = [
         "${mainMod}, Q, killactive,"
-        "${mainMod}, M, exit,"
+        "${mainMod}, M, exec, systemctl suspend"
         "${mainMod}, F, togglefloating,"
         "${mainMod}, Space, exec, ${menu}"
-        "${mainMod}, Enter, exec, ${terminal}"
+        "${mainMod}, Return, exec, ${terminal}"
         "${mainMod}, H, movefocus, l"
         "${mainMod}, J, movefocus, d"
         "${mainMod}, K, movefocus, u"
