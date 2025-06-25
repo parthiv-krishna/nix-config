@@ -1,4 +1,4 @@
-name: "Build NixOS Configurations (x86)"
+name: "Evaluate NixOS Configurations"
 on: [push, pull_request]
 jobs:
   build:
@@ -6,21 +6,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        host: [ icicle, midnight, vardar ]
+        host: [ icicle, midnight, nimbus, vardar ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: true
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v12
       - name: Load SSH private key
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Enable magic Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@v7
-      - name: Build NixOS configuration
-        run: nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
+      - name: Evaluate NixOS configuration
+        run: nix eval .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
