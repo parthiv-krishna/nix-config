@@ -15,11 +15,6 @@
       swapSize = "8G";
     })
 
-    # users
-    (map (lib.custom.relativeTo "system/common/users/") [
-      "parthiv.nix"
-    ])
-
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
   ];

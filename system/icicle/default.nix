@@ -20,11 +20,6 @@
       swapSize = "40G"; # 32G RAM + some extra. not scientific
     })
 
-    # users
-    (map (lib.custom.relativeTo "system/common/users/") [
-      "parthiv.nix"
-    ])
-
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
   ];
