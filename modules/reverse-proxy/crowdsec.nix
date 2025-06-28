@@ -69,9 +69,9 @@ in
                 decisions:
                   - type: ban
                     scope: Ip
-                    duration: 4h
+                    duration: 720h
                 notifications:
-                  - http
+                  - discord
               '';
             };
             plugin_config = {
@@ -83,7 +83,7 @@ in
               listen_port = config.constants.ports.prometheus-crowdsec;
             };
             config_paths = {
-              notification_dir = builtins.dirOf config.sops.templates."crowdsec/notifications/http.yaml".path;
+              notification_dir = builtins.dirOf config.sops.templates."crowdsec/notifications/discord.yaml".path;
               plugin_dir = pluginDir;
               # allow modification via CLI
               simulation_path = "/var/lib/crowdsec/simulation.yaml";
@@ -192,11 +192,11 @@ in
               API_KEY=${config.sops.placeholder."crowdsec/firewall_key"}
             '';
 
-            "crowdsec/notifications/http.yaml" = {
-              # https://www.spad.uk/posts/integrating-crowdsec-with-traefik-discord/
+            "crowdsec/notifications/discord.yaml" = {
+              # based on https://www.spad.uk/posts/integrating-crowdsec-with-traefik-discord/
               content = ''
                 type: http
-                name: http
+                name: discord
                 log_level: info
                 format: |
                   {
@@ -208,7 +208,7 @@ in
                       {{if $alert.Source.Cn -}}
                       {
                         "title": "{{$alert.MachineID}}: {{.Scenario}}",
-                        "description": ":flag_{{ $alert.Source.Cn | lower }}: {{$alert.Source.IP}} will get a {{.Type}} for the next {{.Duration}}. <https://www.shodan.io/host/{{$alert.Source.IP}}>",
+                        "description": ":flag_{{ $alert.Source.Cn | lower }}: {{$alert.Source.IP}}{{if $alert.Source.AsName}} ({{$alert.Source.AsName}}){{end}} will get a {{.Type}} for the next {{.Duration}}.",
                         "url": "https://db-ip.com/{{$alert.Source.IP}}",
                         "color": "16711680"
                       }
@@ -216,7 +216,7 @@ in
                       {{if not $alert.Source.Cn -}}
                       {
                         "title": "{{$alert.MachineID}}: {{.Scenario}}",
-                        "description": ":pirate_flag: {{$alert.Source.IP}} will get a {{.Type}} for the next {{.Duration}}. <https://www.shodan.io/host/{{$alert.Source.IP}}>",
+                        "description": ":pirate_flag: {{$alert.Source.IP}}{{if $alert.Source.AsName}} ({{$alert.Source.AsName}}){{end}} will get a {{.Type}} for the next {{.Duration}}.",
                         "url": "https://db-ip.com/{{$alert.Source.IP}}",
                         "color": "16711680"
                       }
@@ -232,7 +232,7 @@ in
               '';
               owner = "crowdsec";
               group = "crowdsec";
-              path = "/var/lib/crowdsec/notifications/http.yaml";
+              path = "/var/lib/crowdsec/notifications/discord.yaml";
             };
           };
           secrets = {
