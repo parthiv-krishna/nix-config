@@ -1,3 +1,4 @@
+# parthiv user configuration
 {
   config,
   lib,
@@ -30,7 +31,7 @@ in
       hostname = config.networking.hostName;
     };
     users = {
-      parthiv = import (lib.custom.relativeToRoot "home/parthiv/${config.networking.hostName}.nix");
+      parthiv = import (lib.custom.relativeToRoot "home/${config.networking.hostName}.nix");
     };
   };
 }

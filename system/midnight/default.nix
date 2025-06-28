@@ -30,11 +30,6 @@ in
       cacheDevice = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
     })
 
-    # users
-    (map (lib.custom.relativeTo "system/common/users/") [
-      "parthiv.nix"
-    ])
-
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
   ];
