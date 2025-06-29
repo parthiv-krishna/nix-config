@@ -1,14 +1,23 @@
 {
+  config,
+  lib,
   pkgs,
   ...
 }:
 let
+  cfg = config.custom.gui-apps;
+
   packagesWithDirs = with pkgs; [
     {
       package = audacity;
     }
     {
-      package = element;
+      package = discord;
+      stateDir = ".config/discord";
+    }
+    {
+      package = element-desktop;
+      stateDir = ".config/Element";
     }
     {
       package = librewolf;
@@ -39,10 +48,20 @@ let
   );
 in
 {
-  home.packages = packages;
+  options.custom.gui-apps = {
+    enable = lib.mkEnableOption "GUI applications package set";
+  };
 
-  home.persistence."/persist/home/parthiv" = {
-    directories = persistenceDirs;
-    allowOther = true;
+  config = lib.mkIf cfg.enable {
+    home.packages = packages;
+
+    unfree.allowedPackages = [
+      "discord"
+    ];
+
+    home.persistence."/persist/home/parthiv" = {
+      directories = persistenceDirs;
+      allowOther = true;
+    };
   };
 }

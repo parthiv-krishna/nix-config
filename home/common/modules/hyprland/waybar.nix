@@ -1,8 +1,11 @@
 {
+  config,
+  lib,
   pkgs,
   ...
 }:
 let
+  cfg = config.custom.hyprland;
   # One Dark color palette
   onedark = {
     bg = "#282c34";
@@ -15,7 +18,7 @@ let
   };
   margin = "12px";
 in
-{
+lib.mkIf cfg.enable {
   home.packages = with pkgs; [
     hyprland-autoname-workspaces
   ];
@@ -41,9 +44,9 @@ in
 
         network = {
           interval = 5;
-          format-wifi = "";
-          format-ethernet = "";
-          format-disconnected = "";
+          format-wifi = "";
+          format-ethernet = "";
+          format-disconnected = "";
           class = {
             wifi = "wifi";
             ethernet = "ethernet";
@@ -58,15 +61,15 @@ in
             critical = 10;
           };
           format = "{icon} {capacity}%";
-          format-charging = " {capacity}%";
-          format-plugged = " {capacity}%";
+          format-charging = " {capacity}%";
+          format-plugged = " {capacity}%";
           format-full = "{icon} {capacity}%";
           format-icons = [
-            ""
-            ""
-            ""
-            ""
-            ""
+            ""
+            ""
+            ""
+            ""
+            ""
           ];
           class = {
             charging = "charging";

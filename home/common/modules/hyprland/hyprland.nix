@@ -1,5 +1,10 @@
-_:
+{
+  config,
+  lib,
+  ...
+}:
 let
+  cfg = config.custom.hyprland;
   mainMod = "SUPER";
   terminal = "kitty";
   menu = "wofi --show drun";
@@ -20,7 +25,7 @@ let
     ) 10
   );
 in
-{
+lib.mkIf cfg.enable {
   wayland.windowManager.hyprland = {
     enable = true;
 
