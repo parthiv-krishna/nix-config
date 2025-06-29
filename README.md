@@ -9,21 +9,17 @@ The flake is organized into several directories.
 home/  # home-manager configuration
 ├── <user>/  # configuration for <user>
 │   ├── common/  # home configuration that can be used on multiple systems
-│   │   ├── optional/  # home configuration that is enabled on some systems
+│   │   ├── modules/  # home configuration that is enabled on some systems
 │   │   └── required/  # home configuration that must be enabled on all systems
 │   └── <hostname>.nix  # home configuration for <user>@<hostname>
 lib/  # helpers to extend the nixpkgs.lib. all files are
 │     # auto-imported and available at lib.custom
-modules/  # custom NixOS modules
-├── selfhosted/  # self-hosted services that are run on particular hosts using lib.custom.mkSelfHostedService
-│   └── <servicename>/
 system/  # nixos system configuration
 ├── <hostname>/  # configuration for <hostname>. each contains a default.nix and hardware-configuration.nix
 ├── common/  # system configuration that can be used across multiple systems
 │   ├── disks/  # declarative disk configurations (using disko)
-│   ├── optional/  # system configuration that is enabled on some systems
+│   ├── modules/  # system configuration that is enabled on some systems
 │   ├── required/  # system configuration that must be enabled on all systems
-│   └── users/  # user-specific configuration, each system should import its users
 ```
 
 ## System Architecture

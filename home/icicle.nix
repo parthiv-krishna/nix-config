@@ -7,9 +7,12 @@
 {
   imports = [
     ./common/required
-    ./common/optional/gui-apps
-    ./common/optional/hyprland
   ];
+
+  custom = {
+    gui-apps.enable = true;
+    hyprland.enable = true;
+  };
 
   home.stateVersion = "24.11";
 }

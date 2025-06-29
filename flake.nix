@@ -89,7 +89,7 @@
           allowLocalDeployment = false;
         };
       };
-      # TODO: get from ./modules/constants.nix
+      # TODO: get from ./system/common/modules/constants.nix
       internalDomain = "ts.sub0.net";
     in
     {
@@ -108,7 +108,7 @@
         in
         lib.nixosSystem {
           modules = [
-            ./modules
+            ./system/common/modules
             ./system/${hostName}
           ];
           specialArgs = {
@@ -153,7 +153,7 @@
           };
 
           imports = [
-            ./modules
+            ./system/common/modules
             ./system/${hostName}
           ];
 

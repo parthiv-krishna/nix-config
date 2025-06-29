@@ -1,4 +1,12 @@
-_: {
+{
+  config,
+  lib,
+  ...
+}:
+let
+  cfg = config.custom.hyprland;
+in
+lib.mkIf cfg.enable {
   # lock after inactivity
   services.hypridle = {
     enable = true;

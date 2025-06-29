@@ -30,6 +30,9 @@ in
       inherit inputs;
       hostname = config.networking.hostName;
     };
+    sharedModules = [
+      (lib.custom.relativeToRoot "home/common/modules")
+    ];
     users = {
       parthiv = import (lib.custom.relativeToRoot "home/${config.networking.hostName}.nix");
     };
