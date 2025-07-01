@@ -7,7 +7,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.custom.sops;
+in
 {
+  options.custom.sops = {
+    sopsFile = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = "Path to the sops file to use for secrets. Only applied on NixOS systems.";
+    };
+  };
+
   imports = [
     inputs.sops-nix.homeManagerModules.sops
   ];
@@ -15,7 +26,7 @@
   config = lib.mkIf (!config.targets.genericLinux.enable) {
     sops = {
       age.keyFile = "/home/parthiv/.age/parthiv.age";
-      defaultSopsFile = "${inputs.nix-config-secrets}/${config.networking.hostName}.yaml";
+      defaultSopsFile = "${inputs.nix-config-secrets}/${cfg.sopsFile}";
       validateSopsFiles = false;
 
       secrets = {
