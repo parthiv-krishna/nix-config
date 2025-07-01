@@ -188,4 +188,10 @@ lib.mkIf cfg.enable {
       workspace = builtins.genList builtins.toString 10;
     };
   };
+
+  home.persistence."/persist/home/parthiv" = {
+    directories = [
+      "Documents"
+    ];
+  };
 }
