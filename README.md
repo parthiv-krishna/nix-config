@@ -20,3 +20,30 @@ system/  # nixos system configuration
     ├── modules/  # custom modules that can be enabled on some systems
     └── required/  # system configuration that must be enabled on all systems
 ```
+
+## Usage
+
+### NixOS
+```bash
+sudo nixos-rebuild switch --flake .
+```
+
+### Home-manager standalone
+```bash
+home-manager switch --flake .#standalone
+```
+
+## First-time setup
+
+### NixOS
+
+TODO
+
+### Home-manager standalone
+First, [install nix](https://nixos.org/download/)
+```bash
+nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+nix-channel --update
+nix-shell '<home-manager>' -A install
+```
+Then run the command in the Usage section.
