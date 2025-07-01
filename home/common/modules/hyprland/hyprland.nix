@@ -189,9 +189,7 @@ lib.mkIf cfg.enable {
     };
   };
 
-  home.persistence."/persist/home/parthiv" = {
-    directories = [
-      "Documents"
-    ];
-  };
+  custom.persistence.directories = [
+    "Documents"
+  ];
 }
