@@ -59,9 +59,6 @@ in
       "discord"
     ];
 
-    home.persistence."/persist/home/parthiv" = {
-      directories = persistenceDirs;
-      allowOther = true;
-    };
+    custom.persistence.directories = persistenceDirs;
   };
 }
