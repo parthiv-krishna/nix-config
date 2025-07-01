@@ -8,11 +8,11 @@
   ...
 }:
 {
-  config = lib.mkIf (!config.targets.genericLinux.enable) {
-    imports = [
-      inputs.sops-nix.homeManagerModules.sops
-    ];
+  imports = [
+    inputs.sops-nix.homeManagerModules.sops
+  ];
 
+  config = lib.mkIf (!config.targets.genericLinux.enable) {
     sops = {
       age.keyFile = "/home/parthiv/.age/parthiv.age";
       defaultSopsFile = "${inputs.nix-config-secrets}/${config.networking.hostName}.yaml";
