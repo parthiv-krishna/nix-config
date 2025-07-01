@@ -15,8 +15,6 @@
   home.persistence."/persist/home/parthiv" = {
     directories = [
       ".ssh"
-      "nix-config"
-      "nix-config-secrets"
     ];
     allowOther = true;
   };
