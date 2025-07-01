@@ -15,4 +15,4 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Evaluate Home-Manager configuration
-        run: nix eval .#homeConfigurations.standalone
+        run: nix eval .#homeConfigurations.standalone.activationPackage

@@ -14,7 +14,6 @@ in
   options.custom.sops = {
     sopsFile = lib.mkOption {
       type = lib.types.str;
-      default = "";
       description = "Path to the sops file to use for secrets. Only applied on NixOS systems.";
     };
   };
