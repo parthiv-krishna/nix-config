@@ -1,0 +1,18 @@
+name: "Evaluate Home-Manager Standalone Configuration"
+on: [push, pull_request]
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v12
+      - name: Load SSH private key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Evaluate Home-Manager configuration
+        run: nix eval .#homeConfigurations.standalone

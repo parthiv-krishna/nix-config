@@ -28,7 +28,6 @@ in
   home-manager = {
     extraSpecialArgs = {
       inherit inputs;
-      hostname = config.networking.hostName;
     };
     sharedModules = [
       (lib.custom.relativeToRoot "home/common/modules")

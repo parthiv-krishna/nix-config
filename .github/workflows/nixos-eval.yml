@@ -1,7 +1,7 @@
 name: "Evaluate NixOS Configurations"
 on: [push, pull_request]
 jobs:
-  build:
+  eval:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

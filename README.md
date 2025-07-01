@@ -18,7 +18,7 @@ system/  # nixos system configuration
 ├── <hostname>/  # configuration for <hostname>. each contains a default.nix and hardware-configuration.nix
 ├── common/  # system configuration that can be used across multiple systems
 │   ├── disks/  # declarative disk configurations (using disko)
-│   ├── modules/  # system configuration that is enabled on some systems
+│   ├── modules/  # custom modules that can be enabled on some systems
 │   ├── required/  # system configuration that must be enabled on all systems
 ```
 

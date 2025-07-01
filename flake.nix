@@ -91,20 +91,27 @@
       };
       # TODO: get from ./system/common/modules/constants.nix
       internalDomain = "ts.sub0.net";
+
+      # helper function to create custom lib for a system
+      mkCustomLib =
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        lib.extend (
+          _: super:
+          import ./lib {
+            inherit inputs pkgs system;
+            lib = super;
+          }
+        );
     in
     {
       nixosConfigurations = lib.mapAttrs (
         hostName: hostConfig:
         let
           inherit (hostConfig) system;
-          pkgs = nixpkgs.legacyPackages.${system};
-          customLib = lib.extend (
-            _: super:
-            import ./lib {
-              inherit inputs pkgs system;
-              lib = super;
-            }
-          );
+          customLib = mkCustomLib system;
         in
         lib.nixosSystem {
           modules = [
@@ -119,6 +126,26 @@
         }
       ) hosts;
 
+      # standalone home-manager configurations for non-NixOS systems
+      homeConfigurations = {
+        # default standalone configuration using x86_64-linux
+        standalone = inputs.home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${systems.x86};
+          modules = [
+            ./home/common/modules
+            ./home/standalone.nix
+          ];
+          extraSpecialArgs = {
+            inherit inputs;
+            lib = (mkCustomLib systems.x86).extend (
+              _final: _prev: {
+                inherit (inputs.home-manager.lib) hm;
+              }
+            );
+          };
+        };
+      };
+
       # remote deployment
       colmena =
         {
@@ -129,18 +156,10 @@
               _hostName: hostConfig:
               let
                 inherit (hostConfig) system;
-                pkgs = nixpkgs.legacyPackages.${system};
-                customLib = lib.extend (
-                  _: super:
-                  import ./lib {
-                    inherit inputs pkgs system;
-                    lib = super;
-                  }
-                );
               in
               {
                 inherit inputs;
-                lib = customLib;
+                lib = mkCustomLib system;
               }
             ) hosts;
           };
