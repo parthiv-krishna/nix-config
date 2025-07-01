@@ -1,8 +1,6 @@
 # home-manager config for parthiv@icicle
 
-{
-  ...
-}:
+_:
 
 {
   imports = [
@@ -12,6 +10,7 @@
   custom = {
     gui-apps.enable = true;
     hyprland.enable = true;
+    sops.sopsFile = "icicle.yaml";
   };
 
   home.stateVersion = "24.11";
