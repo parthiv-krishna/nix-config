@@ -1,0 +1,26 @@
+name: "Auto update flake.lock"
+on:
+  schedule:
+    - cron: "0 0 * * 1" # Every Monday at midnight UTC
+  workflow_dispatch: # allows manual triggering
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v12
+      - name: Load SSH private key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Update flake.lock
+        run: |
+          git config --global user.name "Parthiv Krishna"
+          git config --global user.email "parthiv-krishna@users.noreply.github.com"
+          nix flake update --commit-lock-file
+      - name: Push changes
+        run: git push
