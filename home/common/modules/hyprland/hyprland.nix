@@ -7,7 +7,7 @@ let
   cfg = config.custom.hyprland;
   mainMod = "SUPER";
   terminal = "kitty";
-  menu = "wofi --show drun";
+  menu = "wofi";
   # workspace keybindings (1..10)
   workspaceBinds = builtins.concatLists (
     builtins.genList (
@@ -29,7 +29,7 @@ lib.mkIf cfg.enable {
   wayland.windowManager.hyprland = {
     enable = true;
 
-    settings = {
+    settings = with config.colorScheme.palette; {
       # monitors
       monitor = ",preferred,auto,1";
 
@@ -52,9 +52,9 @@ lib.mkIf cfg.enable {
         resize_on_border = false;
         allow_tearing = false;
         layout = "dwindle";
-        # colors
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
-        "col.inactive_border" = "rgba(595959aa)";
+        # colors using nix-colors
+        "col.active_border" = "rgba(${base0D}ee) rgba(${base0B}ee) 45deg";
+        "col.inactive_border" = "rgba(${base03}aa)";
       };
 
       decoration = {
@@ -66,7 +66,7 @@ lib.mkIf cfg.enable {
           enabled = true;
           range = 4;
           render_power = 3;
-          color = "rgba(2a1a1aee)";
+          color = "rgba(${base00}ee)";
         };
         blur = {
           enabled = true;

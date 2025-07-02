@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "base16-schemes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1696158499,
+        "narHash": "sha256-5yIHgDTPjoX/3oDEfLSQ0eJZdFL1SaCfb9d6M0RmOTM=",
+        "owner": "tinted-theming",
+        "repo": "base16-schemes",
+        "rev": "a9112eaae86d9dd8ee6bb9445b664fba2f94037a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tinted-theming",
+        "repo": "base16-schemes",
+        "type": "github"
+      }
+    },
     "colmena": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -250,11 +266,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1751336185,
-        "narHash": "sha256-ptnVr2x+sl7cZcTuGx/0BOE2qCAIYHTcgfA+/h60ml0=",
+        "lastModified": 1751407193,
+        "narHash": "sha256-bnnSX5+79OR2NHi/TzMZg+vktFMIGI2JfhQBbx/s+uQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "96354906f58464605ff81d2f6c2ea23211cbf051",
+        "rev": "5d2f3e3e7fbb2cd8cab8b5f9e51526b1269645b9",
         "type": "github"
       },
       "original": {
@@ -306,6 +322,25 @@
         "type": "github"
       }
     },
+    "nix-colors": {
+      "inputs": {
+        "base16-schemes": "base16-schemes",
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1707825078,
+        "narHash": "sha256-hTfge2J2W+42SZ7VHXkf4kjU+qzFqPeC9k66jAUBMHk=",
+        "owner": "misterio77",
+        "repo": "nix-colors",
+        "rev": "b01f024090d2c4fc3152cd0cf12027a7b8453ba1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "misterio77",
+        "repo": "nix-colors",
+        "type": "github"
+      }
+    },
     "nix-config-secrets": {
       "flake": false,
       "locked": {
@@ -349,11 +384,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1750837715,
-        "narHash": "sha256-2m1ceZjbmgrJCZ2PuQZaK4in3gcg3o6rZ7WK6dr5vAA=",
+        "lastModified": 1751393906,
+        "narHash": "sha256-I1x6K61ZcdFlqc07weRBy3erCAB0lVkX10i0c9eXjDI=",
         "owner": "NixOS",
         "repo": "nixos-hardware",
-        "rev": "98236410ea0fe204d0447149537a924fb71a6d4f",
+        "rev": "f49bb3b4107a0917ee144337bb02d311033ee1ba",
         "type": "github"
       },
       "original": {
@@ -375,6 +410,21 @@
         "id": "nixpkgs",
         "ref": "nixos-unstable",
         "type": "indirect"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1697935651,
+        "narHash": "sha256-qOfWjQ2JQSQL15KLh6D7xQhx0qgZlYZTYlcEiRuAMMw=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "e1e11fdbb01113d85c7f41cada9d2847660e3902",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
       }
     },
     "nixvim": {
@@ -475,6 +525,7 @@
         "disko": "disko",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
+        "nix-colors": "nix-colors",
         "nix-config-secrets": "nix-config-secrets",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",

@@ -1,6 +1,7 @@
 {
   inputs,
   lib,
+  config,
   ...
 }:
 {
@@ -43,7 +44,11 @@
     };
 
     colorschemes = {
-      onedark.enable = true;
+      # Use base16 colorscheme with nix-colors
+      base16 = {
+        enable = true;
+        colorscheme = config.colorScheme.slug;
+      };
     };
 
     globals = {
