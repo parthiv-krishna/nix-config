@@ -6,16 +6,6 @@
 }:
 let
   cfg = config.custom.hyprland;
-  # One Dark color palette
-  onedark = {
-    bg = "#282c34";
-    fg = "#abb2bf";
-    blue = "#61afef";
-    green = "#98c379";
-    yellow = "#e5c07b";
-    red = "#e06c75";
-    cyan = "#56b6c2";
-  };
   margin = "12px";
 in
 lib.mkIf cfg.enable {
@@ -86,20 +76,20 @@ lib.mkIf cfg.enable {
       }
     ];
 
-    style = ''
+    style = with config.colorScheme.palette; ''
       * {
         font-size: 13px;
-        color: ${onedark.fg};
+        color: #${base05};
       }
 
       window#waybar {
-        background: ${onedark.bg};
-        border-bottom: 2px solid ${onedark.blue};
+        background: #${base00};
+        border-bottom: 2px solid #${base0D};
       }
 
       #workspaces button {
         background: transparent;
-        color: ${onedark.fg};
+        color: #${base05};
         padding: 0 10px;
         margin-right: 4px;
         border-radius: 6px;
@@ -110,51 +100,51 @@ lib.mkIf cfg.enable {
         transition: background 0.2s, color 0.2s;
       }
       #workspaces button.active {
-        background: ${onedark.blue};
-        color: ${onedark.bg};
+        background: #${base0D};
+        color: #${base00};
       }
       #workspaces button.urgent {
-        background: ${onedark.red};
-        color: ${onedark.bg};
+        background: #${base08};
+        color: #${base00};
       }
       #workspaces button:hover {
-        background: ${onedark.cyan};
-        color: ${onedark.bg};
+        background: #${base0C};
+        color: #${base00};
       }
 
       #network {
         margin-right: ${margin};
       }
       #network.wifi {
-        color: ${onedark.green};
+        color: #${base0B};
       }
       #network.ethernet {
-        color: ${onedark.green};
+        color: #${base0B};
       }
       #network.disconnected {
-        color: ${onedark.red};
+        color: #${base08};
       }
 
       #battery {
         margin-right: ${margin};
-        color: ${onedark.fg};
+        color: #${base05};
       }
       #battery.charging {
-        color: ${onedark.blue};
+        color: #${base0D};
       }
       #battery.full {
-        color: ${onedark.green};
+        color: #${base0B};
       }
       #battery.warning {
-        color: ${onedark.yellow};
+        color: #${base0A};
       }
       #battery.critical {
-        color: ${onedark.red};
+        color: #${base08};
       }
 
       #clock {
         margin-right: ${margin};
-        color: ${onedark.blue};
+        color: #${base0D};
       }
     '';
   };

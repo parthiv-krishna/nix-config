@@ -1,6 +1,10 @@
 # bash configuration, should be imported to home-manager
 
-_: {
+{
+  pkgs,
+  ...
+}:
+{
   programs.bash = {
     enable = true;
 
@@ -14,7 +18,7 @@ _: {
       bind 'set show-mode-in-prompt on'
 
       # print system info
-      fastfetch
+      ${pkgs.fastfetch}/bin/fastfetch
     '';
 
     shellAliases = {
