@@ -34,9 +34,9 @@ lib.mkIf cfg.enable {
 
         network = {
           interval = 5;
-          format-wifi = "";
-          format-ethernet = "";
-          format-disconnected = "";
+          format-wifi = "";
+          format-ethernet = "";
+          format-disconnected = "";
           class = {
             wifi = "wifi";
             ethernet = "ethernet";
@@ -55,11 +55,11 @@ lib.mkIf cfg.enable {
           format-plugged = " {capacity}%";
           format-full = "{icon} {capacity}%";
           format-icons = [
-            ""
-            ""
-            ""
-            ""
-            ""
+            ""
+            ""
+            ""
+            ""
+            ""
           ];
           class = {
             charging = "charging";
@@ -79,7 +79,7 @@ lib.mkIf cfg.enable {
     style = with config.colorScheme.palette; ''
       * {
         font-family: ${config.custom.font.family};
-        font-size: ${toString config.custom.font.sizes.small}px;
+        font-size: ${toString config.custom.font.sizes.xlarge}px;
         color: #${base05};
       }
 
@@ -97,7 +97,7 @@ lib.mkIf cfg.enable {
         min-width: 32px;
         min-height: 24px;
         font-weight: bold;
-        font-size: ${toString config.custom.font.sizes.normal}px;
+        font-size: ${toString config.custom.font.sizes.xlarge}px;
         transition: background 0.2s, color 0.2s;
       }
       #workspaces button.active {
