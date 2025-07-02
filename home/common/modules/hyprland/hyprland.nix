@@ -192,4 +192,11 @@ lib.mkIf cfg.enable {
   custom.persistence.directories = [
     "Documents"
   ];
+
+  home.packages = [
+    config.custom.font.package
+  ];
+
+  fonts.fontconfig.enable = true;
+
 }

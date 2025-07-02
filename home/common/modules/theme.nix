@@ -1,6 +1,7 @@
 {
   inputs,
   lib,
+  pkgs,
   ...
 }:
 {
@@ -9,6 +10,12 @@
   ];
 
   options.custom.font = {
+    package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.nerd-fonts.blex-mono;
+      description = "Font package to use";
+    };
+
     family = lib.mkOption {
       type = lib.types.str;
       default = "BlexMono Nerd Font";
