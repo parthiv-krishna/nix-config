@@ -43,7 +43,7 @@ lib.mkIf cfg.enable {
         sort = "yes";
 
         # text and font
-        font = "monospace 11";
+        font = "${config.custom.font.monoFamily} ${toString config.custom.font.sizes.small}";
         line_height = 0;
         markup = "full";
         format = "<b>%s</b>\\n%b";

@@ -34,8 +34,8 @@ lib.mkIf cfg.enable {
         border: 2px solid #${base0D};
         border-radius: 12px;
         background-color: #${base00};
-        font-family: monospace;
-        font-size: 14px;
+        font-family: ${config.custom.font.family};
+        font-size: ${toString config.custom.font.sizes.normal}px;
         font-weight: 500;
       }
 
