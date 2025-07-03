@@ -46,15 +46,31 @@ lib.custom.mkSelfHostedService {
                   ping = "midnight.${domains.internal}";
                 };
               }
+              {
+                "OwnCloud: drive.${domains.public}" = {
+                  description = "General storage";
+                  href = "https://drive.${domains.public}";
+                  icon = "sh-owncloud";
+                  ping = "midnight.${domains.internal}";
+                };
+              }
             ];
           }
           {
-            "Productivity" = [
+            "Tools" = [
               {
                 "Actual: actual.${domains.public}" = {
                   description = "Budgeting";
                   href = "https://actual.${domains.public}";
                   icon = "sh-actual-budget";
+                  ping = "nimbus.${domains.internal}";
+                };
+              }
+              {
+                "Mealie: food.${domains.public}" = {
+                  description = "Recipies";
+                  href = "https://food.${domains.public}";
+                  icon = "sh-mealie";
                   ping = "nimbus.${domains.internal}";
                 };
               }
