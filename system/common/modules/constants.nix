@@ -21,6 +21,7 @@ in
       homepage = mkPortConstant 8082;
       immich = mkPortConstant 2283;
       jellyfin = mkPortConstant 8096;
+      mealie = mkPortConstant 9000;
       ocis = mkPortConstant 9200;
       ollama = mkPortConstant 11434;
       prometheus = mkPortConstant 9092;
