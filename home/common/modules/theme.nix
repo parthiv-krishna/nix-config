@@ -12,19 +12,19 @@
   options.custom.font = {
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.nerd-fonts.blex-mono;
+      default = pkgs.nerd-fonts.zed-mono;
       description = "Font package to use";
     };
 
     family = lib.mkOption {
       type = lib.types.str;
-      default = "BlexMono Nerd Font";
+      default = "ZedMono Nerd Font";
       description = "Primary font family for UI elements";
     };
 
     monoFamily = lib.mkOption {
       type = lib.types.str;
-      default = "BlexMono Nerd Font Mono";
+      default = "ZedMono Nerd Font Mono";
       description = "Monospace font family for terminals and code";
     };
 

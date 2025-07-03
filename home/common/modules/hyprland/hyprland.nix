@@ -186,6 +186,11 @@ lib.mkIf cfg.enable {
 
       # persistent workspace names
       workspace = builtins.genList builtins.toString 10;
+
+      # disable popup at login
+      ecosystem = {
+        no_update_news = true;
+      };
     };
   };
 
