@@ -181,6 +181,31 @@ in
                             - "profile"
                           userinfo_signed_response_alg: "none"
                           token_endpoint_auth_method: "client_secret_post"
+                        - client_name: "Mealie"
+                          client_id: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/mealie/client_id".path
+                          }" }}
+                          client_secret: {{ secret "${
+                            config.sops.secrets."authelia/identity_providers/oidc/clients/mealie/client_secret".path
+                          }" }}
+                          public: false
+                          authorization_policy: "one_factor"
+                          require_pkce: true
+                          pkce_challenge_method: "S256"
+                          redirect_uris:
+                            - "https://food.sub0.net/login"
+                          scopes:
+                            - "openid"
+                            - "email"
+                            - "profile"
+                            - "groups"
+                          response_types:
+                            - "code"
+                          grant_types:
+                            - "authorization_code"
+                          access_token_signed_response_alg: "none"
+                          userinfo_signed_response_alg: "none"
+                          token_endpoint_auth_method: "client_secret_basic"
                 ''
               )
             ];
@@ -251,6 +276,8 @@ in
               "authelia/identity_providers/oidc/clients/immich/client_secret"
               "authelia/identity_providers/oidc/clients/jellyfin/client_id"
               "authelia/identity_providers/oidc/clients/jellyfin/client_secret"
+              "authelia/identity_providers/oidc/clients/mealie/client_id"
+              "authelia/identity_providers/oidc/clients/mealie/client_secret"
             ];
           in
           lib.listToAttrs (
