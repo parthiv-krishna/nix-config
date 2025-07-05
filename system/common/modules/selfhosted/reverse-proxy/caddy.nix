@@ -42,6 +42,9 @@ in
               metrics {
                 per_host
               }
+              servers {
+                max_header_size 5MB
+              }
             '';
           # virtualHosts are configured by individual services or other modules (like mkSelfHostedService)
         };

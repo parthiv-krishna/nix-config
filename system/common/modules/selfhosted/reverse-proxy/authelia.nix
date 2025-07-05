@@ -28,7 +28,11 @@ in
             };
             # initial settings before secret injection
             settings = {
-              server.address = "tcp://:${toString config.constants.ports.authelia}";
+              server = {
+                address = "tcp://:${toString config.constants.ports.authelia}";
+                read_buffer_size = 32768;
+                write_buffer_size = 32768;
+              };
               theme = "dark";
               log.level = "debug";
               totp.issuer = config.constants.domains.public;
