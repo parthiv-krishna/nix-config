@@ -33,13 +33,6 @@ lib.mkIf cfg.enable {
       # monitors
       monitor = ",preferred,auto,1";
 
-      # autostart
-      "exec-once" = [
-        "hypridle"
-        "hyprland-autoname-workspaces"
-        "waybar"
-      ];
-
       env = [
         "XCURSOR_SIZE,24"
         "HYPRCURSOR_SIZE,24"
