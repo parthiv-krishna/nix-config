@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -9,10 +8,6 @@ let
   margin = "12px";
 in
 lib.mkIf cfg.enable {
-  home.packages = with pkgs; [
-    hyprland-autoname-workspaces
-  ];
-
   programs.waybar = {
     enable = true;
 
@@ -94,15 +89,17 @@ lib.mkIf cfg.enable {
         padding: 0 10px;
         margin-right: 4px;
         border-radius: 6px;
+        border: 2px solid transparent;
         min-width: 32px;
         min-height: 24px;
         font-weight: bold;
         font-size: ${toString config.custom.font.sizes.xlarge}px;
-        transition: background 0.2s, color 0.2s;
+        transition: background 0.2s, color 0.2s, border 0.2s;
       }
       #workspaces button.active {
-        background: #${base0D};
-        color: #${base00};
+        background: transparent;
+        color: #${base0D};
+        border: 2px solid #${base0D};
       }
       #workspaces button.urgent {
         background: #${base08};
@@ -149,4 +146,8 @@ lib.mkIf cfg.enable {
       }
     '';
   };
+
+  wayland.windowManager.hyprland.settings.exec-once = [
+    "waybar"
+  ];
 }
