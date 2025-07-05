@@ -144,15 +144,9 @@ lib.custom.mkSelfHostedService {
 
       # add ping to PATH
       # TODO: contribute back to nixpkgs? how?
-      systemd.services.homepage-dashboard.environment.PATH = lib.mkForce "${lib.makeBinPath [
-        pkgs.iputils
-        pkgs.coreutils
-        pkgs.findutils
-        pkgs.gnugrep
-        pkgs.gnused
-        pkgs.systemd
-      ]}";
-      systemd.services.homepage-dashboard.environment.LOG_LEVEL = "debug";
+      systemd.services.homepage-dashboard.path = with pkgs; [
+        iputils
+      ];
 
       sops = {
         templates."homepage/environment" = {
