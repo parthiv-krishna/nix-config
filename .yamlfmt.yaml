@@ -1,4 +1,0 @@
-match_type: doublestar
-exclude:
-  # secrets syntax confuses yamlfmt
-  - "**/authelia/configuration.yml"
