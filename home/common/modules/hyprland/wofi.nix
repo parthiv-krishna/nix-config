@@ -14,7 +14,6 @@ lib.mkIf cfg.enable {
       width = 600;
       height = 400;
       location = "center";
-      show = "drun";
       prompt = "Search...";
       filter_rate = 100;
       allow_markup = true;
@@ -81,6 +80,12 @@ lib.mkIf cfg.enable {
         border: none;
         color: #${base05};
         font-weight: 500;
+      }
+
+      #prompt {
+        color: #${base0D};
+        font-size: 18px;
+        margin-bottom: 8px;
       }
 
       #entry {
