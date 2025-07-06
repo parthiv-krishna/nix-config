@@ -24,7 +24,7 @@ lib.mkIf cfg.enable {
         ];
 
         "hyprland/workspaces" = {
-          format = "{name}";
+          format = "{id} {name}";
         };
 
         network = {

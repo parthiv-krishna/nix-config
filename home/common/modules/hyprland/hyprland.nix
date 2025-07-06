@@ -1,13 +1,23 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
   cfg = config.custom.hyprland;
   mainMod = "SUPER";
   terminal = "kitty";
-  menu = "wofi";
+  menu = "wofi --show drun";
+  renameWorkspace = "${pkgs.writeScriptBin "rename-workspace" ''
+    newname=$(wofi --show dmenu -p "Rename workspace:" < /dev/null)
+    status=$?
+    if [ $status -ne 0 ] || [ -z "$newname" ]; then
+      # Cancelled or empty input: do nothing
+      exit 0
+    fi
+    hyprctl dispatch renameworkspace $(hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq .id) "$newname"
+  ''}/bin/rename-workspace";
   # workspace keybindings (1..10)
   workspaceBinds = builtins.concatLists (
     builtins.genList (
@@ -135,6 +145,7 @@ lib.mkIf cfg.enable {
         "${mainMod}, F, togglefloating,"
         "${mainMod}, Space, exec, ${menu}"
         "${mainMod}, Return, exec, ${terminal}"
+        "${mainMod}, Comma, exec, ${renameWorkspace}"
         "${mainMod}, H, movefocus, l"
         "${mainMod}, J, movefocus, d"
         "${mainMod}, K, movefocus, u"
