@@ -132,7 +132,7 @@
       # standalone home-manager configurations for non-NixOS systems
       homeConfigurations = {
         # default standalone configuration using x86_64-linux
-        standalone = inputs.home-manager.lib.homeManagerConfiguration {
+        parthiv = inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${systems.x86};
           modules = [
             ./home/common/modules

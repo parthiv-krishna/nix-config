@@ -30,7 +30,7 @@ sudo nixos-rebuild switch --flake .
 
 ### Home-manager standalone
 ```bash
-home-manager switch --flake .#standalone
+home-manager switch --flake .
 ```
 
 ## First-time setup
