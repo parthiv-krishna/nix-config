@@ -1,19 +1,24 @@
-{ config, lib, ... }:
-lib.custom.mkSelfHostedService {
-  inherit config lib;
-  name = "actual";
-  hostName = "nimbus";
-  public = true;
-  protected = false;
-  serviceConfig = lib.mkMerge [
-    {
+{
+  config,
+  ...
+}:
+{
+  custom.selfhosted.actual = {
+    enable = true;
+    hostName = "nimbus";
+    public = true;
+    protected = true;
+    port = 5006;
+    config = {
       services.actual = {
         enable = true;
         settings = {
-          port = config.constants.ports.actual;
+          inherit (config.custom.selfhosted.actual) port;
         };
       };
-    }
-    (lib.custom.mkPersistentSystemDir { directory = "/var/lib/private/actual"; })
-  ];
+    };
+    persistentDirs = [
+      "/var/lib/private/actual"
+    ];
+  };
 }
