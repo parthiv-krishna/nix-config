@@ -1,24 +1,24 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
 let
   inherit (config.constants) domains;
+  cfg = config.custom.selfhosted.homepage;
 in
-lib.custom.mkSelfHostedService {
-  inherit config lib;
-  name = "homepage";
-  hostName = "nimbus";
-  subdomain = ""; # on root domain
-  public = true;
-  protected = true;
-  serviceConfig = lib.mkMerge [
-    {
+{
+  custom.selfhosted.homepage = {
+    enable = true;
+    hostName = "nimbus";
+    subdomain = ""; # on root domain
+    public = true;
+    protected = true;
+    port = 8082;
+    config = {
       services.homepage-dashboard = {
         enable = true;
-        listenPort = config.constants.ports.homepage;
+        listenPort = cfg.port;
         allowedHosts = domains.public;
         environmentFile = config.sops.templates."homepage/environment".path;
 
@@ -162,6 +162,6 @@ lib.custom.mkSelfHostedService {
           "homepage/crowdsec_password" = { };
         };
       };
-    }
-  ];
+    };
+  };
 }

@@ -1,21 +1,14 @@
-{ config, lib, ... }:
+{ config, ... }:
 let
-  name = "ollama";
-  subdomain = name;
-  hostName = "midnight";
   inherit (config.constants) tieredCache;
 in
-lib.custom.mkSelfHostedService {
-  inherit
-    config
-    lib
-    name
-    subdomain
-    hostName
-    ;
-  public = false;
-  serviceConfig = lib.mkMerge [
-    {
+{
+  custom.selfhosted.ollama = {
+    enable = true;
+    hostName = "midnight";
+    public = false;
+    port = 11434;
+    config = {
       services = {
         ollama = {
           enable = true;
@@ -28,10 +21,9 @@ lib.custom.mkSelfHostedService {
         # models are very large and not worth backing up
         restic.backups.digitalocean.exclude = [ "${tieredCache.basePool}/ollama/blobs" ];
       };
-    }
-    (lib.custom.mkPersistentSystemDir {
-      directory = "/var/lib/private/ollama";
-    })
-  ];
-
+    };
+    persistentDirs = [
+      "/var/lib/private/ollama"
+    ];
+  };
 }

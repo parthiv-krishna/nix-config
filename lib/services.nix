@@ -54,6 +54,7 @@
       lib,
       name,
       hostName,
+      port,
       subdomain ? name,
       public ? false,
       protected ? true,
@@ -61,8 +62,6 @@
     }:
     let
       inherit (config.constants) domains proxyHostName;
-
-      port = config.constants.ports.${name};
       myHostName = config.networking.hostName;
       isTargetHost = myHostName == hostName;
       isPublicServer = myHostName == proxyHostName;
@@ -107,10 +106,7 @@
               assertion = isPublicServer -> config.services.caddy.enable;
               message = "Caddy must be enabled on host `${myHostName}` since it is the public server.";
             }
-            {
-              assertion = builtins.hasAttr name config.constants.ports;
-              message = "Port for service `${name}` is not defined in `config.constants.ports.${name}`. Please define it in `modules/constants.nix`.";
-            }
+
           ];
         }
         (lib.mkIf isTargetHost serviceConfig)
