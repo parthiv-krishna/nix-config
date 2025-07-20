@@ -34,6 +34,8 @@
 
   # enable desktop environment
   custom = {
+    bluetooth.enable = true;
+
     desktop = {
       enable = true;
       # TODO: make this work
