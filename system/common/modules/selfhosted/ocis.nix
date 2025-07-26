@@ -14,7 +14,7 @@ in
     public = true;
     protected = false;
     port = 9200;
-    config = {
+    serviceConfig = {
       unfree.allowedPackages = [
         "ocis_5-bin"
       ];

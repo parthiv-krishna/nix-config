@@ -14,7 +14,7 @@ in
     public = true;
     protected = false;
     port = 2283;
-    config = {
+    serviceConfig = {
       services = {
         immich = {
           enable = true;

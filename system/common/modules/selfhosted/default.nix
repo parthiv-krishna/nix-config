@@ -4,8 +4,8 @@
   ...
 }:
 let
-  cfg = config.custom.selfhosted;
   inherit (lib) types;
+  inherit (config.constants) domains;
 in
 {
   imports = lib.custom.scanPaths ./.;
@@ -13,13 +13,17 @@ in
   options.custom.selfhosted = lib.mkOption {
     type = types.attrsOf (
       types.submodule (
-        { name, ... }:
+        {
+          name,
+          config,
+          options,
+          ...
+        }:
         {
           options = {
             enable = lib.mkEnableOption "this service";
             hostName = lib.mkOption {
-              type = types.nullOr types.str;
-              default = null;
+              type = types.str;
             };
             hostNames = lib.mkOption {
               type = types.nullOr (types.listOf types.str);
@@ -40,7 +44,7 @@ in
             port = lib.mkOption {
               type = types.port;
             };
-            config = lib.mkOption {
+            serviceConfig = lib.mkOption {
               type = types.anything;
               default = { };
             };
@@ -76,10 +80,12 @@ in
               public = lib.mkOption {
                 type = types.str;
                 readOnly = true;
+                default = "${config.subdomain}.${domains.public}";
               };
               internal = lib.mkOption {
                 type = types.str;
                 readOnly = true;
+                default = "${config.subdomain}.${config.hostName}.${domains.internal}";
               };
             };
           };
@@ -87,57 +93,5 @@ in
       )
     );
     default = { };
-  };
-
-  config = {
-    custom.selfhosted = lib.mapAttrs (
-      _name: service:
-      let
-        hostName = if service.hostName != null then service.hostName else null;
-      in
-      {
-        fqdn = {
-          public = "${service.subdomain}.${config.constants.domains.public}";
-          internal = "${service.subdomain}.${
-            if hostName != null then hostName else "localhost"
-          }.${config.constants.domains.internal}";
-        };
-      }
-    ) cfg;
-
-    services = lib.mkMerge (
-      lib.mapAttrsToList (
-        name: service:
-        let
-          hostName = if service.hostName != null then service.hostName else null;
-          hostNames = if service.hostNames != null then service.hostNames else [ ];
-          allHostNames = if hostName != null then hostNames ++ [ hostName ] else hostNames;
-        in
-        lib.mkIf (service.enable && (builtins.elem config.networking.hostName allHostNames)) (
-          lib.custom.mkSelfHostedService {
-            inherit (service)
-              public
-              protected
-              port
-              ;
-            inherit name config lib;
-            inherit (config.networking) hostName;
-            inherit (service) subdomain;
-            serviceConfig = lib.mkMerge [
-              service.config
-              (lib.mkMerge (
-                map (
-                  dir:
-                  if builtins.isString dir then
-                    lib.custom.mkPersistentSystemDir { directory = dir; }
-                  else
-                    lib.custom.mkPersistentSystemDir dir
-                ) service.persistentDirs
-              ))
-            ];
-          }
-        )
-      ) cfg
-    );
   };
 }
