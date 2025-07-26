@@ -12,7 +12,7 @@ in
     public = true;
     protected = true;
     port = 9000;
-    config = {
+    serviceConfig = {
       services.mealie = {
         enable = true;
         inherit (cfg) port;

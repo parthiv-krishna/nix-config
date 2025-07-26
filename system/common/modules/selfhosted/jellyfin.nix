@@ -10,7 +10,7 @@ in
     public = true;
     protected = false;
     port = 8096;
-    config = {
+    serviceConfig = {
       services = {
         jellyfin = {
           enable = true;

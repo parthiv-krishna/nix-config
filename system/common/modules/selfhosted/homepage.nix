@@ -15,7 +15,7 @@ in
     public = true;
     protected = true;
     port = 8082;
-    config = {
+    serviceConfig = {
       services.homepage-dashboard = {
         enable = true;
         listenPort = cfg.port;

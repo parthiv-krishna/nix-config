@@ -17,7 +17,7 @@ in
     public = true;
     protected = true;
     port = 8301;
-    config = {
+    serviceConfig = {
       services.thaw = {
         enable = true;
         inherit (cfg) port;

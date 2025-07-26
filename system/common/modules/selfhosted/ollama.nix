@@ -8,7 +8,7 @@ in
     hostName = "midnight";
     public = false;
     port = 11434;
-    config = {
+    serviceConfig = {
       services = {
         ollama = {
           enable = true;
