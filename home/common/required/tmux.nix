@@ -19,7 +19,6 @@
       sensible
       sessionist
       sidebar
-      tmux-powerline
       urlview
       vim-tmux-navigator
     ];
