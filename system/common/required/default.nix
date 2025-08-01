@@ -1,7 +1,6 @@
 {
   inputs,
   lib,
-  pkgs,
   ...
 }:
 {
@@ -9,20 +8,6 @@
     inputs.disko.nixosModules.default
     inputs.home-manager.nixosModules.default
     (lib.custom.scanPaths ./.)
-  ];
-
-  # core system utils
-  environment.systemPackages = with pkgs; [
-    curl
-    fastfetch
-    htop
-    pciutils
-    powertop
-    trash-cli
-    unzip
-    usbutils
-    wget
-    zip
   ];
 
   # enable flakes
