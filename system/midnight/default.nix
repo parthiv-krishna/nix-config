@@ -97,6 +97,9 @@ in
 
     # intel gpu drivers
     intel-gpu.enable = true;
+
+    # UPS monitoring
+    ups.enable = true;
   };
   # should not be changed until a clean install
   system.stateVersion = "24.11";

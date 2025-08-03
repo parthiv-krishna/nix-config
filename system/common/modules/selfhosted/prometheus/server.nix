@@ -26,7 +26,7 @@ lib.custom.mkSelfHostedService {
           job_name = "nut";
           static_configs = [
             {
-              targets = [ "prometheus-nut.vardar.${config.constants.domains.internal}" ];
+              targets = [ "prometheus-nut.midnight.${config.constants.domains.internal}" ];
             }
           ];
           metrics_path = "/ups_metrics";
@@ -53,7 +53,6 @@ lib.custom.mkSelfHostedService {
               targets = [
                 "prometheus-node.midnight.${config.constants.domains.internal}"
                 "prometheus-node.nimbus.${config.constants.domains.internal}"
-                "prometheus-node.vardar.${config.constants.domains.internal}"
               ];
             }
           ];

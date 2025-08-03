@@ -10,7 +10,6 @@ let
   mkStringConstant = mkConstant lib.types.str;
   hosts = {
     midnight = mkStringConstant "midnight";
-    vardar = mkStringConstant "vardar";
     nimbus = mkStringConstant "nimbus";
   };
 in

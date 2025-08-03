@@ -79,14 +79,7 @@ lib.custom.mkSelfHostedService {
         }
         {
           "Network" = [
-            {
-              "Thaw: thaw.${domains.public}" = {
-                description = "Wake up sleeping servers";
-                href = "https://thaw.${domains.public}";
-                icon = "mdi-snowflake-melt";
-                ping = "vardar.${domains.internal}";
-              };
-            }
+
             {
               "Grafana: stats.${domains.public}" = {
                 description = "Charts and metrics";

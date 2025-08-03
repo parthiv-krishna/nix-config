@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        host: [icicle, midnight, nimbus, vardar]
+        host: [icicle, midnight, nimbus]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
