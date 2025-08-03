@@ -30,6 +30,7 @@ let
       "-w"
     ];
   };
+  port = 9090;
 in
 {
   imports = [
@@ -61,7 +62,7 @@ in
           enrollKeyFile = config.sops.secrets."crowdsec/enroll_key".path;
           settings = {
             api.server = {
-              listen_uri = "127.0.0.1:${toString config.constants.ports.crowdsec}";
+              listen_uri = "127.0.0.1:${toString port}";
               profiles_path = pkgs.writeText "profiles.yaml" ''
                 name: default_ip_remediation
                 filters:
@@ -80,7 +81,7 @@ in
             };
             prometheus = {
               enabled = true;
-              listen_port = config.constants.ports.prometheus-crowdsec;
+              listen_port = 9100;
             };
             config_paths = {
               notification_dir = builtins.dirOf config.sops.templates."crowdsec/notifications/discord.yaml".path;
@@ -119,7 +120,7 @@ in
           enable = true;
           settings = {
             api_key = "\${API_KEY}";
-            api_url = "http://127.0.0.1:${toString config.constants.ports.crowdsec}";
+            api_url = "http://127.0.0.1:${toString port}";
           };
         };
 

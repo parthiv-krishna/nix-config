@@ -7,6 +7,8 @@
 let
   cfg = config.custom.reverse-proxy;
   subdomain = "auth";
+  port = 9091;
+  redisPort = 6379;
 in
 {
   config = lib.mkIf (cfg.enable && cfg.publicFacing) (
@@ -29,7 +31,7 @@ in
             # initial settings before secret injection
             settings = {
               server = {
-                address = "tcp://:${toString config.constants.ports.authelia}";
+                address = "tcp://:${toString port}";
                 read_buffer_size = 32768;
                 write_buffer_size = 32768;
               };
@@ -75,7 +77,7 @@ in
                 ];
                 redis = {
                   host = "localhost";
-                  port = config.constants.ports.authelia-redis;
+                  port = redisPort;
                 };
               };
               regulation = {
@@ -218,7 +220,7 @@ in
           # redis server for session storage
           redis.servers."authelia-${cfg.autheliaInstanceName}" = {
             enable = true;
-            port = config.constants.ports.authelia-redis;
+            port = redisPort;
             settings = {
               maxmemory = "512mb";
               maxmemory-policy = "allkeys-lru";
@@ -230,12 +232,11 @@ in
           caddy =
             let
               fqdn = "${subdomain}.${config.constants.domains.public}";
-              port = config.constants.ports.authelia;
             in
             {
               extraConfig = ''
                 (auth) {
-                  forward_auth :${toString config.constants.ports.authelia}  {
+                  forward_auth :${toString port}  {
                     uri /api/authz/forward-auth
                     copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
                   }

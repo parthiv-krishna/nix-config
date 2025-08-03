@@ -7,11 +7,13 @@
 let
   passwordName = "ups/password";
   passwordFile = config.sops.secrets.${passwordName}.path;
+  port = 9102;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus-nut";
   hostName = "vardar";
+  inherit port;
   public = false;
   protected = false;
   serviceConfig = {
@@ -45,7 +47,7 @@ lib.custom.mkSelfHostedService {
 
     services.prometheus.exporters.nut = {
       enable = true;
-      port = config.constants.ports.prometheus-nut;
+      inherit port;
       nutServer = "127.0.0.1";
       nutVariables = [
         "battery.charge"

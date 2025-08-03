@@ -13,12 +13,13 @@
   inherit config lib;
   name = "thaw";
   hostName = "vardar";
+  port = 8301;
   public = true;
   protected = true;
   serviceConfig = {
     services.thaw = {
       enable = true;
-      port = config.constants.ports.thaw;
+      port = 8301;
       machines = {
         midnight = {
           ip = "192.168.4.2";
