@@ -1,16 +1,16 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   inherit (config.constants) tieredCache;
 in
-{
-  custom.selfhosted.jellyfin = {
-    enable = true;
-    hostName = "midnight";
-    subdomain = "tv";
-    public = true;
-    protected = false;
-    port = 8096;
-    serviceConfig = {
+lib.custom.mkSelfHostedService {
+  inherit config lib;
+  name = "jellyfin";
+  hostName = "midnight";
+  subdomain = "tv";
+  public = true;
+  protected = false;
+  serviceConfig = lib.mkMerge [
+    {
       services = {
         jellyfin = {
           enable = true;
@@ -23,6 +23,6 @@ in
           "${tieredCache.basePool}/jellyfin/media"
         ];
       };
-    };
-  };
+    }
+  ];
 }

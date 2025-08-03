@@ -1,25 +1,23 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   secretsRoot = "authelia/identity_providers/oidc/clients/mealie";
-  cfg = config.custom.selfhosted.mealie;
-  autheliaCfg = config.custom.selfhosted.authelia;
 in
-{
-  custom.selfhosted.mealie = {
-    enable = true;
-    hostName = "nimbus";
-    subdomain = "food";
-    public = true;
-    protected = true;
-    port = 9000;
-    serviceConfig = {
+lib.custom.mkSelfHostedService {
+  inherit config lib;
+  name = "mealie";
+  hostName = "nimbus";
+  subdomain = "food";
+  public = true;
+  protected = true;
+  serviceConfig = lib.mkMerge [
+    {
       services.mealie = {
         enable = true;
-        inherit (cfg) port;
+        port = config.constants.ports.mealie;
         settings = {
           OIDC_AUTH_ENABLED = "true";
           OIDC_SIGNUP_ENABLED = "true";
-          OIDC_CONFIGURATION_URL = "https://${autheliaCfg.fqdn.public}/.well-known/openid-configuration";
+          OIDC_CONFIGURATION_URL = "https://auth.sub0.net/.well-known/openid-configuration";
           OIDC_AUTO_REDIRECT = "true";
           OIDC_ADMIN_GROUP = "admin";
           OIDC_USER_GROUP = "user";
@@ -45,9 +43,7 @@ in
           };
         };
       };
-    };
-    persistentDirs = [
-      "/var/lib/private/mealie"
-    ];
-  };
+    }
+    (lib.custom.mkPersistentSystemDir { directory = "/var/lib/private/mealie"; })
+  ];
 }
