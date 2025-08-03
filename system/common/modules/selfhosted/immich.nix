@@ -1,20 +1,21 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
 let
   inherit (config.constants) tieredCache;
 in
-{
-  custom.selfhosted.immich = {
-    enable = true;
-    hostName = "midnight";
-    subdomain = "photos";
-    public = true;
-    protected = false;
-    port = 2283;
-    serviceConfig = {
+lib.custom.mkSelfHostedService {
+  inherit config lib;
+  name = "immich";
+  hostName = "midnight";
+  subdomain = "photos";
+  public = true;
+  protected = false;
+  serviceConfig = lib.mkMerge [
+    {
       services = {
         immich = {
           enable = true;
@@ -58,20 +59,18 @@ in
         "libcufile"
         "libcusparse_lt"
       ];
-    };
-    persistentDirs = [
-      {
-        directory = "/var/lib/postgresql";
-        user = "postgresql";
-        group = "postgresql";
-        mode = "0755";
-      }
-      {
-        directory = "/var/lib/redis-immich";
-        user = "redis-immich";
-        group = "redis-immich";
-        mode = "0700";
-      }
-    ];
-  };
+    }
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/postgresql";
+      user = "postgresql";
+      group = "postgresql";
+      mode = "0755";
+    })
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/redis-immich";
+      user = "redis-immich";
+      group = "redis-immich";
+      mode = "0700";
+    })
+  ];
 }

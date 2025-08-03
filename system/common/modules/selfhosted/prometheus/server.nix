@@ -1,28 +1,22 @@
 { config, lib, ... }:
-let
-  cfg = config.custom.selfhosted.prometheus;
-  nutCfg = config.custom.selfhosted."prometheus-nut";
-  nodeCfg = config.custom.selfhosted."prometheus-node";
-  crowdsecCfg = config.custom.selfhosted.crowdsec;
-in
-{
-  custom.selfhosted.prometheus = {
-    enable = true;
-    hostName = "nimbus";
-    public = false;
-    protected = false;
-    port = 9092;
-    config = {
+lib.custom.mkSelfHostedService {
+  inherit config lib;
+  name = "prometheus";
+  hostName = "nimbus";
+  public = false;
+  protected = false;
+  serviceConfig = lib.mkMerge [
+    {
       services.prometheus = {
         enable = true;
-        inherit (cfg) port;
+        port = config.constants.ports.prometheus;
         globalConfig.scrape_interval = "15s";
         scrapeConfigs = [
           {
             job_name = "nut";
             static_configs = [
               {
-                targets = [ nutCfg.fqdn.internal ];
+                targets = [ "prometheus-nut.vardar.${config.constants.domains.internal}" ];
               }
             ];
             metrics_path = "/ups_metrics";
@@ -34,7 +28,7 @@ in
             job_name = "crowdsec";
             static_configs = [
               {
-                targets = [ "localhost:${toString crowdsecCfg.port}" ];
+                targets = [ "localhost:${toString config.constants.ports.prometheus-crowdsec}" ];
               }
             ];
             metrics_path = "/metrics";
@@ -46,9 +40,11 @@ in
             job_name = "node";
             static_configs = [
               {
-                targets = lib.map (
-                  hostName: "${nodeCfg.subdomain}.${hostName}.${config.constants.domains.internal}"
-                ) nodeCfg.hostNames;
+                targets = [
+                  "prometheus-node.midnight.${config.constants.domains.internal}"
+                  "prometheus-node.nimbus.${config.constants.domains.internal}"
+                  "prometheus-node.vardar.${config.constants.domains.internal}"
+                ];
               }
             ];
             metrics_path = "/metrics";
@@ -72,13 +68,11 @@ in
           }
         ];
       };
-    };
-    persistentDirs = [
-      {
-        directory = "/var/lib/${config.services.prometheus.stateDir}";
-        user = "prometheus";
-        group = "prometheus";
-      }
-    ];
-  };
+    }
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/${config.services.prometheus.stateDir}";
+      user = "prometheus";
+      group = "prometheus";
+    })
+  ];
 }

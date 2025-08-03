@@ -5,6 +5,9 @@
   ...
 }:
 let
+  subdomain = "stats";
+  domain = "${subdomain}.${config.constants.domains.public}";
+  autheliaDomain = "auth.${config.constants.domains.public}";
   secretsRoot = "authelia/identity_providers/oidc/clients/grafana";
 
   # this version fixes GitSync issues. should be able to switch once 12.1.0 hits nixpkgs
@@ -40,18 +43,16 @@ let
       platforms = platforms.linux;
     };
   };
-  cfg = config.custom.selfhosted.grafana;
-  autheliaCfg = config.custom.selfhosted.authelia;
 in
-{
-  custom.selfhosted.grafana = {
-    enable = true;
-    hostName = "nimbus";
-    public = true;
-    protected = true;
-    subdomain = "stats";
-    port = 3000;
-    config = {
+lib.custom.mkSelfHostedService {
+  inherit config lib;
+  name = "grafana";
+  hostName = "nimbus";
+  public = true;
+  protected = true;
+  inherit subdomain;
+  serviceConfig = lib.mkMerge [
+    {
       environment.systemPackages = with pkgs; [
         grafana-image-renderer
       ];
@@ -61,9 +62,9 @@ in
         package = grafana-nightly;
         settings = {
           server = {
-            http_port = cfg.port;
-            root_url = "https://${cfg.fqdn.public}";
-            domain = cfg.fqdn.public;
+            http_port = config.constants.ports.grafana;
+            root_url = "https://${domain}";
+            inherit domain;
             enable_gzip = true;
           };
           feature_toggles = {
@@ -84,9 +85,9 @@ in
             client_secret = "$__file{${config.sops.secrets."${secretsRoot}/client_secret_orig".path}}";
             scopes = "openid profile email groups";
             empty_scopes = false;
-            auth_url = "https://${autheliaCfg.fqdn.public}/api/oidc/authorization";
-            token_url = "https://${autheliaCfg.fqdn.public}/api/oidc/token";
-            api_url = "https://${autheliaCfg.fqdn.public}/api/oidc/userinfo";
+            auth_url = "https://${autheliaDomain}/api/oidc/authorization";
+            token_url = "https://${autheliaDomain}/api/oidc/token";
+            api_url = "https://${autheliaDomain}/api/oidc/userinfo";
             login_attribute_path = "preferred_username";
             groups_attribute_path = "groups";
             name_attribute_path = "name";
@@ -108,13 +109,11 @@ in
           owner = "grafana";
         };
       };
-    };
-    persistentDirs = [
-      {
-        directory = config.services.grafana.dataDir;
-        user = "grafana";
-        group = "grafana";
-      }
-    ];
-  };
+    }
+    (lib.custom.mkPersistentSystemDir {
+      directory = config.services.grafana.dataDir;
+      user = "grafana";
+      group = "grafana";
+    })
+  ];
 }
