@@ -13,4 +13,9 @@
     randomizedDelaySec = "45min";
     persistent = true;
   };
+
+  # Discord notification for auto-upgrade
+  custom.discord-notifiers.nixos-upgrade = {
+    enable = true;
+  };
 }
