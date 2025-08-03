@@ -19,7 +19,6 @@
   systemd.services.nix-gc-after-upgrade = {
     description = "Nix garbage collection after auto-upgrade";
     after = [ "nixos-upgrade.service" ];
-    bindsTo = [ "nixos-upgrade.service" ];
     serviceConfig = {
       Type = "oneshot";
       User = "root";

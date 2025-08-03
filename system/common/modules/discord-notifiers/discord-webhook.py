@@ -46,14 +46,14 @@ def send_service_notification(
     try:
         webhook = discord.SyncWebhook.from_url(webhook_url)
 
-        # Check service status
+        # check service status
         is_active = check_service_status(service_name)
         timestamp = datetime.now().isoformat()
 
-        # Get logs
+        # get logs
         logs = get_service_logs(service_name)
 
-        # Create message and embed
+        # create message and embed
         if is_active:
             message = f"**{service_name}** succeeded on **{hostname}** at {timestamp}"
             title = f"{service_name} Success"
@@ -65,14 +65,14 @@ def send_service_notification(
 
         embed = discord.Embed(description=message, color=color, title=title)
 
-        # Create temporary file with logs
+        # create temporary file with logs
         with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=True) as f:
             f.write(f"Logs for {service_name} on {hostname}\n")
             f.write(f"Timestamp: {timestamp}\n")
             f.write(f"Status: {'Active' if is_active else 'Failed'}\n")
             f.write("=" * 50 + "\n\n")
             f.write(logs)
-            f.flush()  # Ensure content is written to disk
+            f.flush()  # ensure content is written to disk
 
             webhook.send(
                 embed=embed,
