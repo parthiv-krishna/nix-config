@@ -8,11 +8,17 @@ let
       readOnly = true;
     };
   mkStringConstant = mkConstant lib.types.str;
+  hosts = {
+    midnight = mkStringConstant "midnight";
+    vardar = mkStringConstant "vardar";
+    nimbus = mkStringConstant "nimbus";
+  };
 in
 {
   options.constants = {
+    inherit hosts;
 
-    proxyHostName = mkStringConstant "nimbus";
+    publicServerHost = hosts.nimbus;
 
     domains = {
       public = mkStringConstant "sub0.net";

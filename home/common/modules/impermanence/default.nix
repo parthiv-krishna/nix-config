@@ -16,7 +16,8 @@
     home.persistence."/persist/home/parthiv" = {
       directories = [
         ".ssh"
-      ] ++ config.custom.persistence.directories;
+      ]
+      ++ config.custom.persistence.directories;
       inherit (config.custom.persistence) files;
       allowOther = true;
     };

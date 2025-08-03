@@ -51,23 +51,22 @@
           root = {
             name = "root";
             size = "100%";
-            content =
-              {
-                type = "luks";
-                name = "crypted";
-                settings = {
-                  allowDiscards = true;
-                  bypassWorkqueues = true;
-                };
-                content = {
-                  type = "lvm_pv";
-                  vg = "root_vg";
-                };
-              }
-              // lib.optionalAttrs (passwordFile != null) {
-                # provide the password file during installation
-                inherit passwordFile;
+            content = {
+              type = "luks";
+              name = "crypted";
+              settings = {
+                allowDiscards = true;
+                bypassWorkqueues = true;
               };
+              content = {
+                type = "lvm_pv";
+                vg = "root_vg";
+              };
+            }
+            // lib.optionalAttrs (passwordFile != null) {
+              # provide the password file during installation
+              inherit passwordFile;
+            };
           };
         };
       };

@@ -33,5 +33,6 @@ in
 {
   custom = {
     inherit scanPaths;
-  } // mergedImportedAttrs;
+  }
+  // mergedImportedAttrs;
 }

@@ -150,36 +150,35 @@
       };
 
       # remote deployment
-      colmena =
-        {
-          meta = {
-            # build host
-            nixpkgs = nixpkgs.legacyPackages.${systems.x86};
-            nodeSpecialArgs = lib.mapAttrs (
-              _hostName: hostConfig:
-              let
-                inherit (hostConfig) system;
-              in
-              {
-                inherit inputs;
-                lib = mkCustomLib system;
-              }
-            ) hosts;
-          };
-        }
-        // lib.mapAttrs (hostName: hostConfig: {
+      colmena = {
+        meta = {
+          # build host
+          nixpkgs = nixpkgs.legacyPackages.${systems.x86};
+          nodeSpecialArgs = lib.mapAttrs (
+            _hostName: hostConfig:
+            let
+              inherit (hostConfig) system;
+            in
+            {
+              inherit inputs;
+              lib = mkCustomLib system;
+            }
+          ) hosts;
+        };
+      }
+      // lib.mapAttrs (hostName: hostConfig: {
 
-          deployment = {
-            targetHost = "${hostName}.${internalDomain}";
-            inherit (hostConfig) buildOnTarget allowLocalDeployment;
-          };
+        deployment = {
+          targetHost = "${hostName}.${internalDomain}";
+          inherit (hostConfig) buildOnTarget allowLocalDeployment;
+        };
 
-          imports = [
-            ./system/common/modules
-            ./system/${hostName}
-          ];
+        imports = [
+          ./system/common/modules
+          ./system/${hostName}
+        ];
 
-        }) hosts;
+      }) hosts;
 
       # `nix fmt`
       formatter = forEachSystem (
