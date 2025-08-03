@@ -24,7 +24,6 @@ in
     ];
   };
 
-  # TODO: allow home-manager config to be used outside of NixOS
   home-manager = {
     extraSpecialArgs = {
       inherit inputs;

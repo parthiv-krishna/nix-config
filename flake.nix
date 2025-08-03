@@ -86,8 +86,8 @@
           tags = [ "server" ];
         };
       };
-      # TODO: get from ./system/common/modules/constants.nix
-      internalDomain = "ts.sub0.net";
+      constants = import ./system/common/modules/constants.nix { inherit lib; };
+      internalDomain = constants.options.constants.domains.internal.default;
 
       # helper function to create custom lib for a system
       mkCustomLib =
@@ -104,6 +104,7 @@
         );
     in
     {
+      # nixos system configurations
       nixosConfigurations = lib.mapAttrs (
         hostName: hostConfig:
         let
