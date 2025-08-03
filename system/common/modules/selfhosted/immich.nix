@@ -15,6 +15,31 @@ lib.custom.mkSelfHostedService {
   subdomain = "photos";
   public = true;
   protected = false;
+  homepage = {
+    category = config.constants.homepage.categories.storage;
+    description = "Photo storage";
+    icon = "sh-immich";
+  };
+  oidcClient = {
+    subdomain = "photos";
+    redirects = [
+      "/auth/login"
+      "/user-settings"
+    ];
+    customRedirects = [ "app.immich:///oauth-callback" ];
+    extraConfig = {
+      client_name = "Immich";
+      scopes = [
+        "openid"
+        "profile"
+        "email"
+      ];
+      authorization_policy = "one_factor";
+      userinfo_signed_response_alg = "none";
+      token_endpoint_auth_method = "client_secret_post";
+    };
+  };
+
   persistentDirectories = [
     {
       directory = "/var/lib/postgresql";
@@ -73,5 +98,6 @@ lib.custom.mkSelfHostedService {
       "libcufile"
       "libcusparse_lt"
     ];
+
   };
 }

@@ -10,6 +10,28 @@ lib.custom.mkSelfHostedService {
   subdomain = "tv";
   public = true;
   protected = false;
+  homepage = {
+    category = config.constants.homepage.categories.media;
+    description = "Movies and TV";
+    icon = "sh-jellyfin";
+  };
+  oidcClient = {
+    subdomain = "tv";
+    redirects = [ "/sso/OID/redirect/authelia" ];
+    extraConfig = {
+      client_name = "Jellyfin";
+      scopes = [
+        "groups"
+        "openid"
+        "profile"
+      ];
+      authorization_policy = "one_factor";
+      require_pkce = true;
+      userinfo_signed_response_alg = "none";
+      token_endpoint_auth_method = "client_secret_post";
+    };
+  };
+
   serviceConfig = {
     services = {
       jellyfin = {
@@ -23,5 +45,6 @@ lib.custom.mkSelfHostedService {
         "${tieredCache.basePool}/jellyfin/media"
       ];
     };
+
   };
 }

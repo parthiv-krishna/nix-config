@@ -15,6 +15,11 @@ lib.custom.mkSelfHostedService {
   subdomain = "drive";
   public = true;
   protected = false;
+  homepage = {
+    category = config.constants.homepage.categories.storage;
+    description = "General storage";
+    icon = "sh-owncloud";
+  };
   serviceConfig = {
     unfree.allowedPackages = [
       "ocis_5-bin"

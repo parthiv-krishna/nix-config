@@ -33,5 +33,14 @@ in
       cachePool = mkStringConstant "/array/merge/cache";
       basePool = mkStringConstant "/array/merge/base";
     };
+
+    homepage = {
+      categories = {
+        media = mkStringConstant "Media";
+        storage = mkStringConstant "Storage";
+        tools = mkStringConstant "Tools";
+        admin = mkStringConstant "Admin";
+      };
+    };
   };
 }
