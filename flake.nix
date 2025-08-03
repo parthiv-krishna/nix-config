@@ -184,6 +184,7 @@
         inputs.treefmt-nix.lib.mkWrapper pkgs {
           projectRootFile = "flake.nix";
           programs = {
+            black.enable = true;
             deadnix.enable = true;
             nixfmt.enable = true;
             statix.enable = true;
