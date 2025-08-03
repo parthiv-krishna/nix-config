@@ -9,11 +9,17 @@ let
   cfg = config.custom.discord-notifiers;
 
   # Create the Discord webhook script package
+  pythonWithDiscord = pkgs.python3.withPackages (
+    ps: with ps; [
+      discordpy
+      requests
+    ]
+  );
   discordWebhookScript = pkgs.writeShellApplication {
     name = "discord-webhook";
-    runtimeInputs = with pkgs; [ python3Packages.discordpy ];
+    runtimeInputs = [ pythonWithDiscord ];
     text = ''
-      exec ${pkgs.python3}/bin/python3 ${./discord-webhook.py} "$@"
+      exec ${pythonWithDiscord}/bin/python3 ${./discord-webhook.py} "$@"
     '';
   };
 
@@ -36,7 +42,6 @@ let
     {
       "discord-notifier-${name}" = {
         description = "Discord notifier for ${notifierCfg.watchedService}";
-        after = [ "${notifierCfg.watchedService}.service" ];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${webhookScript}";
@@ -45,10 +50,21 @@ let
       };
     };
 
-  # generate all notifier services
+  # generate all notifier services and bind them to watched services
   notifierServices = lib.mkMerge (
     lib.mapAttrsToList (
-      name: notifierCfg: lib.mkIf notifierCfg.enable (mkNotifierService name notifierCfg)
+      name: notifierCfg:
+      lib.mkIf notifierCfg.enable (
+        lib.mkMerge [
+          (mkNotifierService name notifierCfg)
+          {
+            "${notifierCfg.watchedService}" = {
+              onSuccess = [ "discord-notifier-${name}.service" ];
+              onFailure = [ "discord-notifier-${name}.service" ];
+            };
+          }
+        ]
+      )
     ) cfg
   );
 in

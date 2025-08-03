@@ -18,12 +18,16 @@
   # garbage collection after auto-upgrade
   systemd.services.nix-gc-after-upgrade = {
     description = "Nix garbage collection after auto-upgrade";
-    after = [ "nixos-upgrade.service" ];
     serviceConfig = {
       Type = "oneshot";
       User = "root";
       ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 10d";
     };
+  };
+
+  # trigger garbage collection after successful upgrade
+  systemd.services.nixos-upgrade = {
+    onSuccess = [ "nix-gc-after-upgrade.service" ];
   };
 
   # discord notifications
