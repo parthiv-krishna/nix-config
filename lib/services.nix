@@ -63,6 +63,8 @@ in
       protected ? true,
       serviceConfig,
       persistentDirectories ? [ ],
+      homepage ? null,
+      oidcClient ? null,
     }:
     let
       inherit (config.constants) publicServerHost;
@@ -100,6 +102,27 @@ in
           reverse_proxy localhost:${toString port}
         '';
       };
+      # generate homepage entry if homepage metadata is provided
+      homepageEntry =
+        if (homepage != null && public) then
+          {
+            custom.selfhosted.homepageServices."${name}" = {
+              inherit (homepage) category description icon;
+              inherit name subdomain hostName;
+            };
+          }
+        else
+          { };
+
+      # generate oidc client metadata entry if provided
+      oidcEntry =
+        if (oidcClient != null) then
+          {
+            custom.selfhosted.oidcClients."${name}" = oidcClient;
+          }
+        else
+          { };
+
     in
     {
       config = lib.mkMerge (
@@ -176,6 +199,10 @@ in
           })
         ]
         ++ persistentDirConfigs
+        ++ [
+          homepageEntry
+          oidcEntry
+        ]
       );
     };
 }

@@ -54,6 +54,30 @@ lib.custom.mkSelfHostedService {
   public = true;
   protected = true;
   inherit subdomain;
+  homepage = {
+    category = config.constants.homepage.categories.admin;
+    description = "Charts and metrics";
+    icon = "sh-grafana";
+  };
+  oidcClient = {
+    subdomain = "stats";
+    redirects = [ "/login/generic_oauth" ];
+    extraConfig = {
+      client_name = "Grafana";
+      scopes = [
+        "openid"
+        "profile"
+        "groups"
+        "email"
+      ];
+      authorization_policy = "one_factor";
+      require_pkce = true;
+      pkce_challenge_method = "S256";
+      userinfo_signed_response_alg = "none";
+      token_endpoint_auth_method = "client_secret_basic";
+    };
+  };
+
   persistentDirectories = [
     {
       directory = "/var/lib/grafana";

@@ -106,112 +106,76 @@ in
               '')
               (
                 let
-                  domain = config.constants.domains.public;
+                  # collect all OIDC client configurations from services
+                  allOidcClients = config.custom.selfhosted.oidcClients;
+                  # convert configs to YAML, auto-injecting computed fields
+                  clientList = lib.mapAttrsToList (
+                    serviceName: clientConfig:
+                    let
+                      # auto-generate redirect URIs from subdomain + paths
+                      serviceUrl = lib.custom.mkPublicHttpsUrl config.constants clientConfig.subdomain;
+                      domainBasedUris = map (path: "${serviceUrl}${path}") clientConfig.redirects;
+                      allRedirectUris = domainBasedUris ++ clientConfig.customRedirects;
+
+                      # auto-generate standard fields
+                      autoFields = {
+                        # cannot use declarative secrets here as it causes a circular dependency
+                        client_id = "{{ secret \"/run/secrets/authelia/identity_providers/oidc/clients/${serviceName}/client_id\" }}";
+                        client_secret = "{{ secret \"/run/secrets/authelia/identity_providers/oidc/clients/${serviceName}/client_secret\" }}";
+                        public = false;
+                        redirect_uris = allRedirectUris;
+                      };
+
+                      # merge extraConfig with auto-generated fields (auto fields take precedence)
+                      finalConfig = clientConfig.extraConfig // autoFields;
+                    in
+                    finalConfig
+                  ) allOidcClients;
+
+                  clientConfigs = lib.concatStringsSep "\n" (
+                    map (
+                      client:
+                      let
+                        # manually build core fields that need secret interpolation
+                        coreFields = [
+                          "- client_id: ${client.client_id}" # No quotes for secret interpolation
+                          "  client_secret: ${client.client_secret}" # No quotes for secret interpolation
+                          "  public: ${lib.boolToString client.public}"
+                          "  redirect_uris:"
+                        ]
+                        ++ (map (uri: "    - \"${uri}\"") client.redirect_uris);
+
+                        # convert extraConfig to proper YAML lines
+                        extraConfig = removeAttrs client [
+                          "client_id"
+                          "client_secret"
+                          "public"
+                          "redirect_uris"
+                        ];
+                        extraConfigLines = lib.concatLists (
+                          lib.mapAttrsToList (
+                            key: value:
+                            if builtins.isList value then
+                              [ "${key}:" ] ++ (map (item: "  - \"${toString item}\"") value)
+                            else if builtins.isBool value then
+                              [ "${key}: ${lib.boolToString value}" ]
+                            else
+                              [ "${key}: \"${toString value}\"" ]
+                          ) extraConfig
+                        );
+
+                        # combine core fields with extraConfig, properly indented
+                        allLines = coreFields ++ (map (line: "  ${line}") extraConfigLines);
+                      in
+                      lib.concatStringsSep "\n" (map (line: "                        ${line}") allLines)
+                    ) clientList
+                  );
                 in
                 pkgs.writeText "oidc_clients.yml" ''
-                  identity_providers:
-                    oidc:
-                      clients:
-                        - client_name: "Actual"
-                          client_id: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_id".path
-                          }" }}
-                          client_secret: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/actual/client_secret".path
-                          }" }}
-                          public: false
-                          authorization_policy: "one_factor"
-                          redirect_uris:
-                            - "https://actual.${domain}/openid/callback"
-                          scopes:
-                            - "email"
-                            - "groups"
-                            - "openid"
-                            - "profile"
-                          userinfo_signed_response_alg: "none"
-                          token_endpoint_auth_method: "client_secret_basic"
-                        - client_name: "Grafana"
-                          client_id: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/grafana/client_id".path
-                          }" }}
-                          client_secret: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/grafana/client_secret".path
-                          }" }}
-                          public: false
-                          authorization_policy: "one_factor"
-                          require_pkce: true
-                          pkce_challenge_method: "S256"
-                          redirect_uris:
-                            - "https://stats.${domain}/login/generic_oauth"
-                          scopes:
-                            - "openid"
-                            - "profile"
-                            - "groups"
-                            - "email"
-                          userinfo_signed_response_alg: "none"
-                          token_endpoint_auth_method: "client_secret_basic"
-                        - client_name: "Immich"
-                          client_id: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_id".path
-                          }" }}
-                          client_secret: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/immich/client_secret".path
-                          }" }}
-                          public: false
-                          authorization_policy: "one_factor"
-                          redirect_uris:
-                            - "https://photos.${domain}/auth/login"
-                            - "https://photos.${domain}/user-settings"
-                            - "app.immich:///oauth-callback"
-                          scopes:
-                            - "openid"
-                            - "profile"
-                            - "email"
-                          userinfo_signed_response_alg: "none"
-                          token_endpoint_auth_method: "client_secret_post"
-                        - client_name: "Jellyfin"
-                          client_id: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_id".path
-                          }" }}
-                          client_secret: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/jellyfin/client_secret".path
-                          }" }}
-                          public: false
-                          authorization_policy: "one_factor"
-                          require_pkce: true
-                          redirect_uris:
-                            - "https://tv.${domain}/sso/OID/redirect/authelia"
-                          scopes:
-                            - "groups"
-                            - "openid"
-                            - "profile"
-                          userinfo_signed_response_alg: "none"
-                          token_endpoint_auth_method: "client_secret_post"
-                        - client_name: "Mealie"
-                          client_id: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/mealie/client_id".path
-                          }" }}
-                          client_secret: {{ secret "${
-                            config.sops.secrets."authelia/identity_providers/oidc/clients/mealie/client_secret".path
-                          }" }}
-                          public: false
-                          authorization_policy: "one_factor"
-                          require_pkce: true
-                          pkce_challenge_method: "S256"
-                          redirect_uris:
-                            - "https://food.sub0.net/login"
-                          scopes:
-                            - "openid"
-                            - "email"
-                            - "profile"
-                            - "groups"
-                          response_types:
-                            - "code"
-                          grant_types:
-                            - "authorization_code"
-                          access_token_signed_response_alg: "none"
-                          userinfo_signed_response_alg: "none"
-                          token_endpoint_auth_method: "client_secret_basic"
+                                    identity_providers:
+                                      oidc:
+                                        clients:
+                  ${clientConfigs}
                 ''
               )
             ];
@@ -266,24 +230,26 @@ in
         # generate all secret declarations
         sops.secrets =
           let
-            allSecretPaths = [
+            # Core authelia secrets
+            coreSecretPaths = [
               "authelia/identity_validation/reset_password/jwt_secret"
               "authelia/identity_providers/oidc/jwks/key"
               "authelia/identity_providers/oidc/hmac_secret"
               "authelia/session/secret"
               "authelia/session/redis/password"
               "authelia/storage/encryption_key"
-              "authelia/identity_providers/oidc/clients/actual/client_id"
-              "authelia/identity_providers/oidc/clients/actual/client_secret"
-              "authelia/identity_providers/oidc/clients/grafana/client_id"
-              "authelia/identity_providers/oidc/clients/grafana/client_secret"
-              "authelia/identity_providers/oidc/clients/immich/client_id"
-              "authelia/identity_providers/oidc/clients/immich/client_secret"
-              "authelia/identity_providers/oidc/clients/jellyfin/client_id"
-              "authelia/identity_providers/oidc/clients/jellyfin/client_secret"
-              "authelia/identity_providers/oidc/clients/mealie/client_id"
-              "authelia/identity_providers/oidc/clients/mealie/client_secret"
             ];
+
+            # OIDC client secrets for all services (authelia needs access to all of them)
+            allOidcClients = config.custom.selfhosted.oidcClients;
+            oidcClientSecretPaths = lib.concatLists (
+              lib.mapAttrsToList (serviceName: _clientConfig: [
+                "authelia/identity_providers/oidc/clients/${serviceName}/client_id"
+                "authelia/identity_providers/oidc/clients/${serviceName}/client_secret"
+              ]) allOidcClients
+            );
+
+            allSecretPaths = coreSecretPaths ++ oidcClientSecretPaths;
           in
           lib.listToAttrs (
             map (

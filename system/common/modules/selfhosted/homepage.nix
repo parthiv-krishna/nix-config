@@ -21,75 +21,38 @@ lib.custom.mkSelfHostedService {
       enable = true;
       listenPort = port;
       allowedHosts = domains.public;
-      environmentFile = config.sops.templates."homepage/environment".path;
 
-      # TODO: generate names in a better way. move subdomain to constants?
-      services = [
-        {
-          "Media" = [
-            {
-              "Jellyfin: tv.${domains.public}" = {
-                description = "Movies and TV";
-                href = lib.custom.mkPublicHttpsUrl config.constants "tv";
-                icon = "sh-jellyfin";
-                ping = lib.custom.mkInternalFqdn config.constants "" hosts.midnight;
+      # automatically generate services defined in lib.custom.mkSelfHostedService
+      services =
+        let
+          inherit (config.custom.selfhosted) homepageServices;
+
+          servicesByCategory = lib.foldl' (
+            acc: serviceName:
+            let
+              service = homepageServices.${serviceName};
+              inherit (service) category;
+              entry = {
+                "${lib.toUpper (builtins.substring 0 1 service.name)}${
+                  builtins.substring 1 (builtins.stringLength service.name) service.name
+                }: ${service.subdomain}.${domains.public}" =
+                  {
+                    inherit (service) description icon;
+                    href = lib.custom.mkPublicHttpsUrl config.constants service.subdomain;
+                    ping = lib.custom.mkInternalFqdn config.constants "" service.hostName;
+                  };
               };
+            in
+            acc
+            // {
+              ${category} = (acc.${category} or [ ]) ++ [ entry ];
             }
-          ];
-        }
-        {
-          "Storage" = [
-            {
-              "Immich: photos.${domains.public}" = {
-                description = "Photo storage";
-                href = lib.custom.mkPublicHttpsUrl config.constants "photos";
-                icon = "sh-immich";
-                ping = lib.custom.mkInternalFqdn config.constants "" hosts.midnight;
-              };
-            }
-            {
-              "OwnCloud: drive.${domains.public}" = {
-                description = "General storage";
-                href = lib.custom.mkPublicHttpsUrl config.constants "drive";
-                icon = "sh-owncloud";
-                ping = lib.custom.mkInternalFqdn config.constants "" hosts.midnight;
-              };
-            }
-          ];
-        }
-        {
-          "Tools" = [
-            {
-              "Actual: actual.${domains.public}" = {
-                description = "Budgeting";
-                href = lib.custom.mkPublicHttpsUrl config.constants "actual";
-                icon = "sh-actual-budget";
-                ping = lib.custom.mkInternalFqdn config.constants "" hosts.nimbus;
-              };
-            }
-            {
-              "Mealie: food.${domains.public}" = {
-                description = "Recipies";
-                href = lib.custom.mkPublicHttpsUrl config.constants "food";
-                icon = "sh-mealie";
-                ping = lib.custom.mkInternalFqdn config.constants "" hosts.nimbus;
-              };
-            }
-          ];
-        }
-        {
-          "Network" = [
-            {
-              "Grafana: stats.${domains.public}" = {
-                description = "Charts and metrics";
-                href = lib.custom.mkPublicHttpsUrl config.constants "stats";
-                icon = "sh-grafana";
-                ping = lib.custom.mkInternalFqdn config.constants "" hosts.nimbus;
-              };
-            }
-          ];
-        }
-      ];
+          ) { } (builtins.attrNames homepageServices);
+
+        in
+        lib.mapAttrsToList (categoryName: entries: {
+          ${categoryName} = entries;
+        }) servicesByCategory;
 
       settings = {
         title = "${domains.public} Dashboard";
@@ -140,20 +103,5 @@ lib.custom.mkSelfHostedService {
     systemd.services.homepage-dashboard.path = with pkgs; [
       iputils
     ];
-
-    sops = {
-      templates."homepage/environment" = {
-        content = ''
-          HOMEPAGE_VAR_CROWDSEC_USERNAME="${config.sops.placeholder."homepage/crowdsec_username"}"
-          HOMEPAGE_VAR_CROWDSEC_PASSWORD="${config.sops.placeholder."homepage/crowdsec_password"}"
-        '';
-        mode = "0444";
-      };
-
-      secrets = {
-        "homepage/crowdsec_username" = { };
-        "homepage/crowdsec_password" = { };
-      };
-    };
   };
 }
