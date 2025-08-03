@@ -1,11 +1,12 @@
 { config, lib, ... }:
 let
+  inherit (config.constants) hosts;
   port = 9092;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus";
-  hostName = "nimbus";
+  hostName = hosts.nimbus;
   inherit port;
   public = false;
   protected = false;
@@ -26,7 +27,7 @@ lib.custom.mkSelfHostedService {
           job_name = "nut";
           static_configs = [
             {
-              targets = [ "prometheus-nut.midnight.${config.constants.domains.internal}" ];
+              targets = [ (lib.custom.mkInternalFqdn config.constants "prometheus-nut" hosts.midnight) ];
             }
           ];
           metrics_path = "/ups_metrics";
@@ -51,8 +52,8 @@ lib.custom.mkSelfHostedService {
           static_configs = [
             {
               targets = [
-                "prometheus-node.midnight.${config.constants.domains.internal}"
-                "prometheus-node.nimbus.${config.constants.domains.internal}"
+                (lib.custom.mkInternalFqdn config.constants "prometheus-node" hosts.midnight)
+                (lib.custom.mkInternalFqdn config.constants "prometheus-node" hosts.nimbus)
               ];
             }
           ];

@@ -1,11 +1,12 @@
 { config, lib, ... }:
 let
+  inherit (config.constants) hosts;
   port = 5006;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "actual";
-  hostName = "nimbus";
+  hostName = hosts.nimbus;
   inherit port;
   public = true;
   protected = false;

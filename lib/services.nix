@@ -65,7 +65,7 @@ in
       persistentDirectories ? [ ],
     }:
     let
-      inherit (config.constants) domains publicServerHost;
+      inherit (config.constants) publicServerHost;
       myHostName = config.networking.hostName;
       isTargetHost = myHostName == hostName;
       isPublicServer = myHostName == publicServerHost;
@@ -80,12 +80,8 @@ in
 
       # fully qualified domain names
       fqdn = {
-        internal =
-          if subdomain == "" then
-            "${hostName}.${domains.internal}"
-          else
-            "${subdomain}.${hostName}.${domains.internal}";
-        public = if subdomain == "" then domains.public else "${subdomain}.${domains.public}";
+        internal = lib.custom.mkInternalFqdn config.constants subdomain hostName;
+        public = lib.custom.mkPublicFqdn config.constants subdomain;
       };
       virtualHostConfig = logName: {
         logFormat = ''

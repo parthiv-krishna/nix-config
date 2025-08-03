@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  inherit (config.constants) tieredCache;
+  inherit (config.constants) hosts tieredCache;
 in
 lib.custom.mkSelfHostedService {
   inherit
@@ -8,7 +8,7 @@ lib.custom.mkSelfHostedService {
     lib
     ;
   name = "ollama";
-  hostName = "midnight";
+  hostName = hosts.midnight;
   port = 11434;
   public = false;
   persistentDirectories = [ "/var/lib/private/ollama" ];

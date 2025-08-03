@@ -5,13 +5,13 @@
   ...
 }:
 let
-  inherit (config.constants) domains;
+  inherit (config.constants) domains hosts;
   port = 8082;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "homepage";
-  hostName = "nimbus";
+  hostName = hosts.nimbus;
   inherit port;
   subdomain = ""; # on root domain
   public = true;
@@ -30,9 +30,9 @@ lib.custom.mkSelfHostedService {
             {
               "Jellyfin: tv.${domains.public}" = {
                 description = "Movies and TV";
-                href = "https://tv.${domains.public}";
+                href = lib.custom.mkPublicHttpsUrl config.constants "tv";
                 icon = "sh-jellyfin";
-                ping = "midnight.${domains.internal}";
+                ping = lib.custom.mkInternalFqdn config.constants "" hosts.midnight;
               };
             }
           ];
@@ -42,17 +42,17 @@ lib.custom.mkSelfHostedService {
             {
               "Immich: photos.${domains.public}" = {
                 description = "Photo storage";
-                href = "https://photos.${domains.public}";
+                href = lib.custom.mkPublicHttpsUrl config.constants "photos";
                 icon = "sh-immich";
-                ping = "midnight.${domains.internal}";
+                ping = lib.custom.mkInternalFqdn config.constants "" hosts.midnight;
               };
             }
             {
               "OwnCloud: drive.${domains.public}" = {
                 description = "General storage";
-                href = "https://drive.${domains.public}";
+                href = lib.custom.mkPublicHttpsUrl config.constants "drive";
                 icon = "sh-owncloud";
-                ping = "midnight.${domains.internal}";
+                ping = lib.custom.mkInternalFqdn config.constants "" hosts.midnight;
               };
             }
           ];
@@ -62,30 +62,29 @@ lib.custom.mkSelfHostedService {
             {
               "Actual: actual.${domains.public}" = {
                 description = "Budgeting";
-                href = "https://actual.${domains.public}";
+                href = lib.custom.mkPublicHttpsUrl config.constants "actual";
                 icon = "sh-actual-budget";
-                ping = "nimbus.${domains.internal}";
+                ping = lib.custom.mkInternalFqdn config.constants "" hosts.nimbus;
               };
             }
             {
               "Mealie: food.${domains.public}" = {
                 description = "Recipies";
-                href = "https://food.${domains.public}";
+                href = lib.custom.mkPublicHttpsUrl config.constants "food";
                 icon = "sh-mealie";
-                ping = "nimbus.${domains.internal}";
+                ping = lib.custom.mkInternalFqdn config.constants "" hosts.nimbus;
               };
             }
           ];
         }
         {
           "Network" = [
-
             {
               "Grafana: stats.${domains.public}" = {
                 description = "Charts and metrics";
-                href = "https://stats.${domains.public}";
+                href = lib.custom.mkPublicHttpsUrl config.constants "stats";
                 icon = "sh-grafana";
-                ping = "nimbus.${domains.internal}";
+                ping = lib.custom.mkInternalFqdn config.constants "" hosts.nimbus;
               };
             }
           ];

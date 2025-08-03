@@ -5,9 +5,10 @@
   ...
 }:
 let
+  inherit (config.constants) hosts;
   subdomain = "stats";
-  domain = "${subdomain}.${config.constants.domains.public}";
-  autheliaDomain = "auth.${config.constants.domains.public}";
+  domain = lib.custom.mkPublicFqdn config.constants subdomain;
+  autheliaDomain = lib.custom.mkPublicFqdn config.constants "auth";
   secretsRoot = "authelia/identity_providers/oidc/clients/grafana";
 
   # this version fixes GitSync issues. should be able to switch once 12.1.0 hits nixpkgs
@@ -48,7 +49,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "grafana";
-  hostName = "nimbus";
+  hostName = hosts.nimbus;
   inherit port;
   public = true;
   protected = true;
