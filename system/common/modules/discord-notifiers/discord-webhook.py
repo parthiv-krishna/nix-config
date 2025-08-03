@@ -9,15 +9,69 @@ from datetime import datetime
 import discord
 
 
-def get_service_logs(service_name: str) -> str:
-    """Get all logs for a systemd service"""
+def get_service_start_time(service_name: str) -> datetime:
+    """Get the start time of the most recent service run as a datetime object"""
     try:
         result = subprocess.run(
-            ["journalctl", "--unit", service_name, "--no-pager"],
+            ["systemctl", "show", service_name, "--property=ActiveEnterTimestamp"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=10,
         )
+        if result.returncode == 0:
+            # output format: "ActiveEnterTimestamp=Mon 2024-01-01 12:00:00 UTC"
+            timestamp_line = result.stdout.strip()
+            if "=" in timestamp_line:
+                timestamp_str = timestamp_line.split("=", 1)[1].strip()
+                if timestamp_str and timestamp_str not in ["n/a", ""]:
+                    # parse the timestamp string into a datetime object
+                    return datetime.strptime(timestamp_str, "%a %Y-%m-%d %H:%M:%S %Z")
+        return None
+    except Exception:
+        return None
+
+
+def get_service_invocation_id(service_name: str) -> str:
+    """Get the InvocationID of the most recent service run"""
+    try:
+        result = subprocess.run(
+            ["systemctl", "show", "--value", "-p", "InvocationID", service_name],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode == 0:
+            invocation_id = result.stdout.strip()
+            if invocation_id and invocation_id != "":
+                return invocation_id
+        return None
+    except Exception:
+        return None
+
+
+def get_service_logs(service_name: str) -> str:
+    """Get logs for the most recent run of a systemd service using InvocationID"""
+    try:
+        # get the invocation ID for the current/latest service run
+        invocation_id = get_service_invocation_id(service_name)
+
+        if invocation_id:
+            # get logs for this specific invocation only
+            result = subprocess.run(
+                ["journalctl", f"_SYSTEMD_INVOCATION_ID={invocation_id}", "--no-pager"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+        else:
+            # fallback: get recent logs with the last hour
+            result = subprocess.run(
+                ["journalctl", "--unit", service_name, "--since", "1 hour ago", "--no-pager"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+
         return result.stdout
     except subprocess.TimeoutExpired:
         return "Error: Timeout while fetching logs"
@@ -36,8 +90,14 @@ def send_service_notification(
     try:
         webhook = discord.SyncWebhook.from_url(webhook_url)
 
-        timestamp_message = datetime.now().strftime("%b %d %Y %H:%M:%S")
-        timestamp_filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # get service start time for accurate timestamp
+        timestamp = get_service_start_time(service_name)
+        if not timestamp:
+            # fallback to current time if we can't get service start time
+            timestamp = datetime.now()
+
+        timestamp_message = timestamp.strftime("%b %d %Y %H:%M:%S")
+        timestamp_filename = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
 
         # get logs
         logs = get_service_logs(service_name)
