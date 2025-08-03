@@ -37,7 +37,6 @@ let
       "discord-notifier-${name}" = {
         description = "Discord notifier for ${notifierCfg.watchedService}";
         after = [ "${notifierCfg.watchedService}.service" ];
-        bindsTo = [ "${notifierCfg.watchedService}.service" ];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${webhookScript}";
