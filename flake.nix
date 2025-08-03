@@ -71,16 +71,19 @@
           system = systems.x86;
           buildOnTarget = true;
           allowLocalDeployment = true;
+          tags = [ "client" ];
         };
         midnight = {
           system = systems.x86;
           buildOnTarget = true;
           allowLocalDeployment = false;
+          tags = [ "server" ];
         };
         nimbus = {
           system = systems.arm;
           buildOnTarget = true;
           allowLocalDeployment = false;
+          tags = [ "server" ];
         };
       };
       # TODO: get from ./system/common/modules/constants.nix
@@ -161,7 +164,7 @@
 
         deployment = {
           targetHost = "${hostName}.${internalDomain}";
-          inherit (hostConfig) buildOnTarget allowLocalDeployment;
+          inherit (hostConfig) buildOnTarget allowLocalDeployment tags;
         };
 
         imports = [
