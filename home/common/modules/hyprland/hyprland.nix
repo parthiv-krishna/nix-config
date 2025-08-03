@@ -162,7 +162,8 @@ lib.mkIf cfg.enable {
         "${mainMod}, left, workspace, e-1"
         "${mainMod}, mouse:272, movewindow"
         "${mainMod}, mouse:273, resizeactive"
-      ] ++ workspaceBinds;
+      ]
+      ++ workspaceBinds;
 
       # volume and brightness
       bindel = [
