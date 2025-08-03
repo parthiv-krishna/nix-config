@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   ...
 }:
 {
@@ -14,8 +15,21 @@
     persistent = true;
   };
 
-  # Discord notification for auto-upgrade
-  custom.discord-notifiers.nixos-upgrade = {
-    enable = true;
+  # garbage collection after auto-upgrade
+  systemd.services.nix-gc-after-upgrade = {
+    description = "Nix garbage collection after auto-upgrade";
+    after = [ "nixos-upgrade.service" ];
+    bindsTo = [ "nixos-upgrade.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+      ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 10d";
+    };
+  };
+
+  # discord notifications
+  custom.discord-notifiers = {
+    nixos-upgrade.enable = true;
+    nix-gc-after-upgrade.enable = true;
   };
 }
