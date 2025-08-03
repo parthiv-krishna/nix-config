@@ -1,11 +1,11 @@
 { config, lib, ... }:
 let
-  inherit (config.constants) tieredCache;
+  inherit (config.constants) hosts tieredCache;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "jellyfin";
-  hostName = "midnight";
+  hostName = hosts.midnight;
   port = 8096;
   subdomain = "tv";
   public = true;

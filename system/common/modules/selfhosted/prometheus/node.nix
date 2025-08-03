@@ -4,6 +4,7 @@
   ...
 }:
 let
+  inherit (config.constants) hosts;
   port = 9101;
   # shared service configuration for all node exporters
   mkNodeExporterService =
@@ -37,7 +38,7 @@ let
 in
 {
   imports = [
-    (mkNodeExporterService "midnight")
-    (mkNodeExporterService "nimbus")
+    (mkNodeExporterService hosts.midnight)
+    (mkNodeExporterService hosts.nimbus)
   ];
 }

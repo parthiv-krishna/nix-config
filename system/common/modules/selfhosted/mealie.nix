@@ -1,12 +1,13 @@
 { config, lib, ... }:
 let
+  inherit (config.constants) hosts;
   secretsRoot = "authelia/identity_providers/oidc/clients/mealie";
   port = 9000;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "mealie";
-  hostName = "nimbus";
+  hostName = hosts.nimbus;
   inherit port;
   subdomain = "food";
   public = true;

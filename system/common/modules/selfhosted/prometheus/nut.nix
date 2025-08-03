@@ -5,6 +5,7 @@
   ...
 }:
 let
+  inherit (config.constants) hosts;
   passwordName = "ups/password";
   passwordFile = config.sops.secrets.${passwordName}.path;
   port = 9102;
@@ -12,7 +13,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus-nut";
-  hostName = "midnight";
+  hostName = hosts.midnight;
   inherit port;
   public = false;
   protected = false;

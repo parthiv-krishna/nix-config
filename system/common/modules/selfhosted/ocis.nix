@@ -4,13 +4,13 @@
   ...
 }:
 let
-  inherit (config.constants) tieredCache;
+  inherit (config.constants) hosts tieredCache;
   port = 9200;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "ocis";
-  hostName = "midnight";
+  hostName = hosts.midnight;
   inherit port;
   subdomain = "drive";
   public = true;

@@ -45,7 +45,7 @@ in
                   # service-specific rules are managed by lib.custom.mkSelfHostedService
                   # anyone can access the auth portal
                   {
-                    domain_regex = "${subdomain}.${config.constants.domains.public}";
+                    domain_regex = lib.custom.mkPublicFqdn config.constants subdomain;
                     policy = "bypass";
                   }
                   # admins and users can access all domains
@@ -69,7 +69,7 @@ in
                   {
                     name = "sub0_session";
                     domain = config.constants.domains.public;
-                    authelia_url = "https://${subdomain}.${config.constants.domains.public}";
+                    authelia_url = lib.custom.mkPublicHttpsUrl config.constants subdomain;
                     inactivity = "1 week";
                     expiration = "3 weeks";
                     remember_me = "1 month";
@@ -231,7 +231,7 @@ in
           # add authentication to caddy
           caddy =
             let
-              fqdn = "${subdomain}.${config.constants.domains.public}";
+              fqdn = lib.custom.mkPublicFqdn config.constants subdomain;
             in
             {
               extraConfig = ''
