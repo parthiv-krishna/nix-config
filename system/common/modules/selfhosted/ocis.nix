@@ -5,11 +5,13 @@
 }:
 let
   inherit (config.constants) tieredCache;
+  port = 9200;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "ocis";
   hostName = "midnight";
+  inherit port;
   subdomain = "drive";
   public = true;
   protected = false;
@@ -21,7 +23,7 @@ lib.custom.mkSelfHostedService {
     services.ocis = {
       enable = true;
       address = "127.0.0.1";
-      port = config.constants.ports.ocis;
+      inherit port;
       url = "https://drive.sub0.net";
 
       # Use custom data directory in tiered cache

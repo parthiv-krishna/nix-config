@@ -43,77 +43,79 @@ let
       platforms = platforms.linux;
     };
   };
+  port = 3000;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "grafana";
   hostName = "nimbus";
+  inherit port;
   public = true;
   protected = true;
   inherit subdomain;
-  serviceConfig = lib.mkMerge [
+  persistentDirectories = [
     {
-      environment.systemPackages = with pkgs; [
-        grafana-image-renderer
-      ];
-
-      services.grafana = {
-        enable = true;
-        package = grafana-nightly;
-        settings = {
-          server = {
-            http_port = config.constants.ports.grafana;
-            root_url = "https://${domain}";
-            inherit domain;
-            enable_gzip = true;
-          };
-          feature_toggles = {
-            provisioning = true;
-            kubernetesDashboards = true;
-            apiserver = true;
-          };
-          "auth.anonymous" = {
-            enabled = true;
-            org_name = config.constants.domains.public;
-            org_role = "Viewer";
-          };
-          "auth.generic_oauth" = {
-            enabled = true;
-            name = "${config.constants.domains.public} SSO";
-            icon = "signin";
-            client_id = "$__file{${config.sops.secrets."${secretsRoot}/client_id".path}}";
-            client_secret = "$__file{${config.sops.secrets."${secretsRoot}/client_secret_orig".path}}";
-            scopes = "openid profile email groups";
-            empty_scopes = false;
-            auth_url = "https://${autheliaDomain}/api/oidc/authorization";
-            token_url = "https://${autheliaDomain}/api/oidc/token";
-            api_url = "https://${autheliaDomain}/api/oidc/userinfo";
-            login_attribute_path = "preferred_username";
-            groups_attribute_path = "groups";
-            name_attribute_path = "name";
-            use_pkce = true;
-            # users are Viewer by default, but can be promoted by admin account
-            skip_org_role_sync = true;
-            auto_login = false;
-          };
-        };
-      };
-
-      sops.secrets = {
-        "${secretsRoot}/client_id" = {
-          # authelia owns, but grafana should be able to access the client id
-          group = "grafana";
-          mode = "0440";
-        };
-        "${secretsRoot}/client_secret_orig" = {
-          owner = "grafana";
-        };
-      };
-    }
-    (lib.custom.mkPersistentSystemDir {
-      directory = config.services.grafana.dataDir;
+      directory = "/var/lib/grafana";
       user = "grafana";
       group = "grafana";
-    })
+    }
   ];
+  serviceConfig = {
+    environment.systemPackages = with pkgs; [
+      grafana-image-renderer
+    ];
+
+    services.grafana = {
+      enable = true;
+      package = grafana-nightly;
+      settings = {
+        server = {
+          http_port = port;
+          root_url = "https://${domain}";
+          inherit domain;
+          enable_gzip = true;
+        };
+        feature_toggles = {
+          provisioning = true;
+          kubernetesDashboards = true;
+          apiserver = true;
+        };
+        "auth.anonymous" = {
+          enabled = true;
+          org_name = config.constants.domains.public;
+          org_role = "Viewer";
+        };
+        "auth.generic_oauth" = {
+          enabled = true;
+          name = "${config.constants.domains.public} SSO";
+          icon = "signin";
+          client_id = "$__file{${config.sops.secrets."${secretsRoot}/client_id".path}}";
+          client_secret = "$__file{${config.sops.secrets."${secretsRoot}/client_secret_orig".path}}";
+          scopes = "openid profile email groups";
+          empty_scopes = false;
+          auth_url = "https://${autheliaDomain}/api/oidc/authorization";
+          token_url = "https://${autheliaDomain}/api/oidc/token";
+          api_url = "https://${autheliaDomain}/api/oidc/userinfo";
+          login_attribute_path = "preferred_username";
+          groups_attribute_path = "groups";
+          name_attribute_path = "name";
+          use_pkce = true;
+          # users are Viewer by default, but can be promoted by admin account
+          skip_org_role_sync = true;
+          auto_login = false;
+        };
+      };
+    };
+
+    sops.secrets = {
+      "${secretsRoot}/client_id" = {
+        # authelia owns, but grafana should be able to access the client id
+        group = "grafana";
+        mode = "0440";
+      };
+      "${secretsRoot}/client_secret_orig" = {
+        owner = "grafana";
+      };
+    };
+  };
 }
