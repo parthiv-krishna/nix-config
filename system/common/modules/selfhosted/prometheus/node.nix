@@ -39,6 +39,5 @@ in
   imports = [
     (mkNodeExporterService "midnight")
     (mkNodeExporterService "nimbus")
-    (mkNodeExporterService "vardar")
   ];
 }

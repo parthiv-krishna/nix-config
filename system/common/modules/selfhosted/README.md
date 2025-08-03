@@ -7,8 +7,7 @@ The goal is for users on either my home network or the public internet to be abl
 ### Machines
 The network consists of three machines.
 
-- `midnight` is my main home server, which contains mass storage and an RTX 3060 for local AI inference. It runs most of my self-hosted services. For energy savings, it is often asleep.
-- `vardar` is an always-on Dell Wyse 3040 thin client. It is always on and runs Adguard DNS for my local network, and a [custom Wake on LAN webapp](https://github.com/parthiv-krishna/thaw) to allow users to wake up `midnight` when it's asleep.
+- `midnight` is my main home server, which contains mass storage and an RTX 3060 for local AI inference. It runs most of my self-hosted services.
 - `nimbus` is a cloud-hosted server that primarily acts as a proxy into the network from the public internet. It also runs some frequently accessed services that aren't worth waking up `midnight` for.
 
 The machines are connected together using Tailscale, and all inter-machine traffic is HTTPS tunneled through the Tailscale wireguard connections.
@@ -23,7 +22,7 @@ A user visits `service.sub0.net` on the public internet. Traffic is received by 
         - On the machine hosting the service, another instance of Caddy will receive the request and `reverse_proxy` it to localhost:port.
 
 ### Internal Traffic
-- A user visits `service.sub0.net` on my local network. Local DNS entries override the locally-hosted services to point at `midnight` or `vardar` as needed.
+- A user visits `service.sub0.net` on my local network. Local DNS entries override the locally-hosted services to point at `midnight` as needed.
 - The machine's instance of Caddy will `reverse_proxy` the request to localhost:port without any additional authentication.
 
 ## Deployment
@@ -35,10 +34,12 @@ The key to the self hosted services setup is `mkSelfHostedService`, defined in [
 Arguments:
 - `name`: The name of the service (used for ports, domains, and group names).
 - `hostName`: The machine that actually runs the service.
+- `port`: The port on which the service runs.
 - `subdomain` (optional): The subdomain to use for the service (defaults to `name`).
 - `public` (optional): Whether the service should be exposed to the public internet (default: false).
 - `protected` (optional): Whether the service should require authentication via Authelia (default: true).
 - `serviceConfig`: The NixOS module fragment that actually enables and configures the service on the target machine.
+- `persistentDirectories` (optional): The directories containing the state to persist.
 
 The function automatically:
 - Asserts that Caddy is enabled on the relevant hosts.

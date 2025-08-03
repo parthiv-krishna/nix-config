@@ -12,7 +12,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus-nut";
-  hostName = "vardar";
+  hostName = "midnight";
   inherit port;
   public = false;
   protected = false;

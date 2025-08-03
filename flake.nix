@@ -46,10 +46,6 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    thaw = {
-      url = "github:parthiv-krishna/thaw";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -84,11 +80,6 @@
         nimbus = {
           system = systems.arm;
           buildOnTarget = true;
-          allowLocalDeployment = false;
-        };
-        vardar = {
-          system = systems.x86;
-          buildOnTarget = false;
           allowLocalDeployment = false;
         };
       };
