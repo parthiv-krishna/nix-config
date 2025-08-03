@@ -27,24 +27,37 @@ let
   mkNotifierService =
     name: notifierCfg:
     let
-      webhookScript = pkgs.writeShellScript "discord-notifier-${name}" ''
-        set -o pipefail
+      mkWebhookScript =
+        successFlag:
+        pkgs.writeShellScript "discord-notifier-${name}-${if successFlag then "success" else "failure"}" ''
+          set -o pipefail
 
-        # Read webhook URL from secret file
-        WEBHOOK_URL="$(cat "${notifierCfg.webhookSecretPath}")"
+          # Read webhook URL from secret file
+          WEBHOOK_URL="$(cat "${notifierCfg.webhookSecretPath}")"
 
-        ${discordWebhookScript}/bin/discord-webhook \
-          "$WEBHOOK_URL" \
-          --service "${notifierCfg.watchedService}" \
-          --hostname "${config.networking.hostName}"
-      '';
+          ${discordWebhookScript}/bin/discord-webhook \
+            "$WEBHOOK_URL" \
+            --service "${notifierCfg.watchedService}" \
+            --hostname "${config.networking.hostName}" \
+            ${if successFlag then "" else "--failure"}
+        '';
+      successScript = mkWebhookScript true;
+      failureScript = mkWebhookScript false;
     in
     {
-      "discord-notifier-${name}" = {
-        description = "Discord notifier for ${notifierCfg.watchedService}";
+      "discord-notifier-${name}-success" = {
+        description = "Discord notifier for ${notifierCfg.watchedService} success";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${webhookScript}";
+          ExecStart = "${successScript}";
+          User = "root"; # needed to read secret files
+        };
+      };
+      "discord-notifier-${name}-failure" = {
+        description = "Discord notifier for ${notifierCfg.watchedService} failure";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${failureScript}";
           User = "root"; # needed to read secret files
         };
       };
@@ -59,8 +72,8 @@ let
           (mkNotifierService name notifierCfg)
           {
             "${notifierCfg.watchedService}" = {
-              onSuccess = [ "discord-notifier-${name}.service" ];
-              onFailure = [ "discord-notifier-${name}.service" ];
+              onSuccess = [ "discord-notifier-${name}-success.service" ];
+              onFailure = [ "discord-notifier-${name}-failure.service" ];
             };
           }
         ]

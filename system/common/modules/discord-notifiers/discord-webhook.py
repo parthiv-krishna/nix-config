@@ -25,58 +25,48 @@ def get_service_logs(service_name: str) -> str:
         return f"Error fetching logs: {e}"
 
 
-def check_service_status(service_name: str) -> bool:
-    """Check if a systemd service is active"""
-    try:
-        result = subprocess.run(
-            ["systemctl", "is-active", service_name], capture_output=True, text=True
-        )
-        return result.returncode == 0
-    except Exception:
-        return False
-
-
 def send_service_notification(
     webhook_url: str,
     service_name: str,
     hostname: str,
+    success: bool
 ) -> bool:
     """Send a service notification with logs attached"""
 
     try:
         webhook = discord.SyncWebhook.from_url(webhook_url)
 
-        # check service status
-        is_active = check_service_status(service_name)
-        timestamp = datetime.now().isoformat()
+        timestamp_message = datetime.now().strftime("%b %d %Y %H:%M:%S")
+        timestamp_filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         # get logs
         logs = get_service_logs(service_name)
 
         # create message and embed
-        if is_active:
-            message = f"**{service_name}** succeeded on **{hostname}** at {timestamp}"
+        if success:
+            message = f"**{service_name}** succeeded on **{hostname}** at {timestamp_message}"
             title = f"{service_name} Success"
             color = discord.Color(0x00FF00)  # green
         else:
-            message = f"**{service_name}** failed on **{hostname}** at {timestamp}"
+            message = f"**{service_name}** failed on **{hostname}** at {timestamp_message}"
             title = f"{service_name} Failed"
             color = discord.Color(0xFF0000)  # red
 
         embed = discord.Embed(description=message, color=color, title=title)
 
         # create temporary file with logs
+        log_filename = f"{service_name}-{hostname}-{timestamp_filename}.log"
         with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=True) as f:
             f.write(f"Logs for {service_name} on {hostname}\n")
-            f.write(f"Timestamp: {timestamp}\n")
-            f.write(f"Status: {'Active' if is_active else 'Failed'}\n")
+            f.write(f"Timestamp: {timestamp_message}\n")
+            f.write(f"Status: {'Succeeded' if success else 'Failed'}\n")
             f.write("=" * 50 + "\n\n")
             f.write(logs)
             f.flush()  # ensure content is written to disk
 
             webhook.send(
                 embed=embed,
-                file=discord.File(f.name, filename=f"{service_name}-{hostname}.log"),
+                file=discord.File(f.name, filename=log_filename),
             )
 
         return True
@@ -105,16 +95,18 @@ def main():
     parser.add_argument(
         "--hostname", required=True, help="Hostname for service notifications"
     )
+    parser.add_argument("--failure", action="store_true", help="Service failed (default: success)")
 
     args = parser.parse_args()
 
-    success = send_service_notification(
+    result = send_service_notification(
         args.webhook_url,
         args.service,
         args.hostname,
+        not args.failure,
     )
 
-    sys.exit(0 if success else 1)
+    sys.exit(0 if result else 1)
 
 
 if __name__ == "__main__":
