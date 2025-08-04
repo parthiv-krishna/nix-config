@@ -373,15 +373,16 @@
         "website-builder": "website-builder"
       },
       "locked": {
-        "lastModified": 1752337105,
-        "narHash": "sha256-dxnmm2wIgohIOKAoaa4fneDOsnnKR/BgFZuWhx4B5N8=",
-        "owner": "rasmus-kirk",
+        "lastModified": 1749085338,
+        "narHash": "sha256-L3m49DUlrE+WRInrjg/o29LjLswd5l39flIvtKMZdaU=",
+        "owner": "StealthBadger747",
         "repo": "nixarr",
-        "rev": "fc75ca0e6bc2fc31c0a3567d275b92ee30b9311d",
+        "rev": "ee2442856e1351ce98f14d1b79e3ac82c721992c",
         "type": "github"
       },
       "original": {
-        "owner": "rasmus-kirk",
+        "owner": "StealthBadger747",
+        "ref": "add-qbittorrent",
         "repo": "nixarr",
         "type": "github"
       }
@@ -664,11 +665,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1750317638,
-        "narHash": "sha256-B4RWcXXOLO6gMeYyV+K4olu+kGGsYamKH+JAm0cIXqI=",
+        "lastModified": 1748552643,
+        "narHash": "sha256-UI3dlA/6WOitW3ejPhwYvB/yxrVWpdTmh96Hl8CEUis=",
         "owner": "rasmus-kirk",
         "repo": "website-builder",
-        "rev": "b54192000a00e865947f45bacf3184d56363ee38",
+        "rev": "f399b9c89d45a0150ce6230c6df23f62f9c3cf89",
         "type": "github"
       },
       "original": {

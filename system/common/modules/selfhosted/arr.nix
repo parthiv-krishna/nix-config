@@ -2,11 +2,13 @@
   config,
   inputs,
   lib,
+  pkgs,
   ...
 }:
 let
   hostName = config.constants.hosts.midnight;
   mediaDir = "/array/merge/cache/media";
+
 in
 {
   imports = [
@@ -54,8 +56,27 @@ in
     (
       let
         port = 5055;
-        # OIDC support is not yet released, so we need to use a custom build
+        # OIDC is not in the mainline yet, so we need to use a custom build
         # TODO: remove this once OIDC support is mainlined
+        jellyseerrOIDC = pkgs.jellyseerr.overrideAttrs (oldAttrs: {
+          src = pkgs.fetchFromGitHub {
+            owner = "fallenbagel";
+            repo = "jellyseerr";
+            rev = "39b6f47c104f9f0356bf51c6cb7e3996f154a8c2";
+            hash = "sha256-iBnO0WjNqvXfuJMoS6z/NmYgtW5FQ9Ptp9uV5rODIf8=";
+          };
+          version = "1.9.2-oidc";
+
+          pnpmDeps = oldAttrs.pnpmDeps.overrideAttrs (_oldDepAttrs: {
+            src = pkgs.fetchFromGitHub {
+              owner = "fallenbagel";
+              repo = "jellyseerr";
+              rev = "39b6f47c104f9f0356bf51c6cb7e3996f154a8c2";
+              hash = "sha256-iBnO0WjNqvXfuJMoS6z/NmYgtW5FQ9Ptp9uV5rODIf8=";
+            };
+            outputHash = "sha256-lq/b2PqQHsZmnw91Ad4h1uxZXsPATSLqIdb/t2EsmMI=";
+          });
+        });
       in
       lib.custom.mkSelfHostedService {
         inherit config lib;
@@ -69,7 +90,7 @@ in
             enable = true;
             inherit port;
             vpn.enable = true;
-            # package = jellyseerrOIDC;
+            package = jellyseerrOIDC;
           };
         };
         homepage = {
@@ -79,15 +100,17 @@ in
         };
         oidcClient = {
           subdomain = "request";
-          redirects = [ "/login/oidc/callback/authelia" ];
+          redirects = [ "/login?provider=sub0.net&callback=true" ];
+          # TODO: remove when jellyseerr doesn't force HTTP
+          customRedirects = [ "http://request.sub0.net/login?provider=sub0.net&callback=true" ];
           extraConfig = {
-            redirect_uris = [ "https://jellyseerr.sub0.net/login/oidc/callback/authelia" ];
             scopes = [
               "openid"
               "email"
               "profile"
               "groups"
             ];
+            authorization_policy = "one_factor";
             token_endpoint_auth_method = "client_secret_post";
           };
         };
@@ -163,49 +186,10 @@ in
         public = false;
         protected = false;
         serviceConfig = {
-          services.qbittorrent = {
+          nixarr.qbittorrent = {
             enable = true;
-            profileDir = "${mediaDir}/.state/qbittorrent";
-            webuiPort = port;
-          };
-
-          # nginx proxy localhost to the vpn-bound port (nixarr does this for other services)
-          services.nginx = {
-            enable = true;
-
-            recommendedTlsSettings = true;
-            recommendedOptimisation = true;
-            recommendedGzipSettings = true;
-
-            virtualHosts."127.0.0.1:${builtins.toString port}" = {
-              listen = [
-                {
-                  addr = "0.0.0.0";
-                  inherit port;
-                }
-              ];
-              locations."/" = {
-                recommendedProxySettings = true;
-                proxyWebsockets = true;
-                proxyPass = "http://192.168.15.1:${builtins.toString port}";
-              };
-            };
-          };
-
-          # route thru VPN
-          systemd.services.qbittorrent.vpnconfinement = {
-            enable = true;
-            vpnnamespace = "wg";
-          };
-
-          # but allow webui to be accessible on the machine
-          vpnNamespaces.wg = {
-            portMappings = [
-              {
-                from = port;
-                to = port;
-              }
-            ];
+            uiPort = port;
+            vpn.enable = true;
           };
         };
       }
