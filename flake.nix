@@ -25,15 +25,19 @@
     impermanence = {
       url = "github:nix-community/impermanence";
     };
+    nixarr = {
+      url = "github:rasmus-kirk/nixarr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-config-secrets = {
       url = "git+ssh://git@github.com/parthiv-krishna/nix-config-secrets.git?ref=main&shallow=1";
       flake = false;
     };
-    nixos-hardware = {
-      url = "github:NixOS/nixos-hardware";
-    };
     nix-colors = {
       url = "github:misterio77/nix-colors";
+    };
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
     };
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
