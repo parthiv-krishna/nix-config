@@ -66,7 +66,14 @@ def get_service_logs(service_name: str) -> str:
         else:
             # fallback: get recent logs with the last hour
             result = subprocess.run(
-                ["journalctl", "--unit", service_name, "--since", "1 hour ago", "--no-pager"],
+                [
+                    "journalctl",
+                    "--unit",
+                    service_name,
+                    "--since",
+                    "1 hour ago",
+                    "--no-pager",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -80,10 +87,7 @@ def get_service_logs(service_name: str) -> str:
 
 
 def send_service_notification(
-    webhook_url: str,
-    service_name: str,
-    hostname: str,
-    success: bool
+    webhook_url: str, service_name: str, hostname: str, success: bool
 ) -> bool:
     """Send a service notification with logs attached"""
 
@@ -104,11 +108,15 @@ def send_service_notification(
 
         # create message and embed
         if success:
-            message = f"**{service_name}** succeeded on **{hostname}** at {timestamp_message}"
+            message = (
+                f"**{service_name}** succeeded on **{hostname}** at {timestamp_message}"
+            )
             title = f"{service_name} Success"
             color = discord.Color(0x00FF00)  # green
         else:
-            message = f"**{service_name}** failed on **{hostname}** at {timestamp_message}"
+            message = (
+                f"**{service_name}** failed on **{hostname}** at {timestamp_message}"
+            )
             title = f"{service_name} Failed"
             color = discord.Color(0xFF0000)  # red
 
@@ -155,7 +163,9 @@ def main():
     parser.add_argument(
         "--hostname", required=True, help="Hostname for service notifications"
     )
-    parser.add_argument("--failure", action="store_true", help="Service failed (default: success)")
+    parser.add_argument(
+        "--failure", action="store_true", help="Service failed (default: success)"
+    )
 
     args = parser.parse_args()
 
