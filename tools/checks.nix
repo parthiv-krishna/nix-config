@@ -34,6 +34,7 @@
       statix.enable = true;
 
       # other formatting
+      black.enable = true;
       shellcheck.enable = true;
       shfmt.enable = true;
       yamlfmt.enable = true;
