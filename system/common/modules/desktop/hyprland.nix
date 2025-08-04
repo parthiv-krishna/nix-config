@@ -26,7 +26,6 @@ in
           user = "parthiv";
         };
       };
-      vt = 7; # graphical login
     };
 
     fonts.packages = with pkgs; [

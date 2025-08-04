@@ -91,7 +91,7 @@ in
 
     # nvidia drivers
     nvidia = {
-      enable = false;
+      enable = true;
       cudaCapability = "8.6"; # RTX 3060
     };
 

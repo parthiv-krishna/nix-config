@@ -137,25 +137,6 @@ in
     )
     (
       let
-        port = 7878;
-      in
-      lib.custom.mkSelfHostedService {
-        inherit config lib;
-        name = "radarr";
-        inherit hostName port;
-        public = false;
-        protected = false;
-        serviceConfig = {
-          nixarr.radarr = {
-            enable = true;
-            inherit port;
-            vpn.enable = true;
-          };
-        };
-      }
-    )
-    (
-      let
         port = 8787;
       in
       lib.custom.mkSelfHostedService {
@@ -190,6 +171,11 @@ in
             enable = true;
             uiPort = port;
             vpn.enable = true;
+          };
+
+          # fix UID conflict with postgres (on uid 71)
+          users.users.qbittorrent = {
+            uid = lib.mkForce 2071;
           };
         };
       }
