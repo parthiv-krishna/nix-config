@@ -89,7 +89,6 @@ in
           nixarr.jellyseerr = {
             enable = true;
             inherit port;
-            vpn.enable = true;
             package = jellyseerrOIDC;
           };
         };
