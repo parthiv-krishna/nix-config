@@ -16,7 +16,6 @@ lib.custom.mkSelfHostedService {
     icon = "sh-actual-budget";
   };
   oidcClient = {
-    subdomain = "actual";
     redirects = [ "/openid/callback" ];
     extraConfig = {
       client_name = "Actual";

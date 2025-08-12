@@ -118,7 +118,9 @@ in
       oidcEntry =
         if (oidcClient != null) then
           {
-            custom.selfhosted.oidcClients."${name}" = oidcClient;
+            custom.selfhosted.oidcClients."${name}" = oidcClient // {
+              inherit subdomain;
+            };
           }
         else
           { };

@@ -98,7 +98,6 @@ in
           icon = "sh-jellyseerr";
         };
         oidcClient = {
-          subdomain = "request";
           redirects = [ "/login?provider=sub0.net&callback=true" ];
           # TODO: remove when jellyseerr doesn't force HTTP
           customRedirects = [ "http://request.sub0.net/login?provider=sub0.net&callback=true" ];

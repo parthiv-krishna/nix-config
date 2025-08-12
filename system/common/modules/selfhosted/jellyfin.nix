@@ -16,7 +16,6 @@ lib.custom.mkSelfHostedService {
     icon = "sh-jellyfin";
   };
   oidcClient = {
-    subdomain = "tv";
     redirects = [ "/sso/OID/redirect/authelia" ];
     extraConfig = {
       client_name = "Jellyfin";

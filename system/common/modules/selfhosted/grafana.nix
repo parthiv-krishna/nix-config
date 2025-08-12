@@ -60,7 +60,6 @@ lib.custom.mkSelfHostedService {
     icon = "sh-grafana";
   };
   oidcClient = {
-    subdomain = "stats";
     redirects = [ "/login/generic_oauth" ];
     extraConfig = {
       client_name = "Grafana";
