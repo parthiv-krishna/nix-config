@@ -20,6 +20,16 @@ lib.custom.mkSelfHostedService {
     description = "General storage";
     icon = "sh-owncloud";
   };
+
+  persistentDirectories = [
+    {
+      directory = "/var/lib/ocis";
+      user = "ocis";
+      group = "ocis";
+      mode = "0700";
+    }
+  ];
+
   serviceConfig = {
     unfree.allowedPackages = [
       "ocis_5-bin"
