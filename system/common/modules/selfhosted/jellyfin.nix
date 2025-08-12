@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  inherit (config.constants) hosts tieredCache;
+  inherit (config.constants) hosts;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
@@ -35,15 +35,17 @@ lib.custom.mkSelfHostedService {
     services = {
       jellyfin = {
         enable = true;
-        dataDir = "${tieredCache.cachePool}/jellyfin";
-        cacheDir = "${tieredCache.cachePool}/jellyfin/cache";
+        dataDir = "/var/lib/jellyfin";
+        cacheDir = "/var/lib/jellyfin/cache";
       };
-      # don't back up media
-      restic.backups.digitalocean.exclude = [
-        "${tieredCache.basePool}/jellyfin/cache"
-        "${tieredCache.basePool}/jellyfin/media"
-      ];
+
     };
+
+    # don't backup media
+    services.restic.backups.digitalocean.exclude = [
+      "system/var/lib/jellyfin/cache"
+      "system/var/lib/jellyfin/media"
+    ];
 
   };
 }

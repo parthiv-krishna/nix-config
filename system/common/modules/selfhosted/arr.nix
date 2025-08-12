@@ -7,8 +7,8 @@
 }:
 let
   hostName = config.constants.hosts.midnight;
-  mediaDir = "/array/merge/cache/media";
-
+  mediaDir = "/var/lib/arr/media";
+  stateDir = "/var/lib/arr/state";
 in
 {
   imports = [
@@ -205,8 +205,7 @@ in
   config = lib.mkIf (config.networking.hostName == hostName) {
     nixarr = {
       enable = true;
-      inherit mediaDir;
-      stateDir = "${mediaDir}/.state/nixarr";
+      inherit mediaDir stateDir;
 
       vpn = {
         enable = true;
@@ -279,7 +278,8 @@ in
 
     # don't backup media
     services.restic.backups.digitalocean.exclude = [
-      mediaDir
+      "system/var/lib/arr/media"
     ];
+
   };
 }

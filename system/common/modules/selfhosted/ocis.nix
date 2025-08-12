@@ -4,7 +4,7 @@
   ...
 }:
 let
-  inherit (config.constants) hosts tieredCache;
+  inherit (config.constants) hosts;
   port = 9200;
 in
 lib.custom.mkSelfHostedService {
@@ -31,8 +31,8 @@ lib.custom.mkSelfHostedService {
       inherit port;
       url = "https://drive.sub0.net";
 
-      # Use custom data directory in tiered cache
-      configDir = "${tieredCache.cachePool}/ocis/config";
+      # Use custom data directory
+      configDir = "/var/lib/ocis/config";
 
       # Use environment file for secrets
       environmentFile = config.sops.templates.ocis-environment.path;
@@ -54,16 +54,6 @@ lib.custom.mkSelfHostedService {
         PROXY_INSECURE_BACKEND = "true";
       };
     };
-
-    # Mount the oCIS data directory to the tiered cache so we can keep using ProtectSystem=strict
-    systemd.mounts = [
-      {
-        where = "/var/lib/ocis";
-        what = "${tieredCache.cachePool}/ocis";
-        type = "bind";
-        options = "bind";
-      }
-    ];
 
     # TODO: configure everything else
     sops = {
