@@ -137,7 +137,7 @@ in
         compression = "zstd";
         "com.sun:auto-snapshot" = "true";
       };
-      mountpoint = "/";
+      mountpoint = null;
       datasets = {
         "persist" = {
           type = "zfs_fs";

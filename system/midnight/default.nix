@@ -33,6 +33,9 @@ in
 
   time.timeZone = "Etc/UTC";
 
+  # required for ZFS
+  networking.hostId = "746e646d"; # mdnt
+
   custom = {
     reverse-proxy = {
       enable = true;
