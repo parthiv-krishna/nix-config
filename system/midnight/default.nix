@@ -17,17 +17,7 @@ in
     ./hardware-configuration.nix
 
     # disks
-    (import (lib.custom.relativeToRoot "system/common/disks/boot_drive.nix") {
-      inherit lib;
-      device = "/dev/disk/by-id/ata-ADATA_SP610_1F1220031635";
-      swapSize = "8G";
-    })
-    (import (lib.custom.relativeToRoot "system/common/disks/cached_hdd_array.nix") {
-      inherit lib;
-      dataDevices = dataDisks;
-      parityDevices = parityDisks;
-      cacheDevice = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_25033U803116";
-    })
+    ./disks.nix
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
