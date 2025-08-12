@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (config.constants) hosts tieredCache;
+  inherit (config.constants) hosts;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
@@ -58,24 +58,19 @@ lib.custom.mkSelfHostedService {
       immich = {
         enable = true;
         host = "0.0.0.0";
-        mediaLocation = "${tieredCache.cachePool}/immich";
+        mediaLocation = "/var/lib/immich";
         # point immich-machine-learning to the cuda-enabled runtime (see below)
         machine-learning = {
           enable = true;
           environment = {
             LD_LIBRARY_PATH = "${pkgs.python312Packages.onnxruntime}/lib/python3.12/site-packages/onnxruntime/capi";
-            MPLCONFIGDIR = "${tieredCache.cachePool}/immich/matplotlib";
+            MPLCONFIGDIR = "/var/lib/immich/matplotlib";
           };
         };
         # allow access to all acceleration devices
         accelerationDevices = null;
       };
 
-      # don't backup transcoded videos or thumbnails
-      restic.backups.digitalocean.exclude = [
-        "${tieredCache.basePool}/immich/encoded-video"
-        "${tieredCache.basePool}/immich/thumbs"
-      ];
     };
 
     users.users.immich.extraGroups = [
@@ -96,6 +91,12 @@ lib.custom.mkSelfHostedService {
       "cudnn"
       "libcufile"
       "libcusparse_lt"
+    ];
+
+    # don't backup transcoded videos or thumbnails
+    services.restic.backups.digitalocean.exclude = [
+      "system/var/lib/immich/encoded-video"
+      "system/var/lib/immich/thumbs"
     ];
 
   };

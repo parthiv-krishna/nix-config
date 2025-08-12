@@ -1,7 +1,6 @@
 # Configuration for midnight (home server)
 
 {
-  config,
   lib,
   ...
 }:
@@ -49,29 +48,6 @@ in
       enable = true;
       email = "letsencrypt.snowy015@passmail.net";
       cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
-    };
-
-    # tiered cache storage system
-    tiered-cache = {
-      enable = true;
-      cacheDevice = "/array/disk/cache";
-      dataDevices = [
-        "/array/disk/data0"
-        "/array/disk/data1"
-      ];
-      parityDevices = [
-        "/array/disk/parity0"
-      ];
-      cacheMountPoint = config.constants.tieredCache.cachePool;
-      baseMountPoint = config.constants.tieredCache.basePool;
-      targetCacheUsage = 80;
-      timerSchedule = "Sun *-*-* 07:00";
-      webhookSecretName = "tiered-cache/webhook";
-      resticRepositories = [ "digitalocean" ];
-      aiSummary = {
-        enable = true;
-        model = "qwen3:30b-a3b";
-      };
     };
 
     # seagate spindown for all drives

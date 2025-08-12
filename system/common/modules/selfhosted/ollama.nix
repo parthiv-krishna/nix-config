@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  inherit (config.constants) hosts tieredCache;
+  inherit (config.constants) hosts;
 in
 lib.custom.mkSelfHostedService {
   inherit
@@ -19,11 +19,12 @@ lib.custom.mkSelfHostedService {
         acceleration = "cuda";
         # allow remote access (via reverse proxy)
         host = "0.0.0.0";
-        models = "${tieredCache.cachePool}/ollama";
+        models = "/var/lib/ollama";
       };
 
       # models are very large and not worth backing up
-      restic.backups.digitalocean.exclude = [ "${tieredCache.basePool}/ollama/blobs" ];
+      restic.backups.digitalocean.exclude = [ "system/var/lib/ollama/blobs" ];
+
     };
   };
 
