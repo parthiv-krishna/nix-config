@@ -52,6 +52,12 @@ lib.custom.mkSelfHostedService {
       group = "redis-immich";
       mode = "0700";
     }
+    {
+      directory = "/var/lib/immich";
+      user = "immich";
+      group = "immich";
+      mode = "0700";
+    }
   ];
   serviceConfig = {
     services = {
