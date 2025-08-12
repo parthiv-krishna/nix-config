@@ -12,6 +12,14 @@ let
   swapSize = "16G";
   rootSize = "500G";
   l2arcSize = "1T";
+  labels = {
+    boot = "ssd-boot";
+    swap = "ssd-swap";
+    root = "ssd-root";
+    l2arc = "ssd-l2arc";
+    special = "ssd-special";
+    hdds = lib.lists.imap0 (i: _: "hdd${toString i}") hdds;
+  };
 in
 {
   disko.devices = {
@@ -23,7 +31,7 @@ in
           type = "gpt";
           partitions = {
             boot = {
-              label = "boot";
+              label = labels.boot;
               type = "EF00";
               size = "1G";
               content = {
@@ -34,6 +42,7 @@ in
               };
             };
             swap = {
+              label = labels.swap;
               size = swapSize;
               content = {
                 type = "swap";
@@ -41,6 +50,7 @@ in
               };
             };
             root = {
+              label = labels.root;
               size = rootSize;
               content = {
                 type = "btrfs";
@@ -56,6 +66,7 @@ in
             };
             # l2arc: block cache for zdata
             l2arc = {
+              label = "ssd-l2arc";
               size = l2arcSize;
               content = {
                 type = "zfs";
@@ -64,6 +75,7 @@ in
             };
             # special vdev: metadata and small blocks
             special = {
+              label = "ssd-special";
               size = "100%";
               content = {
                 type = "zfs";
@@ -88,7 +100,8 @@ in
             content = {
               type = "gpt";
               partitions = {
-                data = {
+                zfs = {
+                  label = builtins.elemAt labels.hdds i;
                   size = "100%";
                   content = {
                     type = "zfs";
@@ -109,13 +122,13 @@ in
           vdev = [
             {
               mode = "raidz1";
-              members = lib.lists.imap0 (i: _: "hdd${toString i}") hdds;
+              members = lib.map (label: "/dev/disk/by-partlabel/${label}") labels.hdds;
             }
           ];
-          cache = [ "ssd-l2arc" ];
+          cache = [ "/dev/disk/by-partlabel/${labels.l2arc}" ];
           special = [
             {
-              members = [ "ssd-special" ];
+              members = [ "/dev/disk/by-partlabel/${labels.special}" ];
             }
           ];
         };
