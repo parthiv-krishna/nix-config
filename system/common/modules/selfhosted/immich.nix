@@ -21,7 +21,6 @@ lib.custom.mkSelfHostedService {
     icon = "sh-immich";
   };
   oidcClient = {
-    subdomain = "photos";
     redirects = [
       "/auth/login"
       "/user-settings"

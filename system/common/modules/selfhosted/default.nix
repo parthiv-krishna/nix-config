@@ -47,7 +47,7 @@
           options = {
             subdomain = lib.mkOption {
               type = lib.types.str;
-              description = "Subdomain for the service (required for auto-generating URLs)";
+              description = "Subdomain for the service (auto-generated from mkSelfHostedService)";
             };
             redirects = lib.mkOption {
               type = lib.types.listOf lib.types.str;

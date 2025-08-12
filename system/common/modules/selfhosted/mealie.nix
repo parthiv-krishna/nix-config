@@ -18,7 +18,6 @@ lib.custom.mkSelfHostedService {
     icon = "sh-mealie";
   };
   oidcClient = {
-    subdomain = "food";
     redirects = [ "/login" ];
     extraConfig = {
       client_name = "Mealie";
