@@ -326,10 +326,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1754991357,
-        "narHash": "sha256-FlojTY7zEdkZCkURgsjIdwQ/DZ9iKozLGEzM+IjoNMc=",
+        "lastModified": 1754992951,
+        "narHash": "sha256-1lYfFa4RCgZZWt8BwDIThhnhIQr/bmC/Sr79v1hrkPA=",
         "ref": "main",
-        "rev": "a8fb3fa72487e7ceaae13aa995e6b2bcaf524a95",
+        "rev": "93bbaef01f391f1b9e1d40f000cd2f70109bb18d",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -373,16 +373,15 @@
         "website-builder": "website-builder"
       },
       "locked": {
-        "lastModified": 1749085338,
-        "narHash": "sha256-L3m49DUlrE+WRInrjg/o29LjLswd5l39flIvtKMZdaU=",
-        "owner": "StealthBadger747",
+        "lastModified": 1752337105,
+        "narHash": "sha256-dxnmm2wIgohIOKAoaa4fneDOsnnKR/BgFZuWhx4B5N8=",
+        "owner": "rasmus-kirk",
         "repo": "nixarr",
-        "rev": "ee2442856e1351ce98f14d1b79e3ac82c721992c",
+        "rev": "fc75ca0e6bc2fc31c0a3567d275b92ee30b9311d",
         "type": "github"
       },
       "original": {
-        "owner": "StealthBadger747",
-        "ref": "add-qbittorrent",
+        "owner": "rasmus-kirk",
         "repo": "nixarr",
         "type": "github"
       }
@@ -665,11 +664,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1748552643,
-        "narHash": "sha256-UI3dlA/6WOitW3ejPhwYvB/yxrVWpdTmh96Hl8CEUis=",
+        "lastModified": 1750317638,
+        "narHash": "sha256-B4RWcXXOLO6gMeYyV+K4olu+kGGsYamKH+JAm0cIXqI=",
         "owner": "rasmus-kirk",
         "repo": "website-builder",
-        "rev": "f399b9c89d45a0150ce6230c6df23f62f9c3cf89",
+        "rev": "b54192000a00e865947f45bacf3184d56363ee38",
         "type": "github"
       },
       "original": {
