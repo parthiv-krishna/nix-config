@@ -14,7 +14,7 @@ in
     restic
   ];
 
-  services.restic.backups.digitalocean = {
+  services.restic.backups.main = {
     paths = [
       "/persist"
     ];
@@ -32,6 +32,8 @@ in
       "--keep-monthly 3"
     ];
   };
+
+  custom.discord-notifiers.restic-backups-main.enable = true;
 
   sops.secrets = {
     "${secretPassword}" = { };

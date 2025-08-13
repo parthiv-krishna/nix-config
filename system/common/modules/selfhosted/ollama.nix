@@ -23,7 +23,7 @@ lib.custom.mkSelfHostedService {
       };
 
       # models are very large and not worth backing up
-      restic.backups.digitalocean.exclude = [ "system/var/lib/private/ollama/blobs" ];
+      restic.backups.main.exclude = [ "system/var/lib/private/ollama/blobs" ];
 
     };
   };
