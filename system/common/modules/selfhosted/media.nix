@@ -89,7 +89,7 @@ in
           nixarr.jellyfin = {
             enable = true;
             # inherit port;
-            vpn.enable = true;
+            # vpn.enable = true;
           };
         };
       }
@@ -132,7 +132,7 @@ in
             enable = true;
             inherit port;
             package = jellyseerrOIDC;
-            vpn.enable = true;
+            # vpn.enable = true;
           };
         };
         homepage = {
@@ -198,31 +198,6 @@ in
     )
     (
       let
-        port = 8080;
-      in
-      lib.custom.mkSelfHostedService {
-        inherit config lib;
-        name = "qbittorrent";
-        inherit hostName port;
-        subdomain = "download";
-        public = false;
-        protected = false;
-        serviceConfig = {
-          nixarr.qbittorrent = {
-            enable = true;
-            uiPort = port;
-            vpn.enable = true;
-          };
-
-          # fix UID conflict with postgres (on uid 71)
-          users.users.qbittorrent = {
-            uid = lib.mkForce 2071;
-          };
-        };
-      }
-    )
-    (
-      let
         port = 8989;
       in
       lib.custom.mkSelfHostedService {
@@ -238,6 +213,83 @@ in
             # doesn't define port
             # inherit port;
             vpn.enable = true;
+          };
+        };
+      }
+    )
+    (
+      let
+        port = 9091;
+      in
+      lib.custom.mkSelfHostedService {
+        inherit config lib;
+        name = "transmission";
+        inherit hostName port;
+        subdomain = "download";
+        public = false;
+        protected = false;
+        serviceConfig = {
+          nixarr.transmission = {
+            enable = true;
+            uiPort = port;
+            vpn.enable = true;
+            credentialsFile = config.sops.templates.transmission-credentials.path;
+            messageLevel = "debug";
+          };
+
+          sops = {
+            templates.transmission-credentials = {
+              owner = "transmission";
+              group = "cross-seed";
+              mode = "0600";
+              content = ''
+                {
+                  "rpc-username": "admin",
+                  "rpc-password": "${config.sops.placeholder."media/transmission-password"}",
+                  "rpc-authentication-required": true
+                }
+              '';
+            };
+            secrets."media/transmission-password" = {
+              owner = "transmission";
+              group = "cross-seed";
+              mode = "0600";
+            };
+          };
+        };
+      }
+    )
+    (
+      let
+        port = 8889;
+      in
+      lib.custom.mkSelfHostedService {
+        inherit config lib;
+        name = "unmanic";
+        inherit hostName port;
+        public = false;
+        protected = false;
+        serviceConfig = {
+          virtualisation.oci-containers.containers.unmanic = {
+            image = "ghcr.io/unmanic/unmanic:latest";
+            ports = [ "${toString port}:8888" ];
+            volumes = [
+              "${stateDir}/unmanic:/config"
+              "${mediaDir}/library:/library"
+            ];
+            environment = {
+              PUID = toString config.users.users.unmanic.uid;
+              PGID = toString config.users.groups.media.gid;
+            };
+            devices = [
+              "/dev/dri"
+            ];
+          };
+
+          users.users.unmanic = {
+            isSystemUser = true;
+            group = "media";
+            extraGroups = [ "video" ];
           };
         };
       }

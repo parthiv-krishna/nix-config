@@ -26,7 +26,7 @@
       url = "github:nix-community/impermanence";
     };
     nixarr = {
-      url = "github:StealthBadger747/nixarr/add-qbittorrent";
+      url = "github:rasmus-kirk/nixarr";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-config-secrets = {
