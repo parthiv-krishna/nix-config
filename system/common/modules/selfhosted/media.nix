@@ -165,6 +165,7 @@ in
         inherit config lib;
         name = "prowlarr";
         inherit hostName port;
+        subdomain = "indexers";
         public = false;
         protected = false;
         serviceConfig = {
@@ -267,6 +268,7 @@ in
         inherit config lib;
         name = "unmanic";
         inherit hostName port;
+        subdomain = "transcode";
         public = false;
         protected = false;
         serviceConfig = {
@@ -291,6 +293,12 @@ in
             group = "media";
             extraGroups = [ "video" ];
           };
+
+          # don't backup the container image
+          services.restic.backups.main.exclude = [
+            "system/var/lib/containers"
+          ];
+
         };
       }
     )
