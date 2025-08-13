@@ -7,8 +7,8 @@
 }:
 let
   hostName = config.constants.hosts.midnight;
-  mediaDir = "/var/lib/arr/media";
-  stateDir = "/var/lib/arr/state";
+  mediaDir = "/var/lib/media";
+  stateDir = "/var/lib/media/state";
 in
 {
   imports = [
@@ -55,6 +55,48 @@ in
     )
     (
       let
+        port = 8096;
+      in
+      lib.custom.mkSelfHostedService {
+        inherit config lib;
+        name = "jellyfin";
+        inherit hostName port;
+        subdomain = "tv";
+        public = true;
+        protected = false;
+        homepage = {
+          category = config.constants.homepage.categories.media;
+          description = "Movies and TV";
+          icon = "sh-jellyfin";
+        };
+        oidcClient = {
+          redirects = [ "/sso/OID/redirect/authelia" ];
+          extraConfig = {
+            client_name = "Jellyfin";
+            scopes = [
+              "groups"
+              "openid"
+              "profile"
+            ];
+            authorization_policy = "one_factor";
+            require_pkce = true;
+            userinfo_signed_response_alg = "none";
+            token_endpoint_auth_method = "client_secret_post";
+          };
+        };
+
+        serviceConfig = {
+          nixarr.jellyfin = {
+            enable = true;
+            # inherit port;
+            vpn.enable = true;
+          };
+        };
+      }
+
+    )
+    (
+      let
         port = 5055;
         # OIDC is not in the mainline yet, so we need to use a custom build
         # TODO: remove this once OIDC support is mainlined
@@ -90,6 +132,7 @@ in
             enable = true;
             inherit port;
             package = jellyseerrOIDC;
+            vpn.enable = true;
           };
         };
         homepage = {
@@ -210,7 +253,7 @@ in
 
         vpn = {
           enable = true;
-          wgConf = config.sops.secrets."arr/wg_config".path;
+          wgConf = config.sops.secrets."media/wg_config".path;
           vpnTestService.enable = true;
         };
 
@@ -275,11 +318,12 @@ in
         };
       };
 
-      sops.secrets."arr/wg_config" = { };
+      sops.secrets."media/wg_config" = { };
 
       # don't backup media
-      services.restic.backups.digitalocean.exclude = [
-        "system/var/lib/arr/media"
+      services.restic.backups.main.exclude = [
+        "system/var/lib/media/library"
+        "system/var/lib/media/torrents"
       ];
 
     }

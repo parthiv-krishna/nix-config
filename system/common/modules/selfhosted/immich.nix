@@ -100,7 +100,7 @@ lib.custom.mkSelfHostedService {
     ];
 
     # don't backup transcoded videos or thumbnails
-    services.restic.backups.digitalocean.exclude = [
+    services.restic.backups.main.exclude = [
       "system/var/lib/immich/encoded-video"
       "system/var/lib/immich/thumbs"
     ];
