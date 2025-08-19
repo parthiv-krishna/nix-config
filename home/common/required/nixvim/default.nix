@@ -7,7 +7,7 @@
 {
 
   imports = lib.flatten [
-    inputs.nixvim.homeManagerModules.nixvim
+    inputs.nixvim.homeModules.nixvim
     (lib.custom.scanPaths ./.)
   ];
 
