@@ -24,11 +24,14 @@ in
           enable = true;
         };
 
-        # fixes wifi disappearing after suspend/resume
+        hardware.wirelessRegulatoryDatabase = true;
+        boot.extraModprobeConfig = ''
+          options cfg80211 ieee80211_regdom="US"
+        '';
+
+        # easily reload wifi driver if needed
         systemd.services."wifi-reload" = {
           description = "Reload ${cfg.driver} wifi driver after resume";
-          wantedBy = [ "sleep.target" ];
-          after = [ "sleep.target" ];
           serviceConfig = {
             Type = "oneshot";
             ExecStart = "${pkgs.writeShellScriptBin "wifi-reload.sh" ''
