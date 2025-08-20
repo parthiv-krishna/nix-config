@@ -133,4 +133,6 @@ lib.mkIf cfg.enable {
 
     shellIntegration.enableBashIntegration = true;
   };
+
+  programs.bash.shellAliases.ssh = "kitten ssh";
 }
