@@ -314,7 +314,6 @@ in
         vpn = {
           enable = true;
           wgConf = config.sops.secrets."media/wg_config".path;
-          vpnTestService.enable = true;
         };
 
         recyclarr = {
@@ -377,6 +376,74 @@ in
           };
         };
       };
+
+      systemd = {
+        # fix TLS issues due to post-tunnel IPv6
+        services.wg.serviceConfig.ExecStartPost =
+          let
+            ip = "${pkgs.iproute2}/bin/ip";
+          in
+          "${ip} netns exec wg ${ip} link set wg0 mtu 1280";
+
+        services = {
+          vpn-refresh = {
+            description = "Refresh Wireguard";
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "systemctl restart wg.service";
+              ExecStartPost = "systemctl start vpn-test.service";
+            };
+          };
+
+          vpn-test =
+            let
+              vpnTestScript = pkgs.writeShellApplication {
+                name = "vpn-test";
+                runtimeInputs = with pkgs; [
+                  bash
+                  curl
+                  iproute2
+                  unixtools.ping
+                ];
+                text = ''
+                  echo "Current wireguard interface config:"
+                  ip link show wg0
+
+                  echo "Current public IP:"
+                  curl -s ifconfig.me
+
+                  # TODO: download once into nix store
+                  echo "Running DNS leak test:"
+                  curl -s https://raw.githubusercontent.com/macvk/dnsleaktest/b03ab54d574adbe322ca48cbcb0523be720ad38d/dnsleaktest.sh -o dnsleaktest.sh
+                  chmod +x dnsleaktest.sh
+                  ./dnsleaktest.sh
+                '';
+              };
+            in
+            {
+              description = "Test wireguard";
+              serviceConfig = {
+                Type = "oneshot";
+                ExecStart = "${vpnTestScript}/bin/vpn-test";
+              };
+              vpnConfinement = {
+                enable = true;
+                vpnNamespace = "wg";
+              };
+            };
+        };
+
+        timers.vpn-refresh = {
+          description = "Refresh wireguard every 6h";
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            OnUnitActiveSec = "6h";
+            Unit = "vpn-refresh.service";
+          };
+        };
+      };
+
+      custom.discord-notifiers.vpn-test.enable = true;
 
       sops.secrets."media/wg_config" = { };
 
