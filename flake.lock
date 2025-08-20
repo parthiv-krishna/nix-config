@@ -248,11 +248,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1755569926,
-        "narHash": "sha256-s7D28zPHlFWVZ7dDxm0L1o5+t423rMJUfgCMGUeyYSk=",
+        "lastModified": 1755618859,
+        "narHash": "sha256-VGEZMAX/bOKrkg9x5DjXBfjpxm9gvU3kRVps7RKm8mQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c613ac14f5600033bf84ae75c315d5ce24a0229b",
+        "rev": "0e0a16b342bcd435ad83c62f4794ce1a4ccff0ea",
         "type": "github"
       },
       "original": {
@@ -326,10 +326,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1755579273,
-        "narHash": "sha256-uC2a9Q0UFRtJHXgNNbUDAjJivEaw90Q4R3cTVAqZ+lY=",
+        "lastModified": 1755611850,
+        "narHash": "sha256-pZWrdAFnGsEks5M6HHE8AkPx4nkEJfGUmSf5FK8saXg=",
         "ref": "main",
-        "rev": "a6578a6dba845613a72935590656ecbdc3392655",
+        "rev": "307b5539da8b20bc9e9e7c2835f635fc225831d0",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -373,11 +373,11 @@
         "website-builder": "website-builder"
       },
       "locked": {
-        "lastModified": 1752337105,
-        "narHash": "sha256-dxnmm2wIgohIOKAoaa4fneDOsnnKR/BgFZuWhx4B5N8=",
+        "lastModified": 1755601892,
+        "narHash": "sha256-4FECnCcaUVQHnocuuu/KRldPW2yj7hFpd1F7bfWxTxY=",
         "owner": "rasmus-kirk",
         "repo": "nixarr",
-        "rev": "fc75ca0e6bc2fc31c0a3567d275b92ee30b9311d",
+        "rev": "c6cd890fa028ec2a8d735a121cb0a161d265101c",
         "type": "github"
       },
       "original": {
