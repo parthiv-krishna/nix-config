@@ -366,15 +366,6 @@ in
           "${ip} netns exec wg ${ip} link set wg0 mtu 1280";
 
         services = {
-          vpn-refresh = {
-            description = "Refresh Wireguard";
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "systemctl restart wg.service";
-              ExecStartPost = "systemctl start vpn-test.service";
-            };
-          };
-
           vpn-test =
             let
               vpnTestScript = pkgs.writeShellApplication {
@@ -392,11 +383,8 @@ in
                   echo "Current public IP:"
                   curl -s ifconfig.me
 
-                  # TODO: download once into nix store
                   echo "Running DNS leak test:"
-                  curl -s https://raw.githubusercontent.com/macvk/dnsleaktest/b03ab54d574adbe322ca48cbcb0523be720ad38d/dnsleaktest.sh -o dnsleaktest.sh
-                  chmod +x dnsleaktest.sh
-                  ./dnsleaktest.sh
+                  bash ${lib.custom.relativeToRoot "scripts/dnsleaktest.sh"}
                 '';
               };
             in
@@ -406,24 +394,37 @@ in
                 Type = "oneshot";
                 ExecStart = "${vpnTestScript}/bin/vpn-test";
               };
+              onFailure = [ "vpn-refresh.service" ];
               vpnConfinement = {
                 enable = true;
                 vpnNamespace = "wg";
               };
             };
+
+          vpn-refresh = {
+            description = "Refresh Wireguard";
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "systemctl restart wg.service";
+              ExecStartPost = "systemctl start vpn-test.service";
+            };
+          };
         };
 
-        timers.vpn-refresh = {
-          description = "Refresh wireguard every 6h";
+        timers.vpn-test = {
+          description = "Test wireguard every 1h";
           wantedBy = [ "timers.target" ];
           timerConfig = {
-            OnUnitActiveSec = "6h";
-            Unit = "vpn-refresh.service";
+            OnUnitActiveSec = "1h";
+            Unit = "vpn-test.service";
           };
         };
       };
 
-      custom.discord-notifiers.vpn-test.enable = true;
+      custom.discord-notifiers = {
+        vpn-test.enable = true;
+        vpn-refresh.enable = true;
+      };
 
       sops.secrets."media/wg_config" = { };
 

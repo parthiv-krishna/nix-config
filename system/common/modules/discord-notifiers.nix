@@ -19,7 +19,7 @@ let
     name = "discord-webhook";
     runtimeInputs = [ pythonWithDiscord ];
     text = ''
-      exec ${pythonWithDiscord}/bin/python3 ${./discord-webhook.py} "$@"
+      exec ${pythonWithDiscord}/bin/python3 ${lib.custom.relativeToRoot "scripts/discord-webhook.py"} "$@"
     '';
   };
 
