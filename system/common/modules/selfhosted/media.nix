@@ -179,26 +179,6 @@ in
     )
     (
       let
-        port = 8787;
-      in
-      lib.custom.mkSelfHostedService {
-        inherit config lib;
-        name = "readarr";
-        inherit hostName port;
-        subdomain = "books";
-        public = false;
-        protected = false;
-        serviceConfig = {
-          nixarr.readarr = {
-            enable = true;
-            inherit port;
-            vpn.enable = true;
-          };
-        };
-      }
-    )
-    (
-      let
         port = 8989;
       in
       lib.custom.mkSelfHostedService {
