@@ -35,9 +35,13 @@ in
           serviceConfig = {
             Type = "oneshot";
             ExecStart = "${pkgs.writeShellScriptBin "wifi-reload.sh" ''
+              ${pkgs.systemd}/bin/systemctl stop NetworkManager.service
+              ${pkgs.systemd}/bin/systemctl stop wpa_supplicant.service
               ${pkgs.kmod}/bin/modprobe -rv ${cfg.driver}
               sleep 1
               ${pkgs.kmod}/bin/modprobe -v ${cfg.driver}
+              ${pkgs.systemd}/bin/systemctl start wpa_supplicant.service
+              ${pkgs.systemd}/bin/systemctl start NetworkManager.service
             ''}/bin/wifi-reload.sh";
           };
         };
