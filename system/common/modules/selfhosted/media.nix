@@ -126,7 +126,7 @@ in
         inherit hostName port;
         subdomain = "request";
         public = true;
-        protected = true;
+        protected = false;
         serviceConfig = {
           nixarr.jellyseerr = {
             enable = true;
