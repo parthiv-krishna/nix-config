@@ -14,11 +14,7 @@
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
 
     # disks
-    (import (lib.custom.relativeToRoot "system/common/disks/boot_drive_luks_interactive.nix") {
-      inherit lib;
-      device = "/dev/disk/by-id/nvme-nvme.1c5c-414442394e37303139313037303951304f-5348475033312d32303030474d-00000001";
-      swapSize = "40G"; # 32G RAM + some extra. not scientific
-    })
+    ./disks.nix
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")

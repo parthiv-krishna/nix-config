@@ -10,10 +10,7 @@
     ./hardware-configuration.nix
 
     # disks
-    (import (lib.custom.relativeToRoot "system/common/disks/boot_drive.nix") {
-      device = "/dev/sda";
-      swapSize = "8G";
-    })
+    ./disks.nix
 
     # required system modules
     (lib.custom.relativeToRoot "system/common/required")
