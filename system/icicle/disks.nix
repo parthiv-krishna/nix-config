@@ -3,13 +3,21 @@
 #   /root    (intended to be wiped on boot by impermanence module)
 #   /persist (keeps explicitly-declared persistent state)
 #   /nix     (holds nix store)
+# root is encrypted with LUKS with an interactive login password (bitlocker style)
 # based on https://github.com/vimjoyer/impermanent-setup/blob/main/final/disko.nix
+# encryption setup is based on https://github.com/nix-community/disko/blob/master/example/luks-interactive-login.nix
 
 {
-  device ? throw "Set this to your disk device, e.g. /dev/sda",
-  swapSize ? "8G",
+  lib,
   ...
 }:
+let
+  device = "/dev/disk/by-id/nvme-nvme.1c5c-414442394e37303139313037303951304f-5348475033312d32303030474d-00000001";
+  swapSize = "40G";
+  # during installation, the password file is provided by the user
+  # within the configuration, we don't specify it (so we get an interactive password prompt)
+  passwordFile = null;
+in
 {
   disko.devices = {
     disk.main = {
@@ -46,8 +54,20 @@
             name = "root";
             size = "100%";
             content = {
-              type = "lvm_pv";
-              vg = "root_vg";
+              type = "luks";
+              name = "crypted";
+              settings = {
+                allowDiscards = true;
+                bypassWorkqueues = true;
+              };
+              content = {
+                type = "lvm_pv";
+                vg = "root_vg";
+              };
+            }
+            // lib.optionalAttrs (passwordFile != null) {
+              # provide the password file during installation
+              inherit passwordFile;
             };
           };
         };

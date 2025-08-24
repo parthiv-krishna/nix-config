@@ -1,21 +1,19 @@
-# disko configuration for a 2-drive setup, useful when boot drive is small
-# 1. boot drive with boot/ESP/swap/root partitions
-# the root partition is further subdivided into 2 subvolumes
+# disko configuration for a boot drive with boot/ESP/swap/root partitions
+# the root partition is further subdivided into 3 subvolumes
 #   /root    (intended to be wiped on boot by impermanence module)
 #   /persist (keeps explicitly-declared persistent state)
+#   /nix     (holds nix store)
 # based on https://github.com/vimjoyer/impermanent-setup/blob/main/final/disko.nix
-# 2. separate drive with /nix
 
-{
-  mainDevice ? throw "Set this to your disk device, e.g. /dev/sda",
-  nixDevice ? throw "Set this to your disk device, e.g. /dev/sda",
-  swapSize ? "1G",
-  ...
-}:
+_:
+let
+  device = "/dev/sda";
+  swapSize = "8G";
+in
 {
   disko.devices = {
     disk.main = {
-      device = mainDevice;
+      inherit device;
       type = "disk";
       content = {
         type = "gpt";
@@ -77,28 +75,15 @@
                   ];
                   mountpoint = "/persist";
                 };
+
+                "/nix" = {
+                  mountOptions = [
+                    "subvol=nix"
+                    "noatime"
+                  ];
+                  mountpoint = "/nix";
+                };
               };
-            };
-          };
-        };
-      };
-    };
-    disk.nix = {
-      device = nixDevice;
-      type = "disk";
-      content = {
-        type = "gpt";
-        partitions = {
-          nix = {
-            size = "100%";
-            content = {
-              type = "filesystem";
-              format = "btrfs";
-              mountpoint = "/nix";
-              mountOptions = [
-                "defaults"
-                "noatime"
-              ];
             };
           };
         };
