@@ -6,16 +6,16 @@
 }:
 
 let
-  cfg = config.custom.seagate-spindown;
+  cfg = config.custom.seagate-hdd;
 in
 {
-  options.custom.seagate-spindown = {
-    enable = lib.mkEnableOption "Seagate EPC spindown timers";
+  options.custom.seagate-hdd = {
+    enable = lib.mkEnableOption "Seagate disk management";
 
     disks = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "List of disk devices to configure spindown timers for";
+      description = "List of Seagate disk devices";
       example = [
         "/dev/sda"
         "/dev/sdb"
