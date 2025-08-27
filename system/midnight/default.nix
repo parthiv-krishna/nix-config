@@ -43,8 +43,8 @@ in
       cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
     };
 
-    # seagate spindown for all drives
-    seagate-spindown = {
+    # seagate disk management for all drives
+    seagate-hdd = {
       enable = true;
       disks = dataDisks ++ parityDisks;
     };
@@ -69,6 +69,9 @@ in
 
     # UPS monitoring
     ups.enable = true;
+
+    # zfs-related services
+    zfs.enable = true;
   };
   # should not be changed until a clean install
   system.stateVersion = "24.11";
