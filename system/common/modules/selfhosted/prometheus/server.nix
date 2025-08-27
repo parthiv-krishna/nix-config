@@ -76,6 +76,18 @@ lib.custom.mkSelfHostedService {
           scrape_interval = "10s";
           scrape_timeout = "10s";
         }
+        {
+          job_name = "zfs";
+          static_configs = [
+            {
+              targets = [ (lib.custom.mkInternalFqdn config.constants "prometheus-zfs" hosts.midnight) ];
+            }
+          ];
+          metrics_path = "/metrics";
+          scheme = "https";
+          scrape_interval = "10s";
+          scrape_timeout = "10s";
+        }
       ];
     };
   };
