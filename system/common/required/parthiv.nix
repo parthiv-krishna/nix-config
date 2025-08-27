@@ -17,7 +17,10 @@ in
   users.users.parthiv = {
     isNormalUser = true;
     hashedPasswordFile = config.sops.secrets."${passwordSecretName}".path;
-    extraGroups = [ "wheel" ];
+    extraGroups = [
+      "systemd-journal"
+      "wheel"
+    ];
     openssh.authorizedKeys.keys = [
       # parthiv@icicle
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDn4cP5Vjigpv2s3CVWSQc3VlmlnxJqfcYMku3Dwbi2k"
