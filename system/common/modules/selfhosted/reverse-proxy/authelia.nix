@@ -32,8 +32,10 @@ in
             settings = {
               server = {
                 address = "tcp://:${toString port}";
-                read_buffer_size = 32768;
-                write_buffer_size = 32768;
+                buffers = {
+                  read = 32768;
+                  write = 32768;
+                };
               };
               theme = "dark";
               log.level = "debug";
