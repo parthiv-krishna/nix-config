@@ -70,7 +70,10 @@ lib.custom.mkSelfHostedService {
           enable = true;
           environment = {
             LD_LIBRARY_PATH = "${pkgs.python312Packages.onnxruntime}/lib/python3.12/site-packages/onnxruntime/capi";
+            # model downloads need to be somewhere that the immich user has access to
             MPLCONFIGDIR = "/var/lib/immich/matplotlib";
+            HF_HOME = "/var/lib/immich/hf-cache";
+            TRANSFORMERS_CACHE = "/var/lib/immich/hf-cache";
           };
         };
         # allow access to all acceleration devices
@@ -103,6 +106,8 @@ lib.custom.mkSelfHostedService {
     services.restic.backups.main.exclude = [
       "system/var/lib/immich/encoded-video"
       "system/var/lib/immich/thumbs"
+      "system/var/lib/immich/matplotlib"
+      "system/var/lib/immich/hf-cache"
     ];
 
   };
