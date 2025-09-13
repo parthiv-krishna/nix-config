@@ -37,6 +37,18 @@ in
   networking.hostId = "746e646d"; # mdnt
 
   custom = {
+    # tell impermanence to wipe our ssd-root partition on boot
+    impermanence.rootPartitionPath = "/dev/disk/by-partlabel/ssd-root";
+
+    # intel gpu drivers
+    intel-gpu.enable = true;
+
+    # nvidia drivers
+    nvidia = {
+      enable = true;
+      cudaCapability = "8.6"; # RTX 3060
+    };
+
     reverse-proxy = {
       enable = true;
       email = "letsencrypt.snowy015@passmail.net";
@@ -52,23 +64,14 @@ in
     # ssh server
     sshd.enable = true;
 
+    # UPS monitoring
+    ups.enable = true;
+
     # wake on LAN support
     wake-on-lan = {
       enable = true;
       device = "enp2s0";
     };
-
-    # nvidia drivers
-    nvidia = {
-      enable = true;
-      cudaCapability = "8.6"; # RTX 3060
-    };
-
-    # intel gpu drivers
-    intel-gpu.enable = true;
-
-    # UPS monitoring
-    ups.enable = true;
 
     # zfs-related services
     zfs.enable = true;
