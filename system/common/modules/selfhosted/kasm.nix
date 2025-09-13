@@ -2,23 +2,23 @@
 let
   inherit (config.constants) hosts;
   port = 4443;
+  subdomain = "vm";
+  hostName = hosts.midnight;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "kasm";
-  hostName = hosts.midnight;
-  inherit port;
-  subdomain = "vm";
-  public = false;
+  inherit hostName port subdomain;
+  public = true;
   protected = true;
   homepage = {
-    category = config.constants.homepage.categories.storage;
+    category = config.constants.homepage.categories.admin;
     description = "Virtual machines";
     icon = "sh-kasm-workspaces";
   };
 
   oidcClient = {
-    redirects = [ "/api/oidc_callback/" ];
+    redirects = [ "/api/oidc_callback" ];
     extraConfig = {
       client_name = "kasm";
       scopes = [
@@ -48,5 +48,30 @@ lib.custom.mkSelfHostedService {
     };
 
     unfree.allowedPackages = [ "kasmweb" ];
+
+    services.caddy.virtualHosts =
+      let
+        # kasm exposes itself over https using a self-signed cert
+        fixedConfigForKasm = ''
+          tls {
+            dns cloudflare {env.CF_API_TOKEN}
+          }
+          reverse_proxy localhost:${toString port} {
+            transport http {
+                tls_insecure_skip_verify
+            }
+            header_up X-Forwarded-Port "443"
+            header_up X-Forwarded-Proto "https"
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+          }
+        '';
+      in
+      {
+        ${lib.custom.mkPublicFqdn config.constants subdomain}.extraConfig = lib.mkForce fixedConfigForKasm;
+        ${lib.custom.mkInternalFqdn config.constants subdomain hostName}.extraConfig =
+          lib.mkForce fixedConfigForKasm;
+      };
   };
 }

@@ -23,29 +23,28 @@ in
             hash = "sha256-EsIilxpS8pibyrppsYMAxz2CF123YOOEWpd2E4n/hWQ=";
           };
           inherit (cfg) email;
-          globalConfig =
-            let
-              # acme_ca = "https://acme-staging-v02.api.letsencrypt.org/directory";
-              acme_ca = "https://acme-v02.api.letsencrypt.org/directory";
-            in
-            ''
-              acme_ca ${acme_ca}
-              log stdout_logger {
-               output file ${config.services.caddy.logDir}/access.log {
-                  roll_size 10MB
-                  roll_keep 5
-                  roll_keep_for 14d
-                  mode 0640
-                }
-                level INFO
-              }
-              metrics {
-                per_host
-              }
-              servers {
-                max_header_size 5MB
-              }
-            '';
+
+          # acmeCA = "https://acme-staging-v02.api.letsencrypt.org/directory";
+          acmeCA = "https://acme-v02.api.letsencrypt.org/directory";
+
+          logFormat = ''
+            output file ${config.services.caddy.logDir}/access.log {
+               roll_size 10MB
+               roll_keep 5
+               roll_keep_for 14d
+               mode 0640
+             }
+             level INFO
+          '';
+
+          globalConfig = ''
+            metrics {
+              per_host
+            }
+            servers {
+              max_header_size 5MB
+            }
+          '';
           # virtualHosts are configured by individual services or other modules (like mkSelfHostedService)
         };
 
