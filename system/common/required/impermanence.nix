@@ -7,7 +7,7 @@
   ...
 }:
 let
-  cfg = config.custom.impermanance;
+  cfg = config.custom.impermanence;
 in
 {
   imports = [
