@@ -145,6 +145,7 @@ in
           # TODO: remove when jellyseerr doesn't force HTTP
           customRedirects = [ "http://request.sub0.net/login?provider=sub0.net&callback=true" ];
           extraConfig = {
+            client_name = "Jellyseerr";
             scopes = [
               "openid"
               "email"

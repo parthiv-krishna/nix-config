@@ -20,7 +20,7 @@ lib.custom.mkSelfHostedService {
   oidcClient = {
     redirects = [ "/api/oidc_callback" ];
     extraConfig = {
-      client_name = "kasm";
+      client_name = "Kasm";
       scopes = [
         "openid"
         "profile"
