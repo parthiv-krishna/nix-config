@@ -45,7 +45,25 @@ in
               max_header_size 5MB
             }
           '';
-          # virtualHosts are configured by individual services or other modules (like mkSelfHostedService)
+
+          virtualHosts.${lib.custom.mkPublicFqdn config.constants "*"} = {
+            logFormat = ''
+              output file ${config.services.caddy.logDir}/access-wildcard_.${config.constants.domains.public}.log {
+                roll_size 10MB
+                roll_keep 5
+                roll_keep_for 14d
+                mode 0640
+              }
+              level DEBUG
+            '';
+            extraConfig = ''
+              tls {
+                dns cloudflare {env.CF_API_TOKEN}
+              }
+              redir ${lib.custom.mkPublicHttpsUrl config.constants ""}
+            '';
+          };
+          # virtualHosts are configured by individual services (e.g. via lib.custom.mkSelfHostedService)
         };
 
         # enable HTTP/S
