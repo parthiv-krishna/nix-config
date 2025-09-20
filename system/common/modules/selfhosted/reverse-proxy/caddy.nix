@@ -46,9 +46,10 @@ in
             }
           '';
 
+          # wildcard public fqdn
           virtualHosts.${lib.custom.mkPublicFqdn config.constants "*"} = {
             logFormat = ''
-              output file ${config.services.caddy.logDir}/access-wildcard_.${config.constants.domains.public}.log {
+              output file ${config.services.caddy.logDir}/access-${lib.custom.mkPublicFqdn config.constants "wildcard_"}.log {
                 roll_size 10MB
                 roll_keep 5
                 roll_keep_for 14d
@@ -61,6 +62,27 @@ in
                 dns cloudflare {env.CF_API_TOKEN}
               }
               redir ${lib.custom.mkPublicHttpsUrl config.constants ""}
+            '';
+          };
+
+          # wildcard internal fqdn
+          virtualHosts.${lib.custom.mkInternalFqdn config.constants "*" config.networking.hostName} = {
+            logFormat = ''
+              output file ${config.services.caddy.logDir}/access-${
+                lib.custom.mkInternalFqdn config.constants "wildcard_" config.networking.hostName
+              }.log {
+                roll_size 10MB
+                roll_keep 5
+                roll_keep_for 14d
+                mode 0640
+              }
+              level DEBUG
+            '';
+            extraConfig = ''
+              tls {
+                dns cloudflare {env.CF_API_TOKEN}
+              }
+              redir ${lib.custom.mkInternalHttpsUrl config.constants "" config.networking.hostName}
             '';
           };
           # virtualHosts are configured by individual services (e.g. via lib.custom.mkSelfHostedService)
