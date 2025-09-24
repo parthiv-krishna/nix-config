@@ -10,9 +10,11 @@
   home.packages = with pkgs; [
     curl
     fastfetch
+    fzf
     htop
     pciutils
     powertop
+    ripgrep
     trash-cli
     unzip
     usbutils
