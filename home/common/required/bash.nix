@@ -17,6 +17,10 @@
       bind 'set vi-ins-mode-string "\1\e[6 q\2"'
       bind 'set show-mode-in-prompt on'
 
+      # include .bashrc-extra if it exists
+      # for machine-specific config that won't be checked in
+      [[ -f ~/.bashrc-extra ]] && . ~/.bashrc-extra
+
       # print system info
       ${pkgs.fastfetch}/bin/fastfetch
     '';
