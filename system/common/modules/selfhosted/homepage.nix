@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -97,11 +96,5 @@ lib.custom.mkSelfHostedService {
         }
       ];
     };
-
-    # add ping to PATH
-    # TODO: contribute back to nixpkgs? how?
-    systemd.services.homepage-dashboard.path = with pkgs; [
-      iputils
-    ];
   };
 }
