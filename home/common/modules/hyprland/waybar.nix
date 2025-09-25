@@ -1,11 +1,12 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
   cfg = config.custom.hyprland;
-  margin = "12px";
+  margin = "24px";
 in
 lib.mkIf cfg.enable {
   programs.waybar = {
@@ -18,6 +19,9 @@ lib.mkIf cfg.enable {
         modules-left = [ "hyprland/workspaces" ];
         modules-center = [ ];
         modules-right = [
+          "tray"
+          "pulseaudio"
+          "audio"
           "network"
           "battery"
           "clock"
@@ -29,14 +33,26 @@ lib.mkIf cfg.enable {
 
         network = {
           interval = 5;
-          format-wifi = "";
-          format-ethernet = "";
-          format-disconnected = "";
+          format-wifi = "  {essid} ({signalStrength}%)";
+          format-ethernet = "  {ifname}";
+          format-disconnected = "  Offline";
           class = {
             wifi = "wifi";
             ethernet = "ethernet";
             disconnected = "disconnected";
           };
+        };
+
+        pulseaudio = {
+          format = "{icon} {volume}%";
+          format-muted = " Muted ({volume}%)";
+          on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+          scroll-step = 5;
+          format-icons = [
+            ""
+            ""
+            ""
+          ];
         };
 
         battery = {
@@ -110,6 +126,18 @@ lib.mkIf cfg.enable {
         color: #${base00};
       }
 
+      #tray {
+        margin-right: ${margin};
+      }
+
+      #pulseaudio {
+        margin-right: ${margin};
+        color: #${base05};
+      }
+      #pulseaudio.muted {
+        color: #${base08};
+      }
+
       #network {
         margin-right: ${margin};
       }
@@ -148,6 +176,7 @@ lib.mkIf cfg.enable {
   };
 
   wayland.windowManager.hyprland.settings.exec-once = [
+    "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
     "waybar"
   ];
 }
