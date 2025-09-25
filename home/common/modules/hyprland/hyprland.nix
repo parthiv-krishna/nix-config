@@ -135,9 +135,9 @@ lib.mkIf cfg.enable {
         };
       };
 
-      gestures = {
-        workspace_swipe = true;
-      };
+      gesture = [
+        "3, horizontal, workspace"
+      ];
 
       bind = [
         "${mainMod}, Q, killactive,"
