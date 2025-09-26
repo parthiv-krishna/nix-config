@@ -31,6 +31,10 @@ lib.mkIf cfg.enable {
           format = "{id} {name}";
         };
 
+        tray = {
+          spacing = 10;
+        };
+
         network = {
           interval = 5;
           format-wifi = "  {essid} ({signalStrength}%)";
@@ -175,8 +179,18 @@ lib.mkIf cfg.enable {
     '';
   };
 
-  wayland.windowManager.hyprland.settings.exec-once = [
-    "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
-    "waybar"
-  ];
+  wayland.windowManager.hyprland.settings = {
+    exec-once = [
+      "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
+      "${pkgs.pasystray}/bin/pasystray"
+      "${pkgs.blueman}/bin/blueman-applet"
+      "waybar"
+    ];
+
+    windowrule = [
+      # open audio control centered/floating
+      "float, class:org.pulseaudio.pavucontrol"
+      "center, class:org.pulseaudio.pavucontrol"
+    ];
+  };
 }
