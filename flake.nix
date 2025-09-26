@@ -129,24 +129,32 @@
       ) hosts;
 
       # standalone home-manager configurations for non-NixOS systems
-      homeConfigurations = {
-        # default standalone configuration using x86_64-linux
-        parthiv = inputs.home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${systems.x86};
-          modules = [
-            ./home/common/modules
-            ./home/standalone.nix
+      # generate for each of the configured usernames
+      homeConfigurations =
+        let
+          mkHomeConfig =
+            username:
+            inputs.home-manager.lib.homeManagerConfiguration {
+              pkgs = nixpkgs.legacyPackages.${systems.x86};
+              modules = [
+                ./home/common/modules
+                ./home/standalone.nix
+              ];
+              extraSpecialArgs = {
+                inherit inputs username;
+                lib = (mkCustomLib systems.x86).extend (
+                  _final: _prev: {
+                    inherit (inputs.home-manager.lib) hm;
+                  }
+                );
+              };
+            };
+          usernames = [
+            "parthiv"
+            "parthivk"
           ];
-          extraSpecialArgs = {
-            inherit inputs;
-            lib = (mkCustomLib systems.x86).extend (
-              _final: _prev: {
-                inherit (inputs.home-manager.lib) hm;
-              }
-            );
-          };
-        };
-      };
+        in
+        lib.genAttrs usernames mkHomeConfig;
 
       # remote deployment
       colmena = {

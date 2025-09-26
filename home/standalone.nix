@@ -2,6 +2,7 @@
 
 {
   lib,
+  username,
   ...
 }:
 
@@ -11,8 +12,8 @@
   ];
 
   home = {
-    username = lib.mkDefault "parthiv";
-    homeDirectory = lib.mkDefault "/home/parthiv";
+    inherit username;
+    homeDirectory = lib.mkDefault "/home/${username}";
     stateVersion = "24.11";
   };
 
