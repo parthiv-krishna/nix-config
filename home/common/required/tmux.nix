@@ -31,6 +31,12 @@
       unbind-key %
       unbind-key \"
 
+      bind @ choose-window 'join-pane -h -s "%%"'
+
+      # mouse
+      set-option -g mouse on
+      unbind -n MouseDown3Pane
+
       unbind-key C-a
       bind C-a send-key C-a
 
