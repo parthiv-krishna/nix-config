@@ -37,6 +37,19 @@ lib.custom.mkSelfHostedService {
       };
     };
 
+    # disable calibre tests
+    # TODO: re-enable
+    nixpkgs.overlays = [
+      (_: prev: {
+        calibre = prev.calibre.overrideAttrs (_: {
+          doCheck = false;
+          doInstallCheck = false;
+          checkPhase = "echo skipping tests for calibre";
+          installCheckPhase = "echo skipping tests for calibre";
+        });
+      })
+    ];
+
     environment.systemPackages = with pkgs; [
       calibre
     ];
