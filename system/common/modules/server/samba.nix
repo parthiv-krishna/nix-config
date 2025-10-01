@@ -1,12 +1,14 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
   cfg = config.custom.samba;
   rootPath = "/var/lib/samba";
-  publicPath = "${rootPath}/public";
+  publicPath = "${rootPath}/data/public";
+  port = toString 445;
 in
 {
   options.custom.samba = {
@@ -18,6 +20,7 @@ in
       {
         services.samba = {
           enable = true;
+          enableNmbd = false;
           settings = {
             global = {
               "workgroup" = "WORKGROUP";
@@ -29,7 +32,7 @@ in
               "hosts deny" = "0.0.0.0/0";
               "interfaces" = "lo";
               "bind interfaces only" = "yes";
-              "smb ports" = "445";
+              "smb ports" = "${port}";
               "map to guest" = "never";
             };
 
@@ -44,10 +47,37 @@ in
             };
           };
         };
+
+        users = {
+          groups.samba-users = { };
+          users.parthiv.extraGroups = [ "samba-users" ];
+        };
+
+        systemd.services.tailscale-serve-samba = {
+          description = "Serve samba share over tailscale";
+          after = [
+            "tailscaled.service"
+            "smbd.service"
+          ];
+          wants = [
+            "tailscaled.service"
+            "smbd.service"
+          ];
+          wantedBy = [ "multi-user.target" ];
+
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = "${pkgs.tailscale}/bin/tailscale serve --bg --tcp ${port} tcp://localhost:${port}";
+            ExecStop = "${pkgs.tailscale}/bin/tailscale serve --bg --tcp ${port} off";
+            User = "root";
+          };
+        };
       }
       (lib.custom.mkPersistentSystemDir {
         directory = rootPath;
-        user = "samba";
+        user = "root";
+        group = "samba-users";
         mode = "0755";
       })
     ]
