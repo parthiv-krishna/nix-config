@@ -61,6 +61,9 @@ in
       disks = dataDisks ++ parityDisks;
     };
 
+    # smb share
+    samba.enable = true;
+
     # ssh server
     sshd.enable = true;
 

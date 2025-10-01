@@ -8,7 +8,7 @@ let
 in
 {
   options.custom.sshd = {
-    enable = lib.mkEnableOption "custom.intel-gpu";
+    enable = lib.mkEnableOption "custom.sshd";
   };
 
   config = lib.mkIf cfg.enable (
