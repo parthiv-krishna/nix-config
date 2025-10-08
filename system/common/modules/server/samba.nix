@@ -20,7 +20,7 @@ in
       {
         services.samba = {
           enable = true;
-          enableNmbd = false;
+          nmbd.enable = false;
           settings = {
             global = {
               "workgroup" = "WORKGROUP";
