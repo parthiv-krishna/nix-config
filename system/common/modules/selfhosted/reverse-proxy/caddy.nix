@@ -20,7 +20,7 @@ in
               "github.com/caddy-dns/cloudflare@v0.2.1"
               "github.com/hslatman/caddy-crowdsec-bouncer@v0.8.1"
             ];
-            hash = "sha256-WXCUUPJYvnqYgYZf8soLI8USQnELSrJCF/owVmH6zWo=";
+            hash = "sha256-mWdcq1FN/ImOYedSXrNnL4kQkTDkIC+IInVI6NFPPhw=";
           };
           inherit (cfg) email;
 
