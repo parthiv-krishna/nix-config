@@ -17,10 +17,15 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Update flake.lock
+      - name: Configure git
         run: |
           git config --global user.name "Parthiv Krishna"
           git config --global user.email "parthiv-krishna@users.noreply.github.com"
+      - name: Update flake.lock
+        run: |
           nix flake update --commit-lock-file
+      - name: Update caddy.nix plugins hash
+        run: |
+          ./scripts/update-caddy-and-commit.sh ./system/common/modules/selfhosted/reverse-proxy/caddy.nix
       - name: Push changes
         run: git push
