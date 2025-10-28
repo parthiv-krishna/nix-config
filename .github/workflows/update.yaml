@@ -1,4 +1,4 @@
-name: "Auto update flake.lock"
+name: "Auto update"
 on:
   schedule:
     - cron: "0 0 * * 1" # Every Monday at midnight UTC
