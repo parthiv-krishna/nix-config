@@ -1,80 +1,87 @@
 # git configuration, should be imported to home-manager
 
 _: {
-  programs.git = {
-    enable = true;
-    lfs.enable = true;
+  programs = {
+    git = {
+      enable = true;
+      lfs.enable = true;
 
-    userName = "Parthiv Krishna";
-    userEmail = "parthiv-krishna@users.noreply.github.com";
+      settings = {
+        alias = {
+          a = "add";
+          ap = "add -p";
+          au = "add -u";
 
-    # use difftastic syntax highlighter
-    difftastic.enable = true;
+          b = "branch";
+          bv = "branch -v";
 
-    extraConfig = {
-      apply = {
-        whitespace = "fix";
-      };
+          bs = "bisect";
+          bsb = "bisect bad";
+          bsg = "bisect good";
 
-      core = {
-        # error on trailing whitespace
-        whitespace = "trailing-space,space-before-tab";
-      };
+          c = "commit";
+          ca = "commit --amend --no-edit";
+          cam = "commit --amend -m";
+          cm = "commit -m";
 
-      init = {
-        defaultBranch = "main";
-      };
+          co = "checkout";
+          cob = "checkout -b";
 
-      url = {
-        # shortcutes for github
-        "git@github.com:" = {
-          insteadOf = "gh:";
+          d = "diff";
+          dc = "diff --check";
+          dn = "diff --no-index";
+          dnw = "diff --no-index --word-diff";
+          ds = "diff --staged";
+          dsc = "diff --staged --check";
+          dsw = "diff --staged --word-diff";
+          dw = "diff --word-diff";
+
+          r = "reset";
+
+          s = "status";
+          su = "status -uno";
         };
-        "https://github.com/" = {
-          insteadOf = "gh/";
+
+        apply = {
+          whitespace = "fix";
+        };
+
+        core = {
+          # error on trailing whitespace
+          whitespace = "trailing-space,space-before-tab";
+        };
+
+        init = {
+          defaultBranch = "main";
+        };
+
+        url = {
+          # shortcuts for github
+          "git@github.com:" = {
+            insteadOf = "gh:";
+          };
+          "https://github.com/" = {
+            insteadOf = "gh/";
+          };
+        };
+
+        user = {
+          name = "Parthiv Krishna";
+          email = "parthiv-krishna@users.noreply.github.com";
         };
       };
+
+      ignores = [
+        # vim stuff
+        "*~"
+        "*.swp"
+      ];
     };
 
-    aliases = {
-      a = "add";
-      ap = "add -p";
-      au = "add -u";
-
-      b = "branch";
-      bv = "branch -v";
-
-      bs = "bisect";
-      bsb = "bisect bad";
-      bsg = "bisect good";
-
-      c = "commit";
-      ca = "commit --amend --no-edit";
-      cam = "commit --amend -m";
-      cm = "commit -m";
-
-      co = "checkout";
-      cob = "checkout -b";
-
-      d = "diff";
-      dc = "diff --check";
-      dn = "diff --no-index";
-      dnw = "diff --no-index --word-diff";
-      ds = "diff --staged";
-      dsc = "diff --staged --check";
-      dsw = "diff --staged --word-diff";
-      dw = "diff --word-diff";
-
-      r = "reset";
-
-      s = "status";
-      su = "status -uno";
+    # difftastic for smarter diffs
+    difftastic = {
+      enable = true;
+      git.enable = true;
     };
-
-    ignores = [
-      # vim stuff
-      "*~"
-      "*.swp"
-    ];
   };
 }
