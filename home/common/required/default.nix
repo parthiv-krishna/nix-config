@@ -8,10 +8,10 @@
 
   # core utils
   home.packages = with pkgs; [
+    btop
     curl
     fastfetch
     fzf
-    htop
     pciutils
     powertop
     ripgrep
