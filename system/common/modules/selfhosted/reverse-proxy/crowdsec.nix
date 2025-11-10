@@ -33,7 +33,10 @@ let
   port = 9090;
 in
 {
-  disabledModules = [ "services/security/crowdsec.nix" ];
+  disabledModules = [
+    "services/security/crowdsec.nix"
+    "services/security/crowdsec-firewall-bouncer.nix"
+  ];
   imports = [
     inputs.crowdsec.nixosModules.crowdsec
     inputs.crowdsec.nixosModules.crowdsec-firewall-bouncer
