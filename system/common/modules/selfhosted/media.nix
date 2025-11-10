@@ -222,7 +222,7 @@ in
           sops = {
             templates.transmission-credentials = {
               owner = "transmission";
-              group = "cross-seed";
+              group = "media";
               mode = "0600";
               content = ''
                 {
@@ -234,7 +234,7 @@ in
             };
             secrets."media/transmission-password" = {
               owner = "transmission";
-              group = "cross-seed";
+              group = "media";
               mode = "0600";
             };
           };
