@@ -9,7 +9,8 @@ let
 
   packagesWithDirs = with pkgs; [
     {
-      package = audacity;
+      package = brave;
+      stateDir = ".config/BraveSoftware";
     }
     {
       package = discord;

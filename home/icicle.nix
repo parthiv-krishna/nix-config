@@ -10,6 +10,8 @@ _:
   custom = {
     gui-apps.enable = true;
     hyprland.enable = true;
+    sound-engineering.enable = true;
+
     sops.sopsFile = "icicle.yaml";
   };
 
