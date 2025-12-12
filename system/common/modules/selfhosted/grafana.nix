@@ -10,40 +10,6 @@ let
   domain = lib.custom.mkPublicFqdn config.constants subdomain;
   autheliaDomain = lib.custom.mkPublicFqdn config.constants "auth";
   secretsRoot = "authelia/identity_providers/oidc/clients/grafana";
-
-  # this version fixes GitSync issues. should be able to switch once 12.1.0 hits nixpkgs
-  grafana-nightly = pkgs.stdenv.mkDerivation rec {
-    pname = "grafana";
-    version = "12.1.0-244117";
-
-    src = pkgs.fetchurl {
-      url = "https://dl.grafana.com/oss/release/grafana_12.1.0-244117_244117_linux_arm64.tar.gz";
-      sha256 = "sha256-G8de9/By+P3xe0nJCAAGpumwemlyCqCdXqHQsutSMWI=";
-    };
-
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-
-    installPhase = ''
-      mkdir -p $out/bin $out/share/grafana $out/etc/grafana
-
-      # Copy all files to share directory (this becomes homepath)
-      cp -r * $out/share/grafana/
-
-      # Move binary to bin
-      mv $out/share/grafana/bin/grafana $out/bin/grafana
-
-      # Ensure proper permissions
-      chmod +x $out/bin/grafana
-
-      # Create wrapper with proper homepath
-      wrapProgram $out/bin/grafana
-    '';
-
-    meta = with pkgs.lib; {
-      description = "Grafana nightly build";
-      platforms = platforms.linux;
-    };
-  };
   port = 3000;
 in
 lib.custom.mkSelfHostedService {
@@ -91,7 +57,6 @@ lib.custom.mkSelfHostedService {
 
     services.grafana = {
       enable = true;
-      package = grafana-nightly;
       settings = {
         server = {
           http_port = port;
