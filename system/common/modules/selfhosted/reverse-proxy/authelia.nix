@@ -43,27 +43,36 @@ in
               authentication_backend.file.path = "${cfg.autheliaStateDir}/users_database.yml";
               access_control = {
                 default_policy = "deny";
-                rules = lib.mkAfter [
-                  # service-specific rules are managed by lib.custom.mkSelfHostedService
-                  # anyone can access the auth portal
-                  {
-                    domain_regex = lib.custom.mkPublicFqdn config.constants subdomain;
-                    policy = "bypass";
-                  }
-                  # admins and users can access all domains
-                  {
-                    domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
-                    policy = "one_factor";
-                    subject = [
-                      "group:admin"
-                      "group:user"
-                    ];
-                  }
-                  # deny access to non-group domains
-                  {
-                    domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
-                    policy = "deny";
-                  }
+                rules = lib.mkMerge [
+                  (lib.mkBefore [
+                    {
+                      domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
+                      resources = [ "^/robots\\.txt$" ];
+                      policy = "bypass";
+                    }
+                  ])
+                  (lib.mkAfter [
+                    # service-specific rules are managed by lib.custom.mkSelfHostedService
+                    # anyone can access the auth portal
+                    {
+                      domain_regex = lib.custom.mkPublicFqdn config.constants subdomain;
+                      policy = "bypass";
+                    }
+                    # admins and users can access all domains
+                    {
+                      domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
+                      policy = "one_factor";
+                      subject = [
+                        "group:admin"
+                        "group:user"
+                      ];
+                    }
+                    # deny access to non-group domains
+                    {
+                      domain_regex = "^[a-z0-9]*\.?${config.constants.domains.public}$";
+                      policy = "deny";
+                    }
+                  ])
                 ];
               };
               session = {

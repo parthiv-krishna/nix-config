@@ -99,6 +99,7 @@ in
           tls {
             dns cloudflare {env.CF_API_TOKEN}
           }
+          import robots
           reverse_proxy localhost:${toString port}
         '';
       };
@@ -188,6 +189,10 @@ in
                     extraConfig = ''
                       tls {
                         dns cloudflare {env.CF_API_TOKEN}
+                      }
+                      @robots_path path /robots.txt
+                      handle @robots_path {
+                        import robots
                       }
                       import auth
                       reverse_proxy ${proxyTarget}

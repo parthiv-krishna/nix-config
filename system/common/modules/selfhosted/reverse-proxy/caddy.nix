@@ -46,6 +46,18 @@ in
             }
           '';
 
+          # robots.txt on all virtual hosts
+          extraConfig = ''
+                        (robots) {
+                          @robots_path path /robots.txt
+                          handle @robots_path {
+                            header Content-Type text/plain
+                            respond "User-agent: *
+            Disallow: /"
+                          }
+                        }
+          '';
+
           # wildcard public fqdn
           virtualHosts.${lib.custom.mkPublicFqdn config.constants "*"} = {
             logFormat = ''
@@ -61,6 +73,7 @@ in
               tls {
                 dns cloudflare {env.CF_API_TOKEN}
               }
+              import robots
               redir ${lib.custom.mkPublicHttpsUrl config.constants ""}
             '';
           };
@@ -82,6 +95,7 @@ in
               tls {
                 dns cloudflare {env.CF_API_TOKEN}
               }
+              import robots
               redir ${lib.custom.mkInternalHttpsUrl config.constants "" config.networking.hostName}
             '';
           };
