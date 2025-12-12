@@ -190,12 +190,11 @@ in
                       tls {
                         dns cloudflare {env.CF_API_TOKEN}
                       }
-                      @robots_path path /robots.txt
-                      handle @robots_path {
-                        import robots
+                      import robots
+                      handle {
+                        import auth
+                        reverse_proxy ${proxyTarget}
                       }
-                      import auth
-                      reverse_proxy ${proxyTarget}
                     '';
                   };
                 })
