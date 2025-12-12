@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   inherit (config.constants) hosts;
 in
@@ -16,7 +21,7 @@ lib.custom.mkSelfHostedService {
     services = {
       ollama = {
         enable = true;
-        acceleration = "cuda";
+        package = pkgs.ollama-cuda;
         # allow remote access (via reverse proxy)
         host = "0.0.0.0";
         models = "/var/lib/ollama";
