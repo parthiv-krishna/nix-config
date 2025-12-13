@@ -43,6 +43,24 @@ in
           ];
       };
 
+      github =
+        let
+          githubMcpWrapper = pkgs.writeShellScript "github-mcp-wrapper" ''
+            export GITHUB_PERSONAL_ACCESS_TOKEN=$(cat ${config.sops.secrets.${githubTokenSecret}.path})
+            exec ${pkgs.nodejs}/bin/npx -y @modelcontextprotocol/server-github "$@"
+          '';
+        in
+        {
+          type = "stdio";
+          command = "${githubMcpWrapper}";
+          env.PATH =
+            with pkgs;
+            lib.makeBinPath [
+              bash
+              nodejs
+            ];
+        };
+
       playwright = {
         type = "stdio";
         command = "${pkgs.playwright-mcp}/bin/mcp-server-playwright";
