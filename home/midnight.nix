@@ -8,6 +8,7 @@ _:
   ];
 
   custom = {
+    ai-tools.enable = true;
     sops.sopsFile = "midnight.yaml";
   };
 
