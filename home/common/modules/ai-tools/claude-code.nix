@@ -11,7 +11,7 @@ in
     programs.claude-code = {
       enable = true;
 
-      mcpServers = cfg.mcp-servers;
+      inherit (cfg) mcpServers;
 
       settings = {
         includeCoAuthoredBy = false;
