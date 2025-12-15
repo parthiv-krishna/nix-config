@@ -48,14 +48,13 @@ in
 
           # robots.txt on all virtual hosts
           extraConfig = ''
-                        (robots) {
-                          @robots_path path /robots.txt
-                          handle @robots_path {
-                            header Content-Type text/plain
-                            respond "User-agent: *
-            Disallow: /"
-                          }
-                        }
+            (robots) {
+              handle /robots.txt {
+                header Content-Type text/plain
+                respond "User-agent: *
+                         Disallow: /"
+              }
+            }
           '';
 
           # wildcard public fqdn
