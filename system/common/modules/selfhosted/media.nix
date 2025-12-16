@@ -422,18 +422,18 @@ in
             description = "Refresh Wireguard";
             serviceConfig = {
               Type = "oneshot";
-              ExecStart = "systemctl restart wg.service";
+              ExecStart = "systemctl restart wg.service prowlarr.service radarr.service sonarr.service transmission.service";
               ExecStartPost = "systemctl start vpn-test.service";
             };
           };
         };
 
-        timers.vpn-test = {
-          description = "Test wireguard every 1h";
+        timers.vpn-refresh = {
+          description = "Refresh wireguard every 3h";
           wantedBy = [ "timers.target" ];
           timerConfig = {
-            OnUnitActiveSec = "1h";
-            Unit = "vpn-test.service";
+            OnUnitActiveSec = "3h";
+            Unit = "vpn-refresh.service";
           };
         };
       };
