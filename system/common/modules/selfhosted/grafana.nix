@@ -15,7 +15,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "grafana";
-  hostName = hosts.nimbus;
+  hostName = hosts.nimbus.name;
   inherit port;
   public = true;
   protected = true;

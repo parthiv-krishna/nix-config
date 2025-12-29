@@ -13,7 +13,7 @@ lib.custom.mkSelfHostedService {
     lib
     ;
   name = "ollama";
-  hostName = hosts.midnight;
+  hostName = hosts.midnight.name;
   port = 11434;
   public = false;
   persistentDirectories = [ "/var/lib/private/ollama" ];

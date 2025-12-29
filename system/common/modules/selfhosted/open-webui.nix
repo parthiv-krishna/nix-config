@@ -12,7 +12,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "open-webui";
-  hostName = hosts.midnight;
+  hostName = hosts.midnight.name;
   inherit port subdomain;
   public = true;
   protected = true;

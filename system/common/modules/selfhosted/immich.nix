@@ -10,7 +10,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "immich";
-  hostName = hosts.midnight;
+  hostName = hosts.midnight.name;
   port = 2283;
   subdomain = "photos";
   public = true;

@@ -38,7 +38,7 @@ let
 in
 {
   imports = [
-    (mkNodeExporterService hosts.midnight)
-    (mkNodeExporterService hosts.nimbus)
+    (mkNodeExporterService hosts.midnight.name)
+    (mkNodeExporterService hosts.nimbus.name)
   ];
 }

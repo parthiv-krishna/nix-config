@@ -10,7 +10,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus-zfs";
-  hostName = hosts.midnight;
+  hostName = hosts.midnight.name;
   inherit port;
   public = false;
   protected = false;

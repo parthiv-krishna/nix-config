@@ -3,7 +3,7 @@ let
   inherit (config.constants) hosts;
   port = 4443;
   subdomain = "vm";
-  hostName = hosts.midnight;
+  hostName = hosts.midnight.name;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;

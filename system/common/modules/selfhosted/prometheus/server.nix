@@ -6,7 +6,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus";
-  hostName = hosts.nimbus;
+  hostName = hosts.nimbus.name;
   inherit port;
   public = false;
   protected = false;
@@ -27,7 +27,7 @@ lib.custom.mkSelfHostedService {
           job_name = "nut";
           static_configs = [
             {
-              targets = [ (lib.custom.mkInternalFqdn config.constants "prometheus-nut" hosts.midnight) ];
+              targets = [ (lib.custom.mkInternalFqdn config.constants "prometheus-nut" hosts.midnight.name) ];
             }
           ];
           metrics_path = "/ups_metrics";
@@ -52,8 +52,8 @@ lib.custom.mkSelfHostedService {
           static_configs = [
             {
               targets = [
-                (lib.custom.mkInternalFqdn config.constants "prometheus-node" hosts.midnight)
-                (lib.custom.mkInternalFqdn config.constants "prometheus-node" hosts.nimbus)
+                (lib.custom.mkInternalFqdn config.constants "prometheus-node" hosts.midnight.name)
+                (lib.custom.mkInternalFqdn config.constants "prometheus-node" hosts.nimbus.name)
               ];
             }
           ];
@@ -80,7 +80,7 @@ lib.custom.mkSelfHostedService {
           job_name = "zfs";
           static_configs = [
             {
-              targets = [ (lib.custom.mkInternalFqdn config.constants "prometheus-zfs" hosts.midnight) ];
+              targets = [ (lib.custom.mkInternalFqdn config.constants "prometheus-zfs" hosts.midnight.name) ];
             }
           ];
           metrics_path = "/metrics";

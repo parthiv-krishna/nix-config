@@ -7,7 +7,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "mealie";
-  hostName = hosts.nimbus;
+  hostName = hosts.nimbus.name;
   inherit port;
   subdomain = "food";
   public = true;

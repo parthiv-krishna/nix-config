@@ -63,35 +63,10 @@
   outputs =
     { nixpkgs, self, ... }@inputs:
     let
-      inherit (nixpkgs) lib; # equivalent to lib = nixpkgs.lib;
-      systems = {
-        x86 = "x86_64-linux";
-        arm = "aarch64-linux";
-      };
+      inherit (nixpkgs) lib;
+      constants = import ./constants.nix;
+      inherit (constants) hosts systems;
       forEachSystem = lib.genAttrs (lib.attrValues systems);
-      # Build NixOS configurations for each host
-      hosts = {
-        icicle = {
-          system = systems.x86;
-          buildOnTarget = true;
-          allowLocalDeployment = true;
-          tags = [ "client" ];
-        };
-        midnight = {
-          system = systems.x86;
-          buildOnTarget = true;
-          allowLocalDeployment = false;
-          tags = [ "server" ];
-        };
-        nimbus = {
-          system = systems.arm;
-          buildOnTarget = true;
-          allowLocalDeployment = false;
-          tags = [ "server" ];
-        };
-      };
-      constants = import ./system/common/modules/constants.nix { inherit lib; };
-      internalDomain = constants.options.constants.domains.internal.default;
 
       # helper function to create custom lib for a system
       mkCustomLib =
@@ -159,7 +134,6 @@
       # remote deployment
       colmena = {
         meta = {
-          # build host
           nixpkgs = nixpkgs.legacyPackages.${systems.x86};
           nodeSpecialArgs = lib.mapAttrs (
             _hostName: hostConfig:
@@ -176,8 +150,10 @@
       // lib.mapAttrs (hostName: hostConfig: {
 
         deployment = {
-          targetHost = "${hostName}.${internalDomain}";
-          inherit (hostConfig) buildOnTarget allowLocalDeployment tags;
+          targetHost = hostConfig.fqdn;
+          buildOnTarget = true;
+          allowLocalDeployment = false;
+          inherit (hostConfig) tags;
         };
 
         imports = [

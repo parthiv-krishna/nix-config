@@ -10,7 +10,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "homepage";
-  hostName = hosts.nimbus;
+  hostName = hosts.nimbus.name;
   inherit port;
   subdomain = ""; # on root domain
   public = true;

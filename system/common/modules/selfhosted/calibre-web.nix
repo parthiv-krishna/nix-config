@@ -11,7 +11,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "calibre";
-  hostName = hosts.midnight;
+  hostName = hosts.midnight.name;
   inherit port;
   subdomain = "books";
   public = true;

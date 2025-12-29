@@ -6,7 +6,7 @@
   ...
 }:
 let
-  hostName = config.constants.hosts.midnight;
+  hostName = config.constants.hosts.midnight.name;
   mediaDir = "/var/lib/media";
   stateDir = "/var/lib/media/state";
 in
