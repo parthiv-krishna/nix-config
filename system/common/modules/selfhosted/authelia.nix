@@ -9,7 +9,8 @@ let
   subdomain = "auth";
   port = 9091;
   redisPort = 6379;
-  cfg = config.custom.reverse-proxy;
+  instanceName = config.constants.domains.public;
+  stateDir = "/var/lib/authelia-${instanceName}";
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
@@ -24,15 +25,16 @@ lib.custom.mkSelfHostedService {
 
   persistentDirectories = [
     {
-      directory = cfg.autheliaStateDir;
-      inherit (config.services.authelia.instances.${cfg.autheliaInstanceName}) user group;
+      directory = stateDir;
+      user = "authelia-${instanceName}";
+      group = "authelia-${instanceName}";
       mode = "0750";
     }
   ];
 
   serviceConfig = {
     services = {
-      authelia.instances.${config.constants.domains.public} = {
+      authelia.instances.${instanceName} = {
         enable = true;
         secrets = with config.sops; {
           jwtSecretFile = secrets."authelia/identity_validation/reset_password/jwt_secret".path;
@@ -56,8 +58,8 @@ lib.custom.mkSelfHostedService {
           };
           theme = "dark";
           log.level = "debug";
-          totp.issuer = config.constants.domains.public;
-          authentication_backend.file.path = "${cfg.autheliaStateDir}/users_database.yml";
+          totp.issuer = instanceName;
+          authentication_backend.file.path = "${stateDir}/users_database.yml";
           access_control = {
             default_policy = "one_factor";
           };
@@ -65,7 +67,7 @@ lib.custom.mkSelfHostedService {
             cookies = [
               {
                 name = "sub0_session";
-                domain = config.constants.domains.public;
+                domain = instanceName;
                 authelia_url = lib.custom.mkPublicHttpsUrl config.constants subdomain;
                 inactivity = "1 week";
                 expiration = "3 weeks";
@@ -83,14 +85,14 @@ lib.custom.mkSelfHostedService {
             ban_time = "5 minutes";
           };
           storage = {
-            local.path = "${cfg.autheliaStateDir}/db.sqlite3";
+            local.path = "${stateDir}/db.sqlite3";
           };
           # see https://www.authelia.com/integration/proxies/caddy/#implementation
           server.endpoints.authz.forward-auth.implementation = "ForwardAuth";
           # TODO: setup SMTP server for email
           notifier = {
             disable_startup_check = false;
-            filesystem.filename = "${cfg.autheliaStateDir}/notification.txt";
+            filesystem.filename = "${stateDir}/notification.txt";
           };
         };
 
@@ -179,7 +181,7 @@ lib.custom.mkSelfHostedService {
       };
 
       # redis server for session storage
-      redis.servers."authelia-${cfg.autheliaInstanceName}" = {
+      redis.servers."authelia-${instanceName}" = {
         enable = true;
         port = redisPort;
         settings = {
@@ -218,7 +220,7 @@ lib.custom.mkSelfHostedService {
         map (
           secretPath:
           lib.nameValuePair secretPath {
-            owner = config.services.authelia.instances.${cfg.autheliaInstanceName}.user;
+            owner = config.services.authelia.instances.${instanceName}.user;
           }
         ) allSecretPaths
       );
