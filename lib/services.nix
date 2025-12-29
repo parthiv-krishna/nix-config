@@ -98,12 +98,6 @@ in
         '';
       };
 
-      # generate dns entry
-      dnsEntry = {
-        custom.selfhosted.dnsRewrites."${fqdn.internal}" = host.ip.v4;
-        custom.selfhosted.dnsRewrites."${fqdn.public}" = host.ip.v4;
-      };
-
       # generate homepage entry if homepage metadata is provided
       homepageEntry =
         if (homepage != null) then
@@ -153,7 +147,6 @@ in
         ]
         ++ persistentDirConfigs
         ++ [
-          dnsEntry
           homepageEntry
           oidcEntry
         ]

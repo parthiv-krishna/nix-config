@@ -6,11 +6,6 @@
   imports = lib.custom.scanPaths ./.;
 
   options.custom.selfhosted = {
-    dnsRewrites = lib.mkOption {
-      type = lib.types.attrsOf lib.types.str;
-      default = { };
-    };
-
     homepageServices = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.submodule {

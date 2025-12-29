@@ -15,17 +15,9 @@ let
       name,
       system,
       tags,
-      ip,
     }:
     {
       inherit name system tags;
-      ip = {
-        inherit (ip) v4 v6;
-      };
-      ips = [
-        ip.v4
-        ip.v6
-      ];
       # just need the domains, this avoids circular dependency
       fqdn = mkInternalFqdn { inherit domains; } "" name;
     };
@@ -48,28 +40,16 @@ in
       name = "icicle";
       system = systems.x86;
       tags = [ tags.client ];
-      ip = {
-        v4 = "100.74.68.49";
-        v6 = "fd7a:115c:a1e0::501:4437";
-      };
     };
     midnight = mkHost {
       name = "midnight";
       system = systems.x86;
       tags = [ tags.server ];
-      ip = {
-        v4 = "100.82.111.22";
-        v6 = "fd7a:115c:a1e0::5d01:8784";
-      };
     };
     nimbus = mkHost {
       name = "nimbus";
       system = systems.arm;
       tags = [ tags.server ];
-      ip = {
-        v4 = "100.122.154.1";
-        v6 = "fd7a:115c:a1e0::cf01:9a02";
-      };
     };
   };
 

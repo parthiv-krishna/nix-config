@@ -7,7 +7,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "mealie";
-  host = hosts.mealie;
+  host = hosts.midnight;
   inherit port;
   subdomain = "food";
   homepage = {
