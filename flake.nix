@@ -10,10 +10,6 @@
       url = "github:zhaofengli/colmena?ref=release-0.4.x";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    crowdsec = {
-      url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";

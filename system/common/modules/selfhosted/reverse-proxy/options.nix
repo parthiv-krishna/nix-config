@@ -10,12 +10,6 @@ in
   options.custom.reverse-proxy = {
     enable = lib.mkEnableOption "Caddy-based reverse proxy";
 
-    publicFacing = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Whether this Caddy instance is directly facing the public internet. Enables crowdsec and authelia.";
-    };
-
     cloudflareTokenSecretName = lib.mkOption {
       type = lib.types.str;
       default = "caddy/cloudflare_api_token";

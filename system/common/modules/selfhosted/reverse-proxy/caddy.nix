@@ -18,9 +18,8 @@ in
             # TODO: https://github.com/escherlies/nixos-caddy-with-modules ?
             plugins = [
               "github.com/caddy-dns/cloudflare@v0.2.1"
-              "github.com/hslatman/caddy-crowdsec-bouncer@v0.8.1"
             ];
-            hash = "sha256-t8dxMajZBdWQ5CtW384+15Rq0thCp7mrhOw9T50lfms=";
+            hash = "sha256-Dvifm7rRwFfgXfcYvXcPDNlMaoxKd5h4mHEK6kJ+T4A=";
           };
           inherit (cfg) email;
 

@@ -34,18 +34,6 @@ lib.custom.mkSelfHostedService {
           scrape_timeout = "10s";
         }
         {
-          job_name = "crowdsec";
-          static_configs = [
-            {
-              targets = [ "localhost:9100" ];
-            }
-          ];
-          metrics_path = "/metrics";
-          scheme = "http";
-          scrape_interval = "10s";
-          scrape_timeout = "10s";
-        }
-        {
           job_name = "node";
           static_configs = [
             {
