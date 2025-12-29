@@ -26,18 +26,25 @@ lib.custom.mkSelfHostedService {
         enable = true;
         host = "0.0.0.0";
         inherit port;
+        mutableSettings = false;
         settings = {
-          dns = {
-            bind_hosts = host.ips;
-            port = 53;
-            upstream_dns = [
-              # quad9
-              "9.9.9.9"
-              "149.112.112.112"
-            ];
-
+          dns =
+            let
+              quad9 = [
+                "9.9.9.9"
+                "149.112.112.112"
+              ];
+            in
+            {
+              bind_hosts = host.ips;
+              port = 53;
+              upstream_dns = quad9;
+              bootstrap_dns = quad9;
+            };
+          filtering = {
             rewrites = lib.mapAttrsToList (domain: answer: {
               inherit domain answer;
+              enabled = true;
             }) config.custom.selfhosted.dnsRewrites;
           };
         };
