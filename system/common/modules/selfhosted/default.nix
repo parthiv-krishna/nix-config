@@ -1,5 +1,7 @@
 {
+  config,
   lib,
+  pkgs,
   ...
 }:
 {
@@ -71,4 +73,128 @@
     };
 
   };
+
+  config = lib.mkMerge [
+    {
+      services.caddy = {
+        # caddy gets enabled on all hosts that have selhosted services (by mkSelfHostedService)
+        package = pkgs.caddy.withPlugins {
+          # TODO: https://github.com/escherlies/nixos-caddy-with-modules ?
+          plugins = [
+            "github.com/caddy-dns/cloudflare@v0.2.1"
+          ];
+          hash = "sha256-Dvifm7rRwFfgXfcYvXcPDNlMaoxKd5h4mHEK6kJ+T4A=";
+        };
+        email = "letsencrypt.snowy015@passmail.net";
+
+        # acmeCA = "https://acme-staging-v02.api.letsencrypt.org/directory";
+        acmeCA = "https://acme-v02.api.letsencrypt.org/directory";
+
+        logFormat = ''
+          output file ${config.services.caddy.logDir}/access.log {
+             roll_size 10MB
+             roll_keep 5
+             roll_keep_for 14d
+             mode 0640
+           }
+           level INFO
+        '';
+
+        globalConfig = ''
+          metrics {
+            per_host
+          }
+          servers {
+            max_header_size 5MB
+          }
+        '';
+
+        # robots.txt on all virtual hosts
+        extraConfig = ''
+          (robots) {
+            handle /robots.txt {
+              header Content-Type text/plain
+              respond "User-agent: *
+                       Disallow: /"
+            }
+          }
+        '';
+
+        # wildcard public fqdn
+        virtualHosts.${lib.custom.mkPublicFqdn config.constants "*"} = {
+          logFormat = ''
+            output file ${config.services.caddy.logDir}/access-${lib.custom.mkPublicFqdn config.constants "wildcard_"}.log {
+              roll_size 10MB
+              roll_keep 5
+              roll_keep_for 14d
+              mode 0640
+            }
+            level DEBUG
+          '';
+          extraConfig = ''
+            tls {
+              dns cloudflare {env.CF_API_TOKEN}
+            }
+            import robots
+            redir ${lib.custom.mkPublicHttpsUrl config.constants ""}
+          '';
+        };
+
+        # wildcard internal fqdn
+        virtualHosts.${lib.custom.mkInternalFqdn config.constants "*" config.networking.hostName} = {
+          logFormat = ''
+            output file ${config.services.caddy.logDir}/access-${
+              lib.custom.mkInternalFqdn config.constants "wildcard_" config.networking.hostName
+            }.log {
+              roll_size 10MB
+              roll_keep 5
+              roll_keep_for 14d
+              mode 0640
+            }
+            level DEBUG
+          '';
+          extraConfig = ''
+            tls {
+              dns cloudflare {env.CF_API_TOKEN}
+            }
+            import robots
+            redir ${lib.custom.mkInternalHttpsUrl config.constants "" config.networking.hostName}
+          '';
+        };
+        # virtualHosts are configured by individual services (e.g. via lib.custom.mkSelfHostedService)
+      };
+
+      # enable HTTP/S
+      networking.firewall.allowedTCPPorts = [
+        80
+        443
+      ];
+
+      # Read secrets into environment variables for Caddy
+      systemd.services.caddy.serviceConfig.EnvironmentFile = config.sops.templates.caddy-environment.path;
+
+      sops =
+        let
+          cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
+        in
+        {
+          templates.caddy-environment = {
+            content = ''
+              CF_API_TOKEN="${config.sops.placeholder.${cloudflareTokenSecretName}}"
+            '';
+            owner = config.services.caddy.user;
+            inherit (config.services.caddy) group;
+          };
+          secrets.${cloudflareTokenSecretName} = {
+            owner = config.services.caddy.user;
+            inherit (config.services.caddy) group;
+          };
+        };
+    }
+    (lib.custom.mkPersistentSystemDir {
+      directory = "/var/lib/caddy";
+      inherit (config.services.caddy) user group;
+      mode = "0755";
+    })
+  ];
 }

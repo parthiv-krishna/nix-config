@@ -125,18 +125,11 @@ in
     {
       config = lib.mkMerge (
         [
-          {
-            assertions = [
-              {
-                assertion = isTargetHost -> config.services.caddy.enable;
-                message = "Caddy must be enabled on host `${config.networking.hostName}` since it is the host for self-hosted service `${name}`.";
-              }
-            ];
-          }
           (lib.mkIf isTargetHost serviceConfig)
 
           # target host caddy configuration. route the public/internal FQDN to the local port
           (lib.mkIf isTargetHost {
+            services.caddy.enable = true;
             services.caddy.virtualHosts = {
               # route both internal and public FQDN to the local port
               # this allows for routing from public relay and on local network

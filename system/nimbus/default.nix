@@ -25,12 +25,6 @@
   time.timeZone = "Etc/UTC";
 
   custom = {
-    reverse-proxy = {
-      enable = true;
-      email = "letsencrypt.snowy015@passmail.net";
-      cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
-    };
-
     sshd.enable = true;
   };
 

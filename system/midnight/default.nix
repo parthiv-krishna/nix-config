@@ -49,12 +49,6 @@ in
       cudaCapability = "8.6"; # RTX 3060
     };
 
-    reverse-proxy = {
-      enable = true;
-      email = "letsencrypt.snowy015@passmail.net";
-      cloudflareTokenSecretName = "caddy/cloudflare_dns_token";
-    };
-
     # seagate disk management for all drives
     seagate-hdd = {
       enable = true;
