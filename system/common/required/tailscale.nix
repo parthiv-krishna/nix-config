@@ -20,6 +20,8 @@ in
   services.resolved = {
     enable = true;
     fallbackDns = [
+      # need to keep in sync with adguard host
+      config.constants.hosts.nimbus.ip.v4
       # quad9
       "9.9.9.9"
       "149.112.112.112"
