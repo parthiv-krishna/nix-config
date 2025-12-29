@@ -21,6 +21,11 @@ in
         inherit config lib;
         name = "bazarr";
         inherit port host;
+        homepage = {
+          category = config.constants.homepage.categories.media-management;
+          description = "Manage subtitles";
+          icon = "sh-bazarr";
+        };
         subdomain = "subtitles";
         serviceConfig = {
           nixarr.bazarr = {
@@ -40,6 +45,11 @@ in
         name = "radarr";
         inherit host port;
         subdomain = "movies";
+        homepage = {
+          category = config.constants.homepage.categories.media-management;
+          description = "Manage movies";
+          icon = "sh-radarr";
+        };
         serviceConfig = {
           nixarr.radarr = {
             enable = true;
@@ -60,7 +70,7 @@ in
         subdomain = "tv";
         homepage = {
           category = config.constants.homepage.categories.media;
-          description = "Movies and TV";
+          description = "Watch movies and TV";
           icon = "sh-jellyfin";
         };
         oidcClient = {
@@ -162,6 +172,11 @@ in
         inherit config lib;
         name = "prowlarr";
         inherit host port;
+        homepage = {
+          category = config.constants.homepage.categories.media-management;
+          description = "Manage indexers";
+          icon = "sh-prowlarr";
+        };
         subdomain = "indexers";
         serviceConfig = {
           nixarr.prowlarr = {
@@ -180,6 +195,11 @@ in
         inherit config lib;
         name = "sonarr";
         inherit host port;
+        homepage = {
+          category = config.constants.homepage.categories.media-management;
+          description = "Manage shows";
+          icon = "sh-sonarr";
+        };
         subdomain = "shows";
         serviceConfig = {
           nixarr.sonarr = {
@@ -199,6 +219,11 @@ in
         inherit config lib;
         name = "transmission";
         inherit host port;
+        homepage = {
+          category = config.constants.homepage.categories.media-management;
+          description = "Manage downloads";
+          icon = "sh-transmission";
+        };
         subdomain = "download";
         serviceConfig = {
           nixarr.transmission = {
@@ -239,6 +264,11 @@ in
         inherit config lib;
         name = "unmanic";
         inherit host port;
+        homepage = {
+          category = config.constants.homepage.categories.media-management;
+          description = "Manage transcodes";
+          icon = "sh-unmanic";
+        };
         subdomain = "transcode";
         serviceConfig =
           let

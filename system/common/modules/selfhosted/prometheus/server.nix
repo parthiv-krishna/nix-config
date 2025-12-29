@@ -8,6 +8,11 @@ lib.custom.mkSelfHostedService {
   name = "prometheus";
   host = hosts.nimbus;
   inherit port;
+  homepage = {
+    category = config.constants.homepage.categories.admin;
+    description = "Time-series database for monitoring";
+    icon = "sh-prometheus";
+  };
   persistentDirectories = [
     {
       directory = "/var/lib/${config.services.prometheus.stateDir}";

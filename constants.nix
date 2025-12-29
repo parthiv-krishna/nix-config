@@ -61,6 +61,7 @@ in
       storage = "Storage";
       tools = "Tools";
       admin = "Admin";
+      media-management = "Media Management";
     };
   };
 }
