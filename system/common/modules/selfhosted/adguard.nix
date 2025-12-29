@@ -12,11 +12,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "adguard";
-  inherit port;
-  hostName = host.name;
+  inherit port host;
   subdomain = "dns";
-  public = false;
-  protected = true;
   homepage = {
     category = config.constants.homepage.categories.admin;
     description = "Internal Domain Name Resolution";
@@ -38,6 +35,10 @@ lib.custom.mkSelfHostedService {
               "9.9.9.9"
               "149.112.112.112"
             ];
+
+            rewrites = lib.mapAttrsToList (domain: answer: {
+              inherit domain answer;
+            }) config.custom.selfhosted.dnsRewrites;
           };
         };
       };

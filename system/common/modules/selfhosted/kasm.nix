@@ -3,14 +3,12 @@ let
   inherit (config.constants) hosts;
   port = 4443;
   subdomain = "vm";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
 in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "kasm";
-  inherit hostName port subdomain;
-  public = true;
-  protected = true;
+  inherit host port subdomain;
   homepage = {
     category = config.constants.homepage.categories.admin;
     description = "Virtual machines";
@@ -70,7 +68,7 @@ lib.custom.mkSelfHostedService {
       in
       {
         ${lib.custom.mkPublicFqdn config.constants subdomain}.extraConfig = lib.mkForce fixedConfigForKasm;
-        ${lib.custom.mkInternalFqdn config.constants subdomain hostName}.extraConfig =
+        ${lib.custom.mkInternalFqdn config.constants subdomain host.name}.extraConfig =
           lib.mkForce fixedConfigForKasm;
       };
   };

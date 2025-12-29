@@ -6,10 +6,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "actual";
-  hostName = hosts.nimbus.name;
+  host = hosts.nimbus;
   inherit port;
-  public = true;
-  protected = false;
   homepage = {
     category = config.constants.homepage.categories.tools;
     description = "Budgeting";

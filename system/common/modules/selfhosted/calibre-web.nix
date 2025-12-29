@@ -11,11 +11,9 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "calibre";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
   inherit port;
   subdomain = "books";
-  public = true;
-  protected = true;
   homepage = {
     category = config.constants.homepage.categories.media;
     description = "eBooks";

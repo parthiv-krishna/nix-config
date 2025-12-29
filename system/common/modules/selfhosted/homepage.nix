@@ -10,11 +10,9 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "homepage";
-  hostName = hosts.nimbus.name;
+  host = hosts.nimbus;
   inherit port;
   subdomain = ""; # on root domain
-  public = true;
-  protected = true;
   serviceConfig = {
     services.homepage-dashboard = {
       enable = true;

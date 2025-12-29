@@ -10,11 +10,9 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "immich";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
   port = 2283;
   subdomain = "photos";
-  public = true;
-  protected = false;
   homepage = {
     category = config.constants.homepage.categories.storage;
     description = "Photo storage";

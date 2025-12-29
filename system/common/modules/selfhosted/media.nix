@@ -6,7 +6,7 @@
   ...
 }:
 let
-  hostName = config.constants.hosts.midnight.name;
+  host = config.constants.hosts.midnight;
   mediaDir = "/var/lib/media";
   stateDir = "/var/lib/media/state";
 in
@@ -20,10 +20,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "bazarr";
-        inherit hostName port;
+        inherit port host;
         subdomain = "subtitles";
-        public = false;
-        protected = false;
         serviceConfig = {
           nixarr.bazarr = {
             enable = true;
@@ -40,10 +38,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "radarr";
-        inherit hostName port;
+        inherit host port;
         subdomain = "movies";
-        public = false;
-        protected = false;
         serviceConfig = {
           nixarr.radarr = {
             enable = true;
@@ -60,10 +56,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "jellyfin";
-        inherit hostName port;
+        inherit host port;
         subdomain = "tv";
-        public = true;
-        protected = false;
         homepage = {
           category = config.constants.homepage.categories.media;
           description = "Movies and TV";
@@ -123,10 +117,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "jellyseerr";
-        inherit hostName port;
+        inherit host port;
         subdomain = "request";
-        public = true;
-        protected = false;
         serviceConfig = {
           nixarr.jellyseerr = {
             enable = true;
@@ -165,10 +157,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "prowlarr";
-        inherit hostName port;
+        inherit host port;
         subdomain = "indexers";
-        public = false;
-        protected = false;
         serviceConfig = {
           nixarr.prowlarr = {
             enable = true;
@@ -185,10 +175,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "sonarr";
-        inherit hostName port;
+        inherit host port;
         subdomain = "shows";
-        public = false;
-        protected = false;
         serviceConfig = {
           nixarr.sonarr = {
             enable = true;
@@ -206,10 +194,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "transmission";
-        inherit hostName port;
+        inherit host port;
         subdomain = "download";
-        public = false;
-        protected = false;
         serviceConfig = {
           nixarr.transmission = {
             enable = true;
@@ -248,10 +234,8 @@ in
       lib.custom.mkSelfHostedService {
         inherit config lib;
         name = "unmanic";
-        inherit hostName port;
+        inherit host port;
         subdomain = "transcode";
-        public = false;
-        protected = false;
         serviceConfig =
           let
             transcodeCache = "/var/cache/unmanic";
@@ -303,7 +287,7 @@ in
 
   # non-service conmfig
   config =
-    lib.mkIf (config.networking.hostName == hostName) {
+    lib.mkIf (config.networking.hostName == host.name) {
       nixarr = {
         enable = true;
         inherit mediaDir stateDir;
@@ -318,7 +302,7 @@ in
           configuration = {
             sonarr = {
               sonarr_main = {
-                base_url = "${lib.custom.mkInternalHttpsUrl config.constants "sonarr" hostName}";
+                base_url = "${lib.custom.mkInternalHttpsUrl config.constants "sonarr" host.name}";
                 api_key = "!env_var SONARR_API_KEY";
                 quality_definition = {
                   type = "series";
@@ -344,7 +328,7 @@ in
             };
             radarr = {
               radarr_main = {
-                base_url = "${lib.custom.mkInternalHttpsUrl config.constants "radarr" hostName}";
+                base_url = "${lib.custom.mkInternalHttpsUrl config.constants "radarr" host.name}";
                 api_key = "!env_var RADARR_API_KEY";
                 quality_definition = {
                   type = "movie";

@@ -6,6 +6,11 @@
   imports = lib.custom.scanPaths ./.;
 
   options.custom.selfhosted = {
+    dnsRewrites = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = { };
+    };
+
     homepageServices = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.submodule {
@@ -67,7 +72,7 @@
         }
       );
       default = { };
-      description = "OIDC client configurations - auto-generates client_id, client_secret, public, and redirect_uris";
+      description = "OIDC client configurations, auto-generates client_id, client_secret, public, and redirect_uris";
     };
 
   };

@@ -15,10 +15,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "grafana";
-  hostName = hosts.nimbus.name;
+  host = hosts.nimbus;
   inherit port;
-  public = true;
-  protected = true;
   inherit subdomain;
   homepage = {
     category = config.constants.homepage.categories.admin;

@@ -13,10 +13,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus-nut";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
   inherit port;
-  public = false;
-  protected = false;
   serviceConfig = {
     environment.systemPackages = with pkgs; [
       nut

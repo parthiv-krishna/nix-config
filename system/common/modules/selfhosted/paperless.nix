@@ -8,10 +8,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "paperless";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
   inherit port subdomain;
-  public = true;
-  protected = true;
   homepage = {
     category = config.constants.homepage.categories.storage;
     description = "Document management";

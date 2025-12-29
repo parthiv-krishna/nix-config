@@ -12,10 +12,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "open-webui";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
   inherit port subdomain;
-  public = true;
-  protected = true;
   homepage = {
     category = config.constants.homepage.categories.tools;
     description = "AI Models";

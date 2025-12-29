@@ -10,11 +10,9 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "ocis";
-  hostName = hosts.midnight.name;
+  host = hosts.midnight;
   inherit port;
   subdomain = "drive";
-  public = true;
-  protected = false;
   homepage = {
     category = config.constants.homepage.categories.storage;
     description = "General storage";

@@ -8,14 +8,12 @@ let
   port = 9101;
   # shared service configuration for all node exporters
   mkNodeExporterService =
-    hostName:
+    host:
     lib.custom.mkSelfHostedService {
       inherit config lib;
-      name = "prometheus-node";
-      inherit hostName;
+      name = "prometheus-node-${host.name}";
+      inherit host;
       inherit port;
-      public = false;
-      protected = false;
       serviceConfig = {
         services.prometheus.exporters.node = {
           enable = true;
@@ -38,7 +36,7 @@ let
 in
 {
   imports = [
-    (mkNodeExporterService hosts.midnight.name)
-    (mkNodeExporterService hosts.nimbus.name)
+    (mkNodeExporterService hosts.midnight)
+    (mkNodeExporterService hosts.nimbus)
   ];
 }

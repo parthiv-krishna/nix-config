@@ -6,10 +6,8 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "prometheus";
-  hostName = hosts.nimbus.name;
+  host = hosts.nimbus;
   inherit port;
-  public = false;
-  protected = false;
   persistentDirectories = [
     {
       directory = "/var/lib/${config.services.prometheus.stateDir}";
