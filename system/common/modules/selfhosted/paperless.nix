@@ -56,7 +56,7 @@ lib.custom.mkSelfHostedService {
             config.sops.placeholder."${secretsRoot}/client_id"
           }","secret":"${
             config.sops.placeholder."${secretsRoot}/client_secret_orig"
-          }","settings":{"server_url":"https://auth.sub0.net","token_auth_method":"client_secret_basic"}}]}}
+          }","settings":{"server_url":"${lib.custom.mkPublicHttpsUrl config.constants "login"}","token_auth_method":"client_secret_basic"}}]}}
         '';
         mode = "0444";
       };

@@ -6,7 +6,7 @@
 }:
 let
   inherit (config.constants) hosts;
-  subdomain = "auth";
+  subdomain = "login";
   port = 9091;
   redisPort = 6379;
   instanceName = config.constants.domains.public;

@@ -79,7 +79,7 @@ lib.custom.mkSelfHostedService {
             OAUTH_MERGE_ACCOUNTS_BY_EMAIL=true
             OAUTH_CLIENT_ID="${config.sops.placeholder."${secretsRoot}/client_id"}"
             OAUTH_CLIENT_SECRET="${config.sops.placeholder."${secretsRoot}/client_secret_orig"}"
-            OPENID_PROVIDER_URL=${mkPublicHttpsUrl "auth"}/.well-known/openid-configuration
+            OPENID_PROVIDER_URL=${mkPublicHttpsUrl "login"}/.well-known/openid-configuration
             OAUTH_PROVIDER_NAME=${config.constants.domains.public} SSO
             OAUTH_SCOPES=openid email profile groups
             ENABLE_OAUTH_ROLE_MANAGEMENT=true

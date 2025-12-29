@@ -8,7 +8,7 @@ let
   inherit (config.constants) hosts;
   subdomain = "stats";
   domain = lib.custom.mkPublicFqdn config.constants subdomain;
-  autheliaDomain = lib.custom.mkPublicFqdn config.constants "auth";
+  autheliaDomain = lib.custom.mkPublicFqdn config.constants "login";
   secretsRoot = "authelia/identity_providers/oidc/clients/grafana";
   port = 3000;
 in

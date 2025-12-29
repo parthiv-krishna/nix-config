@@ -44,7 +44,7 @@ lib.custom.mkSelfHostedService {
       settings = {
         OIDC_AUTH_ENABLED = "true";
         OIDC_SIGNUP_ENABLED = "true";
-        OIDC_CONFIGURATION_URL = "${lib.custom.mkPublicHttpsUrl config.constants "auth"}/.well-known/openid-configuration";
+        OIDC_CONFIGURATION_URL = "${lib.custom.mkPublicHttpsUrl config.constants "login"}/.well-known/openid-configuration";
         OIDC_AUTO_REDIRECT = "true";
         OIDC_ADMIN_GROUP = "admin";
         OIDC_USER_GROUP = "user";
