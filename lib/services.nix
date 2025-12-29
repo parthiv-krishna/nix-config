@@ -144,8 +144,9 @@ in
               "${fqdn.public}" = virtualHostConfig fqdn.public;
             };
           })
+
+          (lib.mkIf isTargetHost (lib.mkMerge persistentDirConfigs))
         ]
-        ++ persistentDirConfigs
         ++ [
           homepageEntry
           oidcEntry
