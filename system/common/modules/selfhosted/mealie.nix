@@ -1,7 +1,7 @@
 { config, lib, ... }:
 let
   inherit (config.constants) hosts;
-  secretsRoot = "authelia/identity_providers/oidc/clients/mealie";
+  secretsRoot = "mealie";
   port = 9000;
 in
 lib.custom.mkSelfHostedService {

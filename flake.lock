@@ -192,11 +192,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1766969492,
-        "narHash": "sha256-TbvCOhB4ziljUQUOkqYAtKM0H4XJTR/1UQEB2n+NL4s=",
+        "lastModified": 1766980997,
+        "narHash": "sha256-oegDNAvyQwaG3GqSi4U5jpKM7SYHGESGVIuKMRV/lbw=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "9d32c214dbdd66fff881d0d3aad91bde282bd37b",
+        "rev": "7a7b43c7231a439d248179ba8d561dd6cd81799b",
         "type": "github"
       },
       "original": {
@@ -242,10 +242,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1765608863,
-        "narHash": "sha256-kvAbautW4MFSMuCcld//QznKL3PJYxiGNRrkA6x4nwE=",
+        "lastModified": 1767022511,
+        "narHash": "sha256-UXyJNBPEagc0DI8nOsrH47Da960u99PgTRaKvFe8DHc=",
         "ref": "main",
-        "rev": "21a93d4fba1d35a1bb9f046a08978591f14569cb",
+        "rev": "6775b1deb929db3b9c30e8929a4038aad22d2506",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -356,11 +356,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1766941632,
-        "narHash": "sha256-QB8XEoY5D2iRYntcKzJ5wlvgpqqQSe0P0h5CvBO/rUk=",
+        "lastModified": 1767002962,
+        "narHash": "sha256-HGFRwMRUwt56E+SiVX9YQOzpOwHy0/rtEqMoEbkF8Yg=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "ff75a5d3cc674391814c4703464ea1a3db204078",
+        "rev": "63c957603751f0a107c4d9c2cbaff1c8749fc9f1",
         "type": "github"
       },
       "original": {
