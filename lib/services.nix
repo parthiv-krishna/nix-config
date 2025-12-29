@@ -93,7 +93,6 @@ in
           tls {
             dns cloudflare {env.CF_API_TOKEN}
           }
-          import robots
           reverse_proxy localhost:${toString port}
         '';
       };
