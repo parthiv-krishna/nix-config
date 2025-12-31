@@ -9,7 +9,7 @@ lib.custom.mkSelfHostedService {
   host = hosts.nimbus;
   inherit port;
   homepage = {
-    category = config.constants.homepage.categories.admin;
+    category = config.constants.homepage.categories.network;
     description = "Time-series database for monitoring";
     icon = "sh-prometheus";
   };

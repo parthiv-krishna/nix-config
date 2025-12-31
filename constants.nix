@@ -60,7 +60,7 @@ in
       media = "Media";
       storage = "Storage";
       tools = "Tools";
-      admin = "Admin";
+      network = "Network";
       media-management = "Media Management";
     };
   };

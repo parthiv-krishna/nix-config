@@ -18,7 +18,7 @@ lib.custom.mkSelfHostedService {
   host = hosts.nimbus;
   inherit port subdomain;
   homepage = {
-    category = config.constants.homepage.categories.admin;
+    category = config.constants.homepage.categories.network;
     description = "Authentication portal";
     icon = "sh-authelia";
   };

@@ -6,7 +6,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "actual";
-  host = hosts.midnight;
+  host = hosts.nimbus;
   inherit port;
   homepage = {
     category = config.constants.homepage.categories.tools;

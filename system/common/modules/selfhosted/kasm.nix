@@ -10,7 +10,7 @@ lib.custom.mkSelfHostedService {
   name = "kasm";
   inherit host port subdomain;
   homepage = {
-    category = config.constants.homepage.categories.admin;
+    category = config.constants.homepage.categories.tools;
     description = "Virtual machines";
     icon = "sh-kasm-workspaces";
   };

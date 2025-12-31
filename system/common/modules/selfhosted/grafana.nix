@@ -19,7 +19,7 @@ lib.custom.mkSelfHostedService {
   inherit port;
   inherit subdomain;
   homepage = {
-    category = config.constants.homepage.categories.admin;
+    category = config.constants.homepage.categories.network;
     description = "Charts and metrics";
     icon = "sh-grafana";
   };

@@ -30,14 +30,11 @@ lib.custom.mkSelfHostedService {
               service = homepageServices.${serviceName};
               inherit (service) category;
               entry = {
-                "${lib.toUpper (builtins.substring 0 1 service.name)}${
-                  builtins.substring 1 (builtins.stringLength service.name) service.name
-                }: ${service.subdomain}.${domains.public}" =
-                  {
-                    inherit (service) description icon;
-                    href = lib.custom.mkPublicHttpsUrl config.constants service.subdomain;
-                    ping = lib.custom.mkInternalFqdn config.constants "" service.hostName;
-                  };
+                "${service.name}: ${service.subdomain}.${domains.public}" = {
+                  inherit (service) description icon;
+                  href = lib.custom.mkPublicHttpsUrl config.constants service.subdomain;
+                  ping = lib.custom.mkInternalFqdn config.constants "" service.hostName;
+                };
               };
             in
             acc
@@ -46,10 +43,29 @@ lib.custom.mkSelfHostedService {
             }
           ) { } (builtins.attrNames homepageServices);
 
+          template = with config.constants.homepage.categories; [
+            {
+              "Applications" = [
+                media
+                storage
+                tools
+              ];
+            }
+            {
+              "Administrative" = [
+                network
+                media-management
+              ];
+            }
+          ];
         in
-        lib.mapAttrsToList (categoryName: entries: {
-          ${categoryName} = entries;
-        }) servicesByCategory;
+        builtins.map (
+          group:
+          builtins.mapAttrs (
+            _groupName: categories:
+            builtins.map (category: { ${category} = servicesByCategory.${category}; }) categories
+          ) group
+        ) template;
 
       settings = {
         title = "${domains.public} Dashboard";
