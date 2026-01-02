@@ -37,5 +37,6 @@ in
     users = {
       parthiv = import (lib.custom.relativeToRoot "home/${config.networking.hostName}.nix");
     };
+    backupFileExtension = "bak";
   };
 }
