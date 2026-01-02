@@ -128,7 +128,7 @@ in
 
           # target host caddy configuration. route the public/internal FQDN to the local port
           (lib.mkIf isTargetHost {
-            services.caddy.enable = true;
+            custom.selfhosted.enableReverseProxy = true;
             services.caddy.virtualHosts = {
               # route both internal and public FQDN to the local port
               # this allows for routing from public relay and on local network
