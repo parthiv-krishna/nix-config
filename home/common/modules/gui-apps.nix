@@ -17,6 +17,9 @@ let
       stateDir = ".config/discord";
     }
     {
+      package = kdePackages.dolphin;
+    }
+    {
       package = element-desktop;
       stateDir = ".config/Element";
     }
@@ -65,13 +68,14 @@ in
     xdg.mimeApps = {
       enable = true;
       defaultApplications = {
+        "application/pdf" = "librewolf.desktop";
         "text/html" = "librewolf.desktop";
+        "x-scheme-handler/about" = "librewolf.desktop";
         "x-scheme-handler/http" = "librewolf.desktop";
         "x-scheme-handler/https" = "librewolf.desktop";
-        "x-scheme-handler/about" = "librewolf.desktop";
-        "x-scheme-handler/unknown" = "librewolf.desktop";
         "x-scheme-handler/sgnl" = "signal.desktop";
         "x-scheme-handler/signalcaptcha" = "signal.desktop";
+        "x-scheme-handler/unknown" = "librewolf.desktop";
       };
     };
   };
