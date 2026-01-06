@@ -62,7 +62,7 @@ let
           PROXY_OIDC_SKIP_USER_INFO = "false";
 
           # user provisioning from OIDC claims
-          PROXY_AUTOPROVISION_ACCOUNTS = "false";
+          PROXY_AUTOPROVISION_ACCOUNTS = "true";
           PROXY_AUTOPROVISION_CLAIM_USERNAME = "preferred_username";
           PROXY_AUTOPROVISION_CLAIM_EMAIL = "email";
           PROXY_AUTOPROVISION_CLAIM_DISPLAYNAME = "name";
