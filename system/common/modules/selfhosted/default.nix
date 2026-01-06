@@ -77,6 +77,12 @@ in
 
     # gets enabled on all hosts that have selhosted services (by mkSelfHostedService)
     enableReverseProxy = lib.mkEnableOption "selfhosted reverse proxy";
+
+    autheliaExtraConfig = lib.mkOption {
+      type = lib.types.attrs;
+      default = { };
+      description = "Extra configuration to merge into Authelia settings";
+    };
   };
 
   config = lib.mkIf cfg.enableReverseProxy (

@@ -94,7 +94,8 @@ lib.custom.mkSelfHostedService {
             disable_startup_check = false;
             filesystem.filename = "${stateDir}/notification.txt";
           };
-        };
+        }
+        // config.custom.selfhosted.autheliaExtraConfig;
 
         settingsFiles = [
           # yaml generator messes up secret formatting so do this manually
@@ -116,14 +117,18 @@ lib.custom.mkSelfHostedService {
                   domainBasedUris = map (path: "${serviceUrl}${path}") clientConfig.redirects;
                   allRedirectUris = domainBasedUris ++ clientConfig.customRedirects;
 
-                  # auto-generate standard fields
+                  # determine if this is a public client (no client_secret needed)
+                  isPublicClient = clientConfig.extraConfig.public or false;
+
+                  # auto-generate standard fields. public clients have no client secret
                   autoFields = {
                     # cannot use declarative secrets here as it causes a circular dependency
                     client_id = "{{ secret \"/run/secrets/authelia/identity_providers/oidc/clients/${serviceName}/client_id\" }}";
-                    client_secret = "{{ secret \"/run/secrets/authelia/identity_providers/oidc/clients/${serviceName}/client_secret\" }}";
-                    public = false;
                     redirect_uris = allRedirectUris;
-                  };
+                  }
+                  // (lib.optionalAttrs (!isPublicClient) {
+                    client_secret = "{{ secret \"/run/secrets/authelia/identity_providers/oidc/clients/${serviceName}/client_secret\" }}";
+                  });
 
                   # merge extraConfig with auto-generated fields (auto fields take precedence)
                   finalConfig = clientConfig.extraConfig // autoFields;
@@ -138,8 +143,10 @@ lib.custom.mkSelfHostedService {
                     # manually build core fields that need secret interpolation
                     coreFields = [
                       "- client_id: ${client.client_id}" # No quotes for secret interpolation
-                      "  client_secret: ${client.client_secret}" # No quotes for secret interpolation
-                      "  public: ${lib.boolToString client.public}"
+                    ]
+                    ++ (lib.optional (client ? client_secret) "  client_secret: ${client.client_secret}")
+                    ++ [
+                      "  public: ${lib.boolToString (client.public or false)}"
                       "  redirect_uris:"
                     ]
                     ++ (map (uri: "    - \"${uri}\"") client.redirect_uris);
@@ -208,10 +215,17 @@ lib.custom.mkSelfHostedService {
         # OIDC client secrets for all services (authelia needs access to all of them)
         allOidcClients = config.custom.selfhosted.oidcClients;
         oidcClientSecretPaths = lib.concatLists (
-          lib.mapAttrsToList (serviceName: _clientConfig: [
-            "authelia/identity_providers/oidc/clients/${serviceName}/client_id"
-            "authelia/identity_providers/oidc/clients/${serviceName}/client_secret"
-          ]) allOidcClients
+          lib.mapAttrsToList (
+            serviceName: clientConfig:
+            let
+              isPublicClient = clientConfig.extraConfig.public or false;
+            in
+            [ "authelia/identity_providers/oidc/clients/${serviceName}/client_id" ]
+            # only generate client_secret path for confidential clients
+            ++ (lib.optional (
+              !isPublicClient
+            ) "authelia/identity_providers/oidc/clients/${serviceName}/client_secret")
+          ) allOidcClients
         );
 
         allSecretPaths = coreSecretPaths ++ oidcClientSecretPaths;
