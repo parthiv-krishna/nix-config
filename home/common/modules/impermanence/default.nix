@@ -2,24 +2,21 @@
 
 {
   config,
-  inputs,
   lib,
   ...
 }:
 {
   imports = lib.flatten [
     (lib.custom.scanPaths ./.)
-    inputs.impermanence.nixosModules.home-manager.impermanence
   ];
 
   config = lib.mkIf (!config.targets.genericLinux.enable) {
-    home.persistence."/persist/home/parthiv" = {
+    home.persistence."/persist" = {
       directories = [
         ".ssh"
       ]
       ++ config.custom.persistence.directories;
       inherit (config.custom.persistence) files;
-      allowOther = true;
     };
   };
 }
