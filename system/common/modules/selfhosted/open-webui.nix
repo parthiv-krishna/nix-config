@@ -75,6 +75,7 @@ lib.custom.mkSelfHostedService {
         templates."open-webui/environment" = {
           content = ''
             WEBUI_URL=${mkPublicHttpsUrl subdomain}
+            ENABLE_PERSISTENT_CONFIG=false
             ENABLE_OAUTH_SIGNUP=true
             OAUTH_MERGE_ACCOUNTS_BY_EMAIL=true
             OAUTH_CLIENT_ID="${config.sops.placeholder."${secretsRoot}/client_id"}"
