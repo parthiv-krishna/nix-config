@@ -36,7 +36,7 @@ let
         dns cloudflare {env.CF_API_TOKEN}
       }
 
-      forward_auth ${autheliaUrl}/api/authz/forward-auth {
+      forward_auth ${autheliaUrl} {
         uri /api/authz/forward-auth
         copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
       }
