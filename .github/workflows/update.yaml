@@ -26,6 +26,6 @@ jobs:
           nix flake update --commit-lock-file
       - name: Update caddy.nix plugins hash
         run: |
-          ./scripts/update-caddy-and-commit.sh ./system/common/modules/selfhosted/reverse-proxy/caddy.nix
+          ./scripts/update-caddy-and-commit.sh ./system/common/modules/selfhosted/default.nix
       - name: Push changes
         run: git push

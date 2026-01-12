@@ -7,10 +7,8 @@ if [[ ! -f $CADDY_NIX ]]; then
 	exit 1
 fi
 
-# TODO: I think this is good enough, but technically brittle
-# find plugins in caddy.nix which contain @
-# and find original hash
-PLUGINS=$(grep -o '.*@.*' "$CADDY_NIX")
+# plugins contain / then @. potentially brittle.
+PLUGINS=$(grep -oP '"\S+/\S+@\S+"' "$CADDY_NIX")
 OLD_HASH=$(grep -o 'sha256-[A-Za-z0-9+/=]\+' "$CADDY_NIX")
 
 echo "found plugins:"

@@ -93,9 +93,9 @@ in
           package = pkgs.caddy.withPlugins {
             # TODO: https://github.com/escherlies/nixos-caddy-with-modules ?
             plugins = [
-              "github.com/caddy-dns/cloudflare@v0.2.1"
+              "github.com/caddy-dns/cloudflare@v0.2.2"
             ];
-            hash = "sha256-Dvifm7rRwFfgXfcYvXcPDNlMaoxKd5h4mHEK6kJ+T4A=";
+            hash = "sha256-ea8PC/+SlPRdEVVF/I3c1CBprlVp1nrumKM5cMwJJ3U=";
           };
           email = "letsencrypt.snowy015@passmail.net";
 
