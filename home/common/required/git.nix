@@ -1,10 +1,6 @@
 # git configuration, should be imported to home-manager
 
-{
-  config,
-  ...
-}:
-{
+_: {
   programs = {
     git = {
       enable = true;
@@ -96,24 +92,4 @@
       };
     };
   };
-
-  # configure gh authentication using token from sops
-  home.activation.setupGhAuth = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-        GH_HOSTS_FILE="$HOME/.config/gh/hosts.yml"
-        GITHUB_TOKEN_PATH="${config.sops.secrets."github/token".path}"
-
-        if [ -f "$GITHUB_TOKEN_PATH" ]; then
-          mkdir -p "$(dirname "$GH_HOSTS_FILE")"
-          cat > "$GH_HOSTS_FILE" <<EOF
-    github.com:
-        user: parthiv-krishna
-        oauth_token: $(cat "$GITHUB_TOKEN_PATH")
-        git_protocol: ssh
-    EOF
-          chmod 600 "$GH_HOSTS_FILE"
-          echo "GitHub CLI authentication configured"
-        else
-          echo "Warning: GitHub token not found at $GITHUB_TOKEN_PATH"
-        fi
-  '';
 }

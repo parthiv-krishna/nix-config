@@ -6,7 +6,6 @@
 }:
 let
   cfg = config.custom.ai-tools;
-  githubTokenSecret = "github/token";
 in
 {
   imports = lib.custom.scanPaths ./.;
@@ -24,7 +23,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sops.secrets.${githubTokenSecret} = { };
 
     custom.ai-tools.mcpServers = {
       filesystem = {
@@ -46,7 +44,6 @@ in
       github =
         let
           githubMcpWrapper = pkgs.writeShellScript "github-mcp-wrapper" ''
-            export GITHUB_PERSONAL_ACCESS_TOKEN=$(cat ${config.sops.secrets.${githubTokenSecret}.path})
             exec ${pkgs.nodejs}/bin/npx -y @modelcontextprotocol/server-github "$@"
           '';
         in
