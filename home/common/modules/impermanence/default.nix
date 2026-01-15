@@ -3,6 +3,7 @@
 {
   config,
   lib,
+  options,
   ...
 }:
 {
@@ -10,7 +11,8 @@
     (lib.custom.scanPaths ./.)
   ];
 
-  config = lib.mkIf (!config.targets.genericLinux.enable) {
+  # skip non-nixos hosts
+  config = lib.optionalAttrs (options ? home.persistence) {
     home.persistence."/persist" = {
       directories = [
         ".ssh"
