@@ -52,7 +52,7 @@
     };
 
     globals = {
-      mapleader = "\\";
+      mapleader = " ";
     };
 
     keymaps = [

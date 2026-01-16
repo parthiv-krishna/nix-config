@@ -8,7 +8,7 @@ _:
   ];
 
   custom = {
-    ai-tools.enable = true;
+    opencode.enable = true;
     gui-apps.enable = true;
     hyprland.enable = true;
     sound-engineering.enable = true;

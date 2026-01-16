@@ -6,7 +6,7 @@ _: {
   ];
 
   custom = {
-    ai-tools.enable = true;
+    opencode.enable = true;
 
     sops.sopsFile = "nimbus.yaml";
   };

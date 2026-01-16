@@ -20,7 +20,7 @@
   # home-manager manages itself
   programs.home-manager.enable = true;
 
-  custom.ai-tools.enable = true;
+  custom.opencode.enable = true;
 
   # for non-NixOS systems, ensure we have basic system integration
   targets.genericLinux.enable = true;
