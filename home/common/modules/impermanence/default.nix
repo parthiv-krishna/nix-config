@@ -16,6 +16,7 @@
     home.persistence."/persist" = {
       directories = [
         ".ssh"
+        "Documents"
       ]
       ++ config.custom.persistence.directories;
       inherit (config.custom.persistence) files;
