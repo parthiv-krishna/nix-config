@@ -15,7 +15,7 @@ in
 lib.custom.mkSelfHostedService {
   inherit config lib;
   name = "authelia";
-  host = hosts.nimbus;
+  host = hosts.midnight;
   inherit port subdomain;
   homepage = {
     category = config.constants.homepage.categories.network;

@@ -213,7 +213,7 @@ in
     )
     (
       let
-        port = 9091;
+        port = 9090;
       in
       lib.custom.mkSelfHostedService {
         inherit config lib;
