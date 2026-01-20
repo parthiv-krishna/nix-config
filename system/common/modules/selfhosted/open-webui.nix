@@ -49,20 +49,6 @@ lib.custom.mkSelfHostedService {
       environmentFile = config.sops.templates."open-webui/environment".path;
     };
 
-    # disable rapidocr pytest checks
-    # TODO: re-enable
-    nixpkgs.overlays = [
-      (_: prev: {
-        python3Packages = prev.python3Packages // {
-          rapidocr-onnxruntime = prev.python3Packages.rapidocr-onnxruntime.overrideAttrs (_: {
-            doCheck = false;
-            checkPhase = "echo skipping tests for rapidocr-onnxruntime";
-            pytestCheckPhase = "echo skipping pytest for rapidocr-onnxruntime";
-          });
-        };
-      })
-    ];
-
     unfree.allowedPackages = [
       "open-webui"
     ];
