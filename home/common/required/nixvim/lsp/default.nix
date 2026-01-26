@@ -78,7 +78,6 @@
         "gr" = "references";
         "gt" = "type_definition";
         "K" = "hover";
-        "<C-K>" = "signature_help";
         "<leader>rn" = "rename";
         "<leader>ca" = "code_action";
         "<leader>f" = "format";
