@@ -19,7 +19,7 @@ in
   # tailscale integrates with systemd-resolved
   services.resolved = {
     enable = true;
-    fallbackDns = [
+    settings.Resolve.FallbackDNS = [
       # quad9
       "9.9.9.9"
       "149.112.112.112"
