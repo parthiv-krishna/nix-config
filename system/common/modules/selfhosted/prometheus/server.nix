@@ -80,6 +80,33 @@ lib.custom.mkSelfHostedService {
           scrape_interval = "10s";
           scrape_timeout = "10s";
         }
+        {
+          job_name = "smartmon";
+          static_configs = [
+            {
+              targets = [ (lib.custom.mkPublicFqdn config.constants "prometheus-smartmon") ];
+            }
+          ];
+          metrics_path = "/metrics";
+          scheme = "https";
+          scrape_interval = "60s";
+          scrape_timeout = "10s";
+        }
+        {
+          job_name = "systemd";
+          static_configs = [
+            {
+              targets = [
+                (lib.custom.mkPublicFqdn config.constants "prometheus-systemd-midnight")
+                (lib.custom.mkPublicFqdn config.constants "prometheus-systemd-nimbus")
+              ];
+            }
+          ];
+          metrics_path = "/metrics";
+          scheme = "https";
+          scrape_interval = "15s";
+          scrape_timeout = "10s";
+        }
       ];
     };
   };
