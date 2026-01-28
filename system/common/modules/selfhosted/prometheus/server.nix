@@ -107,6 +107,18 @@ lib.custom.mkSelfHostedService {
           scrape_interval = "15s";
           scrape_timeout = "10s";
         }
+        {
+          job_name = "jellyfin";
+          static_configs = [
+            {
+              targets = [ (lib.custom.mkPublicFqdn config.constants "tv") ];
+            }
+          ];
+          metrics_path = "/metrics";
+          scheme = "https";
+          scrape_interval = "30s";
+          scrape_timeout = "10s";
+        }
       ];
     };
   };
