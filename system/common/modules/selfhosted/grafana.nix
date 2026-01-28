@@ -9,7 +9,7 @@ let
   subdomain = "stats";
   domain = lib.custom.mkPublicFqdn config.constants subdomain;
   autheliaDomain = lib.custom.mkPublicFqdn config.constants "login";
-  secretsRoot = "authelia/identity_providers/oidc/clients/grafana";
+  secretsRoot = "grafana";
   port = 3000;
 in
 lib.custom.mkSelfHostedService {
@@ -96,9 +96,7 @@ lib.custom.mkSelfHostedService {
 
     sops.secrets = {
       "${secretsRoot}/client_id" = {
-        # authelia owns, but grafana should be able to access the client id
-        group = "grafana";
-        mode = "0440";
+        owner = "grafana";
       };
       "${secretsRoot}/client_secret_orig" = {
         owner = "grafana";
