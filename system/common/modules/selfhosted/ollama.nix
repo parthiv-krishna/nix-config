@@ -15,6 +15,7 @@ lib.custom.mkSelfHostedService {
   name = "ollama";
   host = hosts.midnight;
   port = 11434;
+  backupServices = [ "ollama.service" ];
   persistentDirectories = [ "/var/lib/private/ollama" ];
   serviceConfig = {
     services = {

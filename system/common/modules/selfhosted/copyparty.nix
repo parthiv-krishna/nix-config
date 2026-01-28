@@ -53,6 +53,7 @@ in
   inherit name;
   host = hosts.midnight;
   inherit port subdomain;
+  backupServices = [ "copyparty.service" ];
   homepage = {
     category = config.constants.homepage.categories.storage;
     description = "(BETA) new option for file storage";

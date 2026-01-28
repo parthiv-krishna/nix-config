@@ -17,6 +17,10 @@ lib.custom.mkSelfHostedService {
   name = "authelia";
   host = hosts.midnight;
   inherit port subdomain;
+  backupServices = [
+    "authelia-${instanceName}.service"
+    "redis-${instanceName}.service"
+  ];
   homepage = {
     category = config.constants.homepage.categories.network;
     description = "Authentication portal";

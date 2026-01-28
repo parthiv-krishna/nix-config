@@ -46,6 +46,12 @@ in
       description = "Metadata for all self-hosted services with homepage entries";
     };
 
+    backupServices = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "List of systemd services to stop during backups";
+    };
+
     oidcClients = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.submodule {

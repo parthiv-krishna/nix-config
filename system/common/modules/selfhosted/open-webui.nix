@@ -14,6 +14,7 @@ lib.custom.mkSelfHostedService {
   name = "open-webui";
   host = hosts.midnight;
   inherit port subdomain;
+  backupServices = [ "open-webui.service" ];
   homepage = {
     category = config.constants.homepage.categories.tools;
     description = "AI Models";

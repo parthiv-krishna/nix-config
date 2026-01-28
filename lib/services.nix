@@ -63,6 +63,7 @@ in
       persistentDirectories ? [ ],
       homepage ? null,
       oidcClient ? null,
+      backupServices ? [ ],
     }:
     let
       isTargetHost = config.networking.hostName == host.name;
@@ -120,6 +121,7 @@ in
           }
         else
           { };
+
     in
     {
       config = lib.mkMerge (
@@ -138,6 +140,11 @@ in
           })
 
           (lib.mkIf isTargetHost (lib.mkMerge persistentDirConfigs))
+
+          # register services for backup shutdown if on target host and list is not empty
+          (lib.mkIf (isTargetHost && backupServices != [ ]) {
+            custom.selfhosted.backupServices = backupServices;
+          })
         ]
         ++ [
           homepageEntry

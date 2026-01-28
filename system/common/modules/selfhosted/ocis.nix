@@ -15,6 +15,7 @@ let
     host = hosts.midnight;
     inherit port;
     subdomain = driveSubdomain;
+    backupServices = [ "ocis.service" ];
     homepage = {
       category = config.constants.homepage.categories.storage;
       description = "General storage";

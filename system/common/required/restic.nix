@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }:
 let
@@ -8,6 +9,27 @@ let
   secretPassword = "${secretRoot}/password";
   secretRepository = "${secretRoot}/repository";
   secretEnvironment = "${secretRoot}/environment";
+
+  # generate scripts to stop/start services for backups
+  servicesToStop = config.custom.selfhosted.backupServices;
+
+  stopServicesScript = pkgs.writeShellScript "stop-services-for-backup" ''
+    echo "stopping services for backup..."
+    ${lib.concatMapStringsSep "\n" (service: ''
+      echo "stopping ${service}..."
+      systemctl stop ${service} || true
+    '') servicesToStop}
+    echo "all services stopped."
+  '';
+
+  startServicesScript = pkgs.writeShellScript "start-services-after-backup" ''
+    echo "starting services after backup..."
+    ${lib.concatMapStringsSep "\n" (service: ''
+      echo "starting ${service}..."
+      systemctl start ${service} || true
+    '') servicesToStop}
+    echo "all services started."
+  '';
 in
 {
   environment.systemPackages = with pkgs; [
@@ -22,7 +44,7 @@ in
     repositoryFile = config.sops.secrets."${secretRepository}".path;
     environmentFile = config.sops.secrets."${secretEnvironment}".path;
     timerConfig = {
-      OnCalendar = "07:00"; # 12am PT
+      OnCalendar = "11:00"; # 4am PT
       Persistent = true;
     };
     initialize = true;
@@ -31,6 +53,16 @@ in
       "--keep-weekly 3"
       "--keep-monthly 3"
     ];
+
+    # stop services before backup to prevent database corruption
+    backupPrepareCommand = lib.mkIf (servicesToStop != [ ]) ''
+      ${stopServicesScript}
+    '';
+
+    # restart services after backup completes
+    backupCleanupCommand = lib.mkIf (servicesToStop != [ ]) ''
+      ${startServicesScript}
+    '';
   };
 
   custom.discord-notifiers.restic-backups-main.enable = true;

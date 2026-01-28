@@ -18,6 +18,7 @@ lib.custom.mkSelfHostedService {
   host = hosts.nimbus;
   inherit port;
   inherit subdomain;
+  backupServices = [ "grafana.service" ];
   homepage = {
     category = config.constants.homepage.categories.network;
     description = "Charts and metrics";

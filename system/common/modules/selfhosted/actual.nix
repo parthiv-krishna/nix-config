@@ -8,6 +8,7 @@ lib.custom.mkSelfHostedService {
   name = "actual";
   host = hosts.midnight;
   inherit port;
+  backupServices = [ "actual.service" ];
   homepage = {
     category = config.constants.homepage.categories.tools;
     description = "Budgeting";

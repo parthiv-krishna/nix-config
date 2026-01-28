@@ -21,6 +21,7 @@ in
         inherit config lib;
         name = "bazarr";
         inherit port host;
+        backupServices = [ "bazarr.service" ];
         homepage = {
           category = config.constants.homepage.categories.media-management;
           description = "Manage subtitles";
@@ -45,6 +46,7 @@ in
         name = "radarr";
         inherit host port;
         subdomain = "movies";
+        backupServices = [ "radarr.service" ];
         homepage = {
           category = config.constants.homepage.categories.media-management;
           description = "Manage movies";
@@ -68,6 +70,7 @@ in
         name = "jellyfin";
         inherit host port;
         subdomain = "tv";
+        backupServices = [ "jellyfin.service" ];
         homepage = {
           category = config.constants.homepage.categories.media;
           description = "Watch movies and TV";
@@ -133,6 +136,7 @@ in
         name = "jellyseerr";
         inherit host port;
         subdomain = "request";
+        backupServices = [ "jellyseerr.service" ];
         serviceConfig = {
           nixarr.jellyseerr = {
             enable = true;
@@ -172,6 +176,7 @@ in
         inherit config lib;
         name = "prowlarr";
         inherit host port;
+        backupServices = [ "prowlarr.service" ];
         homepage = {
           category = config.constants.homepage.categories.media-management;
           description = "Manage indexers";
@@ -195,6 +200,7 @@ in
         inherit config lib;
         name = "sonarr";
         inherit host port;
+        backupServices = [ "sonarr.service" ];
         homepage = {
           category = config.constants.homepage.categories.media-management;
           description = "Manage shows";
@@ -219,6 +225,7 @@ in
         inherit config lib;
         name = "transmission";
         inherit host port;
+        backupServices = [ "transmission.service" ];
         homepage = {
           category = config.constants.homepage.categories.media-management;
           description = "Manage downloads";

@@ -13,6 +13,7 @@ lib.custom.mkSelfHostedService {
   host = hosts.midnight;
   port = 2283;
   subdomain = "photos";
+  # immich has built-in automatic database backups so we don't need it as a backupService
   homepage = {
     category = config.constants.homepage.categories.storage;
     description = "Photo storage";

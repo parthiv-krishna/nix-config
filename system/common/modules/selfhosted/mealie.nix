@@ -10,6 +10,7 @@ lib.custom.mkSelfHostedService {
   host = hosts.midnight;
   inherit port;
   subdomain = "food";
+  backupServices = [ "mealie.service" ];
   homepage = {
     category = config.constants.homepage.categories.tools;
     description = "Recipes";

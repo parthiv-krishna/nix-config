@@ -10,6 +10,7 @@ lib.custom.mkSelfHostedService {
   name = "paperless";
   host = hosts.midnight;
   inherit port subdomain;
+  # exporter automatically stops all services during export, so we don't need backupServices
   homepage = {
     category = config.constants.homepage.categories.storage;
     description = "Document management";
@@ -47,6 +48,9 @@ lib.custom.mkSelfHostedService {
       environmentFile = config.sops.templates."paperless/environment".path;
       domain = lib.custom.mkPublicFqdn config.constants subdomain;
     };
+
+    # runs daily at 1:30 AM, automatically stops all paperless services during export
+    services.paperless.exporter.enable = true;
 
     sops = {
       templates."paperless/environment" = {

@@ -14,6 +14,7 @@ lib.custom.mkSelfHostedService {
   host = hosts.midnight;
   inherit port;
   subdomain = "books";
+  backupServices = [ "calibre-web.service" ];
   homepage = {
     category = config.constants.homepage.categories.media;
     description = "eBooks";
