@@ -113,6 +113,12 @@ in
           '';
 
           globalConfig = ''
+            admin {
+              origins ${lib.custom.mkPublicFqdn config.constants "prometheus-caddy-${config.networking.hostName}"} ${
+                lib.custom.mkInternalFqdn config.constants "prometheus-caddy-${config.networking.hostName}"
+                  config.networking.hostName
+              }
+            }
             metrics {
               per_host
             }

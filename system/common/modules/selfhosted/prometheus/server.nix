@@ -58,12 +58,13 @@ lib.custom.mkSelfHostedService {
           static_configs = [
             {
               targets = [
-                "localhost:2019"
+                (lib.custom.mkPublicFqdn config.constants "prometheus-caddy-midnight")
+                (lib.custom.mkPublicFqdn config.constants "prometheus-caddy-nimbus")
               ];
             }
           ];
           metrics_path = "/metrics";
-          scheme = "http";
+          scheme = "https";
           scrape_interval = "10s";
           scrape_timeout = "10s";
         }
