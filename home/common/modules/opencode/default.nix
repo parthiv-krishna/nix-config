@@ -19,11 +19,19 @@ in
 
       settings = {
         provider = {
-          "nvidia" = {
+          nvidia-internal = {
             npm = "@ai-sdk/openai-compatible";
-            name = "NVIDIA";
+            name = "NVIDIA Internal";
             options = {
               baseURL = "https://inference-api.nvidia.com/v1";
+            };
+            models = {
+              "claude-opus-4.5-high" = {
+                id = "aws/anthropic/claude-opus-4-5";
+                name = "Claude 4.5 Opus (high)";
+                reasoning = true;
+                options.reasoning_effort = "high";
+              };
             };
           };
         };
@@ -31,7 +39,8 @@ in
         enabled_providers = [
           "anthropic"
           "github-copilot"
-          "nvidia"
+          "nvidia" # build.nvidia.com
+          "nvidia-internal" # inference.nvidia.com
         ];
 
         autoupdate = false;
