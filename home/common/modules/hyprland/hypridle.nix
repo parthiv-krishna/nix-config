@@ -18,19 +18,19 @@ lib.mkIf cfg.enable {
       };
       listener = [
         {
-          timeout = 7 * 60;
+          timeout = 100 * 60;
           on-timeout = "brightnessctl -s set 10";
           on-resume = "brightnessctl -r";
           ignore_inhibit = true;
         }
         {
-          timeout = 8 * 60;
+          timeout = 150 * 60;
           on-timeout = "hyprlock";
           on-resume = "hyprctl dispatch dpms on";
           ignore_inhibit = true;
         }
         {
-          timeout = 10 * 60;
+          timeout = 200 * 60;
           on-timeout = "systemctl suspend";
           ignore_inhibit = true;
         }

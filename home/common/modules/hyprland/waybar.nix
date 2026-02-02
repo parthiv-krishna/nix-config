@@ -187,7 +187,7 @@ lib.mkIf cfg.enable {
       "waybar"
     ];
 
-    windowrule = [
+    windowrulev2 = [
       # open audio control centered/floating
       "float, class:org.pulseaudio.pavucontrol"
       "center, class:org.pulseaudio.pavucontrol"

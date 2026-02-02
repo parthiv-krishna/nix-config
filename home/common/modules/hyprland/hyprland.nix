@@ -62,7 +62,6 @@ lib.mkIf cfg.enable {
 
       decoration = {
         rounding = 10;
-        rounding_power = 2;
         active_opacity = 1.0;
         inactive_opacity = 1.0;
         shadow = {
@@ -80,7 +79,7 @@ lib.mkIf cfg.enable {
       };
 
       animations = {
-        enabled = "yes, please :)";
+        enabled = "yes";
         bezier = [
           "easeOutQuint,0.23,1,0.32,1"
           "easeInOutCubic,0.65,0.05,0.36,1"
@@ -183,14 +182,10 @@ lib.mkIf cfg.enable {
         ", XF86AudioPrev, exec, playerctl previous"
       ];
 
-      # window rules
-      windowrule = [
+      windowrulev2 = [
         "suppressevent maximize, class:.*"
         "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
       ];
-
-      # persistent workspace names
-      workspace = builtins.genList builtins.toString 10;
 
       # disable popup at login
       ecosystem = {
