@@ -30,6 +30,11 @@
 
   # enable desktop environment
   custom = {
+    audio = {
+      enable = true;
+      micVolume = 0.5;
+    };
+
     bluetooth.enable = true;
 
     desktop = {
