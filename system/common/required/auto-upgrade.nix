@@ -26,13 +26,11 @@
       };
     };
 
-    # trigger garbage collection after successful upgrade
     nixos-upgrade = {
       onSuccess = [ "nix-gc-after-upgrade.service" ];
     };
   };
 
-  # discord notifications
   custom.discord-notifiers = {
     nixos-upgrade.enable = true;
     nix-gc-after-upgrade.enable = true;
@@ -43,4 +41,11 @@
     "L /root/.ssh/id_ed25519 - - - - ${config.users.users.parthiv.home}/.ssh/id_ed25519"
   ];
 
+  programs.ssh.knownHosts = {
+    "github.com" = {
+      hostNames = [ "github.com" ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+    };
+
+  };
 }
