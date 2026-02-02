@@ -24,7 +24,7 @@ in
 
   config = lib.mkIf (!config.targets.genericLinux.enable) {
     sops = {
-      age.keyFile = "/home/parthiv/.age/parthiv.age";
+      age.keyFile = "/persist/home/parthiv/.age/parthiv.age";
       defaultSopsFile = "${inputs.nix-config-secrets}/${cfg.sopsFile}";
       validateSopsFiles = false;
 
@@ -39,7 +39,7 @@ in
         sops
       ];
       sessionVariables = {
-        SOPS_AGE_KEY_FILE = "/home/parthiv/.age/parthiv.age";
+        SOPS_AGE_KEY_FILE = "/persist/home/parthiv/.age/parthiv.age";
       };
     };
 
