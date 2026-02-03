@@ -3,6 +3,7 @@
 
 {
   inputs,
+  pkgs,
   system,
   ...
 }:
@@ -11,6 +12,7 @@
   pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
     src = ./.;
     default_stages = [ "pre-commit" ];
+    package = pkgs.prek;
     hooks = {
       # general stuff
       check-added-large-files = {
