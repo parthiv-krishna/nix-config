@@ -44,12 +44,26 @@ lib.custom.mkSelfHostedService {
       enableLocalDB = true;
       env.PORT = port;
 
-      # Add the version to settings
       settings = {
         version = "1.3.0";
+
+        endpoints = {
+          custom = [
+            {
+              name = "sub0.net LLMs";
+              apiKey = "not-needed";
+              baseURL = "${mkPublicHttpsUrl "llm"}/v1";
+              models = {
+                default = [ "medium" ];
+                fetch = true;
+              };
+              titleConvo = true;
+              titleModel = "small";
+            }
+          ];
+        };
       };
 
-      # Use credentials option for file-based secrets
       credentials = {
         CREDS_KEY = config.sops.secrets."${secretsRoot}/creds_key".path;
         CREDS_IV = config.sops.secrets."${secretsRoot}/creds_iv".path;
@@ -58,7 +72,6 @@ lib.custom.mkSelfHostedService {
         OPENID_SESSION_SECRET = config.sops.secrets."${secretsRoot}/openid_session_secret".path;
       };
 
-      # Use credentialsFile for remaining env vars
       credentialsFile = config.sops.templates."librechat/environment".path;
     };
 
