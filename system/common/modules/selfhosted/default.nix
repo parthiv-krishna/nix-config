@@ -118,20 +118,25 @@ in
              level INFO
           '';
 
-          globalConfig = ''
-            admin {
-              origins ${lib.custom.mkPublicFqdn config.constants "prometheus-caddy-${config.networking.hostName}"} ${
-                lib.custom.mkInternalFqdn config.constants "prometheus-caddy-${config.networking.hostName}"
-                  config.networking.hostName
+          globalConfig =
+            let
+              adminPort = toString 2019;
+            in
+            ''
+              admin 127.0.0.1:${adminPort} {
+                origins ${lib.custom.mkPublicFqdn config.constants "prometheus-caddy-${config.networking.hostName}"} ${
+                  lib.custom.mkInternalFqdn config.constants
+                    "prometheus-caddy-${config.networking.hostName} localhost:${adminPort} 127.0.0.1:${adminPort} [::1]:${adminPort}"
+                    config.networking.hostName
+                }
               }
-            }
-            metrics {
-              per_host
-            }
-            servers {
-              max_header_size 5MB
-            }
-          '';
+              metrics {
+                per_host
+              }
+              servers {
+                max_header_size 5MB
+              }
+            '';
 
           # wildcard public fqdn
           virtualHosts.${lib.custom.mkPublicFqdn config.constants "*"} = {
