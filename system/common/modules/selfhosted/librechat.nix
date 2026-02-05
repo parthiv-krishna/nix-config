@@ -1,0 +1,95 @@
+{
+  config,
+  lib,
+  ...
+}:
+let
+  inherit (config.constants) hosts;
+  secretsRoot = "librechat";
+  port = 3080;
+  subdomain = "ai";
+  mkPublicHttpsUrl = lib.custom.mkPublicHttpsUrl config.constants;
+in
+lib.custom.mkSelfHostedService {
+  inherit config lib;
+  name = "librechat";
+  host = hosts.midnight;
+  inherit port subdomain;
+  backupServices = [ "librechat.service" ];
+  homepage = {
+    category = config.constants.homepage.categories.tools;
+    description = "AI Chat Interface";
+    icon = "sh-librechat";
+  };
+  oidcClient = {
+    redirects = [ "/oauth/openid/callback" ];
+    extraConfig = {
+      client_name = "LibreChat";
+      scopes = [
+        "openid"
+        "profile"
+        "email"
+      ];
+      public = false;
+      authorization_policy = "one_factor";
+      userinfo_signing_algorithm = "none";
+      token_endpoint_auth_method = "client_secret_post";
+    };
+  };
+
+  persistentDirectories = [ "/var/lib/librechat" ];
+  serviceConfig = {
+    services.librechat = {
+      enable = true;
+      enableLocalDB = true;
+      env.PORT = port;
+
+      # Add the version to settings
+      settings = {
+        version = "1.3.0";
+      };
+
+      # Use credentials option for file-based secrets
+      credentials = {
+        CREDS_KEY = config.sops.secrets."${secretsRoot}/creds_key".path;
+        CREDS_IV = config.sops.secrets."${secretsRoot}/creds_iv".path;
+        JWT_SECRET = config.sops.secrets."${secretsRoot}/jwt_secret".path;
+        JWT_REFRESH_SECRET = config.sops.secrets."${secretsRoot}/jwt_refresh_secret".path;
+        OPENID_SESSION_SECRET = config.sops.secrets."${secretsRoot}/openid_session_secret".path;
+      };
+
+      # Use credentialsFile for remaining env vars
+      credentialsFile = config.sops.templates."librechat/environment".path;
+    };
+
+    sops = {
+      templates."librechat/environment" = {
+        content = ''
+          ALLOW_SOCIAL_LOGIN=true
+          OPENID_BUTTON_LABEL=Log in with sub0.net SSO
+          OPENID_ISSUER=${mkPublicHttpsUrl "login"}
+          OPENID_CLIENT_ID=${config.sops.placeholder."${secretsRoot}/client_id"}
+          OPENID_CLIENT_SECRET=${config.sops.placeholder."${secretsRoot}/client_secret_orig"}
+          OPENID_CALLBACK_URL=/oauth/openid/callback
+          OPENID_SCOPE=openid profile email
+          DOMAIN_CLIENT=${mkPublicHttpsUrl subdomain}
+          DOMAIN_SERVER=${mkPublicHttpsUrl subdomain}
+        '';
+        mode = "0400";
+      };
+
+      secrets = {
+        "${secretsRoot}/creds_key" = { };
+        "${secretsRoot}/creds_iv" = { };
+        "${secretsRoot}/jwt_secret" = { };
+        "${secretsRoot}/jwt_refresh_secret" = { };
+        "${secretsRoot}/openid_session_secret" = { };
+        "${secretsRoot}/client_id" = { };
+        "${secretsRoot}/client_secret_orig" = { };
+      };
+    };
+
+    # librechat uses mongodb
+    unfree.allowedPackages = [ "mongodb" ];
+  };
+}
