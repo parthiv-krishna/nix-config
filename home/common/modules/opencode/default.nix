@@ -82,5 +82,7 @@ in
         share = "disabled";
       };
     };
+
+    custom.persistence.directories = [ ".local/share/opencode" ];
   };
 }
