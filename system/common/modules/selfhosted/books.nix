@@ -92,7 +92,10 @@ let
     inherit host;
     port = 8084;
     subdomain = "bookrequest";
-    backupServices = [ "docker-shelfmark.service" ];
+    backupServices = [
+      "docker-shelfmark.service"
+      "docker-gluetun-shelfmark.service"
+    ];
     homepage = {
       category = config.constants.homepage.categories.media;
       description = "Request a book";
@@ -116,8 +119,35 @@ let
       };
     };
     serviceConfig = {
+      # gluetun VPN
+      virtualisation.oci-containers.containers.gluetun-shelfmark = {
+        image = "qmcgaw/gluetun:latest";
+        ports = [ "8084:8084" ];
+        volumes = [
+          "${stateDir}/gluetun:/gluetun"
+          "${config.sops.secrets."media/wg_config".path}:/gluetun/wireguard/wg0.conf:ro"
+        ];
+        environment = {
+          VPN_SERVICE_PROVIDER = "custom";
+          VPN_TYPE = "wireguard";
+          VPN_ENDPOINT_PORT = "51820";
+          TZ = config.time.timeZone;
+          WIREGUARD_CONF_SECRETFILE = "/gluetun/wireguard/wg0.conf";
+          WIREGUARD_MTU = "1280";
+        };
+        extraOptions = [
+          "--cap-add=NET_ADMIN"
+          "--device=/dev/net/tun"
+        ];
+      };
+
+      # shelfmark container using gluetun's network
       virtualisation.oci-containers.containers.shelfmark = {
         image = "ghcr.io/calibrain/shelfmark:latest";
+        dependsOn = [ "gluetun-shelfmark" ];
+        extraOptions = [
+          "--network=container:gluetun-shelfmark"
+        ];
         volumes = [
           "${stateDir}/shelfmark/config:/config"
           # downloads go to CWA's ingest dir for automatic library import
@@ -129,16 +159,20 @@ let
           TZ = config.time.timeZone;
           CALIBRE_WEB_URL = lib.custom.mkPublicHttpsUrl config.constants "books";
         };
-        extraOptions = [ "--network=host" ];
       };
 
+      systemd.tmpfiles.rules = [
+        "d ${stateDir}/gluetun 0755 ${booksUser} ${booksGroup} -"
+      ];
+
+      # wait for gluetun
       systemd.services.docker-shelfmark = {
-        vpnConfinement = {
-          enable = true;
-          vpnNamespace = "wg";
+        after = [ "docker-gluetun-shelfmark.service" ];
+        requires = [ "docker-gluetun-shelfmark.service" ];
+        bindsTo = [ "docker-gluetun-shelfmark.service" ];
+        serviceConfig = {
+          RestartSec = "5s";
         };
-        after = [ "wg.service" ];
-        requires = [ "wg.service" ];
       };
     };
   };
