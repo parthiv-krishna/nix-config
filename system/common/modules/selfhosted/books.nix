@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -133,10 +134,18 @@ let
           TZ = config.time.timeZone;
           WIREGUARD_CONF_SECRETFILE = "/gluetun/wireguard/wg0.conf";
           WIREGUARD_MTU = "1280";
+          FIREWALL_VPN_INPUT_PORTS = "8084";
+          FIREWALL_INPUT_PORTS = "8084";
+          DISABLE_IPV6 = "yes";
+          DNS_KEEP_NAMESERVER = "on";
+          DOT = "off";
         };
         extraOptions = [
           "--cap-add=NET_ADMIN"
           "--device=/dev/net/tun"
+          # enable TCP MTU probing and lower MSS
+          "--sysctl=net.ipv4.tcp_mtu_probing=1"
+          "--sysctl=net.ipv4.ip_no_pmtu_disc=1"
         ];
       };
 
@@ -160,17 +169,29 @@ let
         };
       };
 
-      systemd.tmpfiles.rules = [
-        "d ${stateDir}/gluetun 0755 ${booksUser} ${booksGroup} -"
-      ];
+      systemd = {
+        tmpfiles.rules = [
+          "d ${stateDir}/gluetun 0755 ${booksUser} ${booksGroup} -"
+        ];
 
-      # wait for gluetun
-      systemd.services.docker-shelfmark = {
-        after = [ "docker-gluetun-shelfmark.service" ];
-        requires = [ "docker-gluetun-shelfmark.service" ];
-        bindsTo = [ "docker-gluetun-shelfmark.service" ];
-        serviceConfig = {
-          RestartSec = "5s";
+        # clamp MSS to avoid MTU issues with TLS handshakes
+        services = {
+          docker-gluetun-shelfmark = {
+            postStart = ''
+              sleep 2
+              ${pkgs.docker}/bin/docker exec gluetun-shelfmark iptables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu || true
+            '';
+          };
+
+          # wait for gluetun
+          docker-shelfmark = {
+            after = [ "docker-gluetun-shelfmark.service" ];
+            requires = [ "docker-gluetun-shelfmark.service" ];
+            bindsTo = [ "docker-gluetun-shelfmark.service" ];
+            serviceConfig = {
+              RestartSec = "5s";
+            };
+          };
         };
       };
     };
