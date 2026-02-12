@@ -33,8 +33,7 @@ let
           "profile"
         ];
         authorization_policy = "one_factor";
-        require_pkce = true;
-        pkce_challenge_method = "S256";
+        require_pkce = false;
         response_types = [ "code" ];
         grant_types = [ "authorization_code" ];
         token_endpoint_auth_method = "client_secret_basic";
