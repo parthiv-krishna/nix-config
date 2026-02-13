@@ -193,23 +193,13 @@ let
             };
           };
 
-          # refresh and test vpn every few hours
+          # refresh vpn every few hours
           gluetun-vpn-refresh = {
             description = "Refresh gluetun VPN";
             serviceConfig = {
               Type = "oneshot";
               ExecStart = "systemctl restart docker-gluetun-shelfmark.service docker-shelfmark.service";
             };
-            onSuccess = [ "gluetun-vpn-test.service" ];
-          };
-
-          gluetun-vpn-test = {
-            description = "Test gluetun VPN connection";
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${pkgs.docker}/bin/docker exec gluetun-shelfmark wget -qO- https://ifconfig.me";
-            };
-            onFailure = [ "gluetun-vpn-refresh.service" ];
           };
         };
 
@@ -224,7 +214,6 @@ let
       };
 
       custom.discord-notifiers = {
-        gluetun-vpn-test.enable = true;
         gluetun-vpn-refresh.enable = true;
       };
     };
