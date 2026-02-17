@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -74,6 +75,12 @@ lib.custom.mkSelfHostedService {
 
       credentialsFile = config.sops.templates."librechat/environment".path;
     };
+
+    # librechat only looks for oidc upon startup. if login.sub0.net is not available at startup, then oidc never works
+    # wait for oidc config availability
+    systemd.services.librechat.serviceConfig.ExecStartPre = [
+      "${lib.getExe pkgs.curl} --silent --show-error --fail --retry 30 --retry-delay 2 --retry-connrefused --connect-timeout 5 --max-time 10 ${mkPublicHttpsUrl "login"}/.well-known/openid-configuration"
+    ];
 
     sops = {
       templates."librechat/environment" = {
