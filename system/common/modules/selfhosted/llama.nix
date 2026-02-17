@@ -52,7 +52,12 @@ let
         "qwen3vl-thinking"
         "qwen3vl-8b-thinking"
         "thinking"
+        "vision"
       ];
+      mmproj = pkgs.fetchurl {
+        url = "https://huggingface.co/unsloth/Qwen3-VL-8B-Thinking-GGUF/resolve/main/mmproj-BF16.gguf";
+        hash = "sha256-4G/N2omMCeprseyktIH8bB55PTTvMaCtEoZ4t2PshoI=";
+      };
     };
   };
 in
@@ -101,9 +106,17 @@ lib.custom.mkSelfHostedService {
         # pass thru all other parameters as-is to the settings
         models = lib.mapAttrs (
           _name:
-          { model, ngl, ... }@params:
           {
-            cmd = "${llama-server} --port \${PORT} -m ${model} -ngl ${toString ngl} --no-webui";
+            model,
+            ngl,
+            mmproj ? null,
+            ...
+          }@params:
+          let
+            mmprojFlags = if (mmproj == null) then "" else "--mmproj ${mmproj} --no-mmproj-offload";
+          in
+          {
+            cmd = "${llama-server} --port \${PORT} -m ${model} ${mmprojFlags} -ngl ${toString ngl} --no-webui";
           }
           // params
         ) modelConfigs;
