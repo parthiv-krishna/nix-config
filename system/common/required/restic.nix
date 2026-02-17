@@ -8,7 +8,6 @@ let
   secretRoot = "restic";
   secretPassword = "${secretRoot}/password";
   secretRepository = "${secretRoot}/repository";
-  secretEnvironment = "${secretRoot}/environment";
 
   # generate scripts to stop/start services for backups
   servicesToStop = config.custom.selfhosted.backupServices;
@@ -42,7 +41,6 @@ in
     ];
     passwordFile = config.sops.secrets."${secretPassword}".path;
     repositoryFile = config.sops.secrets."${secretRepository}".path;
-    environmentFile = config.sops.secrets."${secretEnvironment}".path;
     timerConfig = {
       OnCalendar = "11:00"; # 4am PT
       Persistent = true;
@@ -65,11 +63,16 @@ in
     '';
   };
 
+  # trust backup.sub0.net
+  programs.ssh.knownHosts = {
+    "backup.sub0.net".publicKey =
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";
+  };
+
   custom.discord-notifiers.restic-backups-main.enable = true;
 
   sops.secrets = {
     "${secretPassword}" = { };
     "${secretRepository}" = { };
-    "${secretEnvironment}" = { };
   };
 }
