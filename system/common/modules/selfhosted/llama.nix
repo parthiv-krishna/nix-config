@@ -23,6 +23,7 @@ let
         hash = "sha256-YvulfJBsMS/2zHobvwzUlSNJPfWfr4yyZoReBGoBZgA=";
       };
       ngl = 0;
+      extraArgs = "--device none";
       aliases = [
         "gemma3n"
         "gemma3n-e2b"
@@ -42,12 +43,13 @@ let
       ];
     };
 
-    qwen3vl-8b-thinking-q6_k_xl = {
+    qwen3vl-8b-thinking-q4_k_m = {
       model = pkgs.fetchurl {
-        url = "https://huggingface.co/unsloth/Qwen3-VL-8B-Thinking-GGUF/resolve/main/Qwen3-VL-8B-Thinking-UD-Q6_K_XL.gguf";
-        hash = "sha256-d21NCwG6utX9lIgmmfGTC8H29DNHkouETbAittEhEis=";
+        url = "https://huggingface.co/unsloth/Qwen3-VL-8B-Thinking-GGUF/resolve/main/Qwen3-VL-8B-Thinking-Q4_K_M.gguf";
+        hash = "sha256-o2bG1+YwwHwTk9KVVd9nJ4+evUDC/WqAZZAl/ymdAyc=";
       };
       ngl = 37;
+      ctxSize = 36864;
       aliases = [
         "qwen3vl-thinking"
         "qwen3vl-8b-thinking"
@@ -92,7 +94,7 @@ lib.custom.mkSelfHostedService {
             exclusive = true;
             members = [
               "ministral3-14b-q4_k_m"
-              "qwen3vl-8b-thinking-q6_k_xl"
+              "qwen3vl-8b-thinking-q4_k_m"
             ];
           };
           cpu_model = {
@@ -110,18 +112,21 @@ lib.custom.mkSelfHostedService {
             model,
             ngl,
             mmproj ? null,
+            ctxSize ? null,
+            extraArgs ? "",
             ...
           }@params:
           let
-            mmprojFlags = if (mmproj == null) then "" else "--mmproj ${mmproj} --no-mmproj-offload";
+            mmprojArgs = if (mmproj == null) then "" else "--mmproj ${mmproj}";
+            ctxSizeArgs = if (ctxSize == null) then "" else "--ctx-size ${toString ctxSize}";
           in
           {
-            cmd = "${llama-server} --port \${PORT} -m ${model} ${mmprojFlags} -ngl ${toString ngl} --no-webui";
+            cmd = "${llama-server} --port \${PORT} -m ${model} ${mmprojArgs} ${ctxSizeArgs} -ngl ${toString ngl} --no-webui ${extraArgs}";
+            ttl = 300;
           }
           // params
         ) modelConfigs;
       };
     };
   };
-
 }
