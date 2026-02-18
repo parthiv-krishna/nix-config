@@ -17,7 +17,6 @@
       inherit (pkgs)
 
         age
-        colmena
         compose2nix
         git
         nix

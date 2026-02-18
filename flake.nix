@@ -6,10 +6,6 @@
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    colmena = {
-      url = "github:zhaofengli/colmena?ref=release-0.4.x";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     copyparty = {
       url = "github:9001/copyparty";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -130,38 +126,6 @@
           ];
         in
         lib.genAttrs usernames mkHomeConfig;
-
-      # remote deployment
-      colmena = {
-        meta = {
-          nixpkgs = nixpkgs.legacyPackages.${systems.x86};
-          nodeSpecialArgs = lib.mapAttrs (
-            _hostName: hostConfig:
-            let
-              inherit (hostConfig) system;
-            in
-            {
-              inherit inputs;
-              lib = mkCustomLib system;
-            }
-          ) hosts;
-        };
-      }
-      // lib.mapAttrs (hostName: hostConfig: {
-
-        deployment = {
-          targetHost = hostConfig.fqdn;
-          buildOnTarget = true;
-          allowLocalDeployment = false;
-          inherit (hostConfig) tags;
-        };
-
-        imports = [
-          ./system/common/modules
-          ./system/${hostName}
-        ];
-
-      }) hosts;
 
       # `nix fmt`
       formatter = forEachSystem (

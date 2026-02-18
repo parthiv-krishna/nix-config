@@ -25,9 +25,6 @@ A user visits `service.sub0.net` on the public internet. Traffic is received by 
 - A user visits `service.sub0.net` on my local network. Local DNS entries override the locally-hosted services to point at `midnight` as needed.
 - The machine's instance of Caddy will `reverse_proxy` the request to localhost:port without any additional authentication.
 
-## Deployment
-Due to the multi-system architecture, I use (colmena)[https://github.com/zhaofengli/colmena] to manage deployment. A single command (`colmena apply`) will push the updates to the configuration to all of the machines.
-
 ## Self Hosted Services
 The key to the self hosted services setup is `mkSelfHostedService`, defined in [lib/services.nix](./lib/services.nix). `mkSelfHostedService` is a helper that standardizes the configuration and exposure of self-hosted services across the network. It automates the setup of Caddy reverse proxy rules, domain names, authentication, and public/private access, so you only need to specify the service-specific configuration and a few metadata fields. This makes it easy to add new services and ensures consistent, secure access patterns for both internal and external users.
 
