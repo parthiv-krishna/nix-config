@@ -4,7 +4,7 @@ _:
 
 {
   imports = [
-    ./common/required
+    ../../manifests/home-required.nix
   ];
 
   custom = {

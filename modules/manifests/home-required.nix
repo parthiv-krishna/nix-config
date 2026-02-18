@@ -1,12 +1,12 @@
+{ pkgs, ... }:
 {
-  lib,
-  pkgs,
-  ...
-}:
-{
-  imports = lib.custom.scanPaths ./.;
+  imports = [
+    ../features/core/bash.nix
+    ../features/core/git.nix
+    ../features/core/nixvim/default.nix
+    ../features/core/tmux.nix
+  ];
 
-  # core utils
   home.packages = with pkgs; [
     btop
     curl

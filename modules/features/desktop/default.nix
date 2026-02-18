@@ -29,5 +29,5 @@
     };
   };
 
-  imports = lib.custom.scanPaths ./.;
+  imports = [ ./hyprland-system.nix ];
 }

@@ -7,9 +7,7 @@
   ...
 }:
 {
-  imports = lib.flatten [
-    (lib.custom.scanPaths ./.)
-  ];
+  imports = [ ./persistence-options.nix ];
 
   # skip non-nixos hosts
   config = lib.optionalAttrs (options ? home.persistence) {

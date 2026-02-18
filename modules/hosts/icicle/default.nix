@@ -17,7 +17,9 @@
     ./disks.nix
 
     # required system modules
-    (lib.custom.relativeToRoot "system/common/required")
+    (lib.custom.relativeToRoot "modules/manifests/required.nix")
+    (lib.custom.relativeToRoot "modules/manifests/desktop-environment.nix")
+    (lib.custom.relativeToRoot "modules/manifests/laptop.nix")
   ];
 
   networking.hostName = "icicle";

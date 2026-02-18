@@ -11,8 +11,7 @@ let
     inputs.home-manager.lib.homeManagerConfiguration {
       pkgs = inputs.nixpkgs.legacyPackages.${constants.systems.x86};
       modules = [
-        ../../home/common/modules
-        ../../home/standalone.nix
+        ./home-manager-standalone.nix
       ];
       extraSpecialArgs = {
         inherit inputs username;

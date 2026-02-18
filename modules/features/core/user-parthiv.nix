@@ -32,10 +32,10 @@ in
       inherit inputs;
     };
     sharedModules = [
-      (lib.custom.relativeToRoot "home/common/modules")
+      (lib.custom.relativeToRoot "modules/manifests/home-shared.nix")
     ];
     users = {
-      parthiv = import (lib.custom.relativeToRoot "home/${config.networking.hostName}.nix");
+      parthiv = import (lib.custom.relativeToRoot "modules/hosts/${config.networking.hostName}/home.nix");
     };
     backupFileExtension = "bak";
   };

@@ -18,8 +18,8 @@ in
       inherit system;
 
       modules = [
-        ../../system/common/modules
-        ../../system/${hostName}
+        ../manifests/nixos-modules.nix
+        ../hosts/${hostName}
       ];
 
       specialArgs = {

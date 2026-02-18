@@ -8,7 +8,8 @@
 
 {
   imports = [
-    ./common/required
+    ../manifests/home-shared.nix
+    ../manifests/home-required.nix
   ];
 
   home = {
