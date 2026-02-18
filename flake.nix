@@ -54,115 +54,16 @@
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs =
-    { nixpkgs, self, ... }@inputs:
-    let
-      inherit (nixpkgs) lib;
-      constants = import ./constants.nix;
-      inherit (constants) hosts systems;
-      forEachSystem = lib.genAttrs (lib.attrValues systems);
-
-      # helper function to create custom lib for a system
-      mkCustomLib =
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        lib.extend (
-          _: super:
-          import ./lib {
-            inherit inputs pkgs system;
-            lib = super;
-          }
-        );
-    in
-    {
-      # nixos system configurations
-      nixosConfigurations = lib.mapAttrs (
-        hostName: hostConfig:
-        let
-          inherit (hostConfig) system;
-          customLib = mkCustomLib system;
-        in
-        lib.nixosSystem {
-          modules = [
-            ./system/common/modules
-            ./system/${hostName}
-          ];
-          specialArgs = {
-            inherit inputs;
-            lib = customLib;
-          };
-          inherit system;
-        }
-      ) hosts;
-
-      # standalone home-manager configurations for non-NixOS systems
-      # generate for each of the configured usernames
-      homeConfigurations =
-        let
-          mkHomeConfig =
-            username:
-            inputs.home-manager.lib.homeManagerConfiguration {
-              pkgs = nixpkgs.legacyPackages.${systems.x86};
-              modules = [
-                ./home/common/modules
-                ./home/standalone.nix
-              ];
-              extraSpecialArgs = {
-                inherit inputs username;
-                lib = (mkCustomLib systems.x86).extend (
-                  _final: _prev: {
-                    inherit (inputs.home-manager.lib) hm;
-                  }
-                );
-              };
-            };
-          usernames = [
-            "parthiv"
-            "parthivk"
-          ];
-        in
-        lib.genAttrs usernames mkHomeConfig;
-
-      # `nix fmt`
-      formatter = forEachSystem (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        inputs.treefmt-nix.lib.mkWrapper pkgs {
-          projectRootFile = "flake.nix";
-          programs = {
-            black.enable = true;
-            deadnix.enable = true;
-            nixfmt.enable = true;
-            statix.enable = true;
-          };
-        }
-      );
-
-      # Pre-commit
-      checks = forEachSystem (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        import ./tools/checks.nix { inherit inputs pkgs system; }
-      );
-
-      # `nix develop`
-      devShells = forEachSystem (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        import ./tools/shell.nix {
-          inherit pkgs;
-          checks = self.checks.${system};
-        }
-      );
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        ./modules/flake-parts.nix
+        ./modules/configurations/nixos.nix
+        ./modules/configurations/home-manager.nix
+      ];
     };
 }
