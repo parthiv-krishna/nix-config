@@ -12,6 +12,7 @@ in
     enable = lib.mkEnableOption "NVIDIA drivers";
     cudaCapability = lib.mkOption {
       type = lib.types.str;
+      default = "";
       description = "CUDA capability level for the installed GPU";
       example = "8.6";
     };

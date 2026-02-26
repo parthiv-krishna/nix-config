@@ -1,0 +1,77 @@
+{
+  "custom": {
+    "font": {
+      "family": "ZedMono Nerd Font",
+      "monoFamily": "ZedMono Nerd Font Mono",
+      "package": "/nix/store/a8219zb2q74p7l5k4nfdkpf5r5apqw3l-nerd-fonts-zed-mono-3.4.0+1.2.0",
+      "sizes": {
+        "large": 14,
+        "normal": 12,
+        "small": 10,
+        "xlarge": 16
+      }
+    },
+    "gui-apps": {
+      "enable": false
+    },
+    "hyprland": {
+      "enable": false
+    },
+    "opencode": {
+      "enable": true
+    },
+    "persistence": {
+      "directories": [
+        ".local/share/opencode"
+      ],
+      "files": []
+    },
+    "sops": {
+      "sopsFile": ""
+    },
+    "sound-engineering": {
+      "enable": false
+    }
+  },
+  "homeDirectory": "/home/parthiv",
+  "programs": {
+    "bash": {
+      "enable": true
+    },
+    "git": {
+      "enable": true
+    },
+    "kitty": {
+      "enable": false
+    },
+    "nixvim": {
+      "enable": true
+    },
+    "waybar": {
+      "enable": false
+    },
+    "wofi": {
+      "enable": false
+    }
+  },
+  "services": {
+    "dunst": {
+      "enable": false
+    },
+    "hypridle": {
+      "enable": false
+    },
+    "hyprpaper": {
+      "enable": false
+    }
+  },
+  "stateVersion": "24.11",
+  "username": "parthiv",
+  "wayland": {
+    "windowManager": {
+      "hyprland": {
+        "enable": false
+      }
+    }
+  }
+}

@@ -1,0 +1,1174 @@
+{
+  "boot": {
+    "loader": {
+      "grub": {
+        "enable": false
+      },
+      "systemd-boot": {
+        "enable": true
+      }
+    }
+  },
+  "custom": {
+    "audio": {
+      "enable": false,
+      "micVolume": 1.0
+    },
+    "bluetooth": {
+      "enable": false
+    },
+    "desktop": {
+      "enable": false,
+      "idleMinutes": {
+        "lock": 5,
+        "screenOff": 10,
+        "suspend": 15
+      }
+    },
+    "discord-notifiers": {
+      "gluetun-vpn-refresh": {
+        "enable": true,
+        "watchedService": "gluetun-vpn-refresh",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "nix-gc-after-upgrade": {
+        "enable": true,
+        "watchedService": "nix-gc-after-upgrade",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "nixos-upgrade": {
+        "enable": true,
+        "watchedService": "nixos-upgrade",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "restic-backups-main": {
+        "enable": true,
+        "watchedService": "restic-backups-main",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "vpn-refresh": {
+        "enable": true,
+        "watchedService": "vpn-refresh",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "vpn-test": {
+        "enable": true,
+        "watchedService": "vpn-test",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "zfs-scrub": {
+        "enable": true,
+        "watchedService": "zfs-scrub",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "zfs-snapshot-daily": {
+        "enable": true,
+        "watchedService": "zfs-snapshot-daily",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "zfs-snapshot-monthly": {
+        "enable": true,
+        "watchedService": "zfs-snapshot-monthly",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "zfs-snapshot-weekly": {
+        "enable": true,
+        "watchedService": "zfs-snapshot-weekly",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      },
+      "zfs-trim": {
+        "enable": true,
+        "watchedService": "zfs-trim",
+        "webhookSecretPath": "/run/secrets/discord/webhook"
+      }
+    },
+    "impermanence": {
+      "rootPartitionPath": "/dev/disk/by-partlabel/ssd-root"
+    },
+    "intel-gpu": {
+      "enable": true
+    },
+    "nvidia": {
+      "cudaCapability": "8.6",
+      "enable": true
+    },
+    "samba": {
+      "enable": true
+    },
+    "seagate-hdd": {
+      "disks": [
+        "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF",
+        "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGTQ",
+        "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZTM09ETE"
+      ],
+      "enable": true,
+      "timers": {
+        "idleA": 100,
+        "idleB": 120000,
+        "idleC": 600000,
+        "standbyZ": 900000
+      }
+    },
+    "selfhosted": {
+      "autheliaExtraConfig": {
+        "identity_providers": {
+          "oidc": {
+            "cors": {
+              "endpoints": [
+                "authorization",
+                "token",
+                "revocation",
+                "introspection",
+                "userinfo"
+              ]
+            },
+            "lifespans": {
+              "custom": {
+                "ocis": {
+                  "access_token": "2 days",
+                  "refresh_token": "3 days"
+                }
+              }
+            }
+          }
+        }
+      },
+      "backupServices": [
+        "ocis.service",
+        "transmission.service",
+        "sonarr.service",
+        "prowlarr.service",
+        "jellyseerr.service",
+        "jellyfin.service",
+        "radarr.service",
+        "bazarr.service",
+        "mealie.service",
+        "librechat.service",
+        "forgejo.service",
+        "copyparty.service",
+        "docker-calibre-web-automated.service",
+        "docker-shelfmark.service",
+        "docker-gluetun-shelfmark.service",
+        "authelia-sub0.net.service",
+        "redis-sub0.net.service",
+        "actual.service"
+      ],
+      "enableReverseProxy": true,
+      "homepageServices": {
+        "actual": {
+          "category": "Tools",
+          "description": "Budgeting",
+          "hostName": "midnight",
+          "icon": "sh-actual-budget",
+          "name": "actual",
+          "subdomain": "actual"
+        },
+        "authelia": {
+          "category": "Network",
+          "description": "Authentication portal",
+          "hostName": "midnight",
+          "icon": "sh-authelia",
+          "name": "authelia",
+          "subdomain": "login"
+        },
+        "bazarr": {
+          "category": "Media Management",
+          "description": "Manage subtitles",
+          "hostName": "midnight",
+          "icon": "sh-bazarr",
+          "name": "bazarr",
+          "subdomain": "subtitles"
+        },
+        "calibre-web-automated": {
+          "category": "Media",
+          "description": "Read eBooks",
+          "hostName": "midnight",
+          "icon": "sh-calibre-web",
+          "name": "calibre-web-automated",
+          "subdomain": "books"
+        },
+        "copyparty": {
+          "category": "Storage",
+          "description": "(BETA) new option for file storage",
+          "hostName": "midnight",
+          "icon": "sh-copyparty",
+          "name": "copyparty",
+          "subdomain": "drive2"
+        },
+        "forgejo": {
+          "category": "Tools",
+          "description": "Code repositories",
+          "hostName": "midnight",
+          "icon": "sh-forgejo",
+          "name": "forgejo",
+          "subdomain": "git"
+        },
+        "grafana": {
+          "category": "Network",
+          "description": "Charts and metrics",
+          "hostName": "nimbus",
+          "icon": "sh-grafana",
+          "name": "grafana",
+          "subdomain": "stats"
+        },
+        "immich": {
+          "category": "Storage",
+          "description": "Photo storage",
+          "hostName": "midnight",
+          "icon": "sh-immich",
+          "name": "immich",
+          "subdomain": "photos"
+        },
+        "jellyfin": {
+          "category": "Media",
+          "description": "Watch movies and TV",
+          "hostName": "midnight",
+          "icon": "sh-jellyfin",
+          "name": "jellyfin",
+          "subdomain": "tv"
+        },
+        "jellyseerr": {
+          "category": "Media",
+          "description": "Request media",
+          "hostName": "midnight",
+          "icon": "sh-jellyseerr",
+          "name": "jellyseerr",
+          "subdomain": "request"
+        },
+        "kasm": {
+          "category": "Tools",
+          "description": "Virtual machines",
+          "hostName": "midnight",
+          "icon": "sh-kasm-workspaces",
+          "name": "kasm",
+          "subdomain": "vm"
+        },
+        "librechat": {
+          "category": "Tools",
+          "description": "AI Chat Interface",
+          "hostName": "midnight",
+          "icon": "sh-librechat",
+          "name": "librechat",
+          "subdomain": "ai"
+        },
+        "mealie": {
+          "category": "Tools",
+          "description": "Recipes",
+          "hostName": "midnight",
+          "icon": "sh-mealie",
+          "name": "mealie",
+          "subdomain": "food"
+        },
+        "ocis": {
+          "category": "Storage",
+          "description": "General storage",
+          "hostName": "midnight",
+          "icon": "sh-owncloud",
+          "name": "ocis",
+          "subdomain": "drive"
+        },
+        "paperless": {
+          "category": "Storage",
+          "description": "Document management",
+          "hostName": "midnight",
+          "icon": "sh-paperless-ngx",
+          "name": "paperless",
+          "subdomain": "paperless"
+        },
+        "prometheus": {
+          "category": "Network",
+          "description": "Time-series database for monitoring",
+          "hostName": "nimbus",
+          "icon": "sh-prometheus",
+          "name": "prometheus",
+          "subdomain": "prometheus"
+        },
+        "prowlarr": {
+          "category": "Media Management",
+          "description": "Manage indexers",
+          "hostName": "midnight",
+          "icon": "sh-prowlarr",
+          "name": "prowlarr",
+          "subdomain": "indexers"
+        },
+        "radarr": {
+          "category": "Media Management",
+          "description": "Manage movies",
+          "hostName": "midnight",
+          "icon": "sh-radarr",
+          "name": "radarr",
+          "subdomain": "movies"
+        },
+        "shelfmark": {
+          "category": "Media",
+          "description": "Request a book",
+          "hostName": "midnight",
+          "icon": "sh-shelfmark",
+          "name": "shelfmark",
+          "subdomain": "bookrequest"
+        },
+        "sonarr": {
+          "category": "Media Management",
+          "description": "Manage shows",
+          "hostName": "midnight",
+          "icon": "sh-sonarr",
+          "name": "sonarr",
+          "subdomain": "shows"
+        },
+        "transmission": {
+          "category": "Media Management",
+          "description": "Manage downloads",
+          "hostName": "midnight",
+          "icon": "sh-transmission",
+          "name": "transmission",
+          "subdomain": "download"
+        },
+        "unmanic": {
+          "category": "Media Management",
+          "description": "Manage transcodes",
+          "hostName": "midnight",
+          "icon": "sh-unmanic",
+          "name": "unmanic",
+          "subdomain": "transcode"
+        }
+      },
+      "oidcClients": {
+        "actual": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "Actual",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "",
+            "require_pkce": false,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "email",
+              "groups",
+              "openid",
+              "profile"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/openid/callback"
+          ],
+          "subdomain": "actual"
+        },
+        "calibre-web-automated": {
+          "customRedirects": [],
+          "extraConfig": {
+            "authorization_policy": "one_factor",
+            "client_name": "Calibre Web Automated",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "require_pkce": false,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "email",
+              "profile"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic"
+          },
+          "redirects": [
+            "/login/generic/authorized"
+          ],
+          "subdomain": "books"
+        },
+        "forgejo": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "Forgejo",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "profile",
+              "email",
+              "groups"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/user/oauth2/sub0/callback"
+          ],
+          "subdomain": "git"
+        },
+        "grafana": {
+          "customRedirects": [],
+          "extraConfig": {
+            "authorization_policy": "one_factor",
+            "client_name": "Grafana",
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "scopes": [
+              "openid",
+              "profile",
+              "groups",
+              "email"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/login/generic_oauth"
+          ],
+          "subdomain": "stats"
+        },
+        "immich": {
+          "customRedirects": [
+            "app.immich:///oauth-callback"
+          ],
+          "extraConfig": {
+            "authorization_policy": "one_factor",
+            "client_name": "Immich",
+            "scopes": [
+              "openid",
+              "profile",
+              "email"
+            ],
+            "token_endpoint_auth_method": "client_secret_post",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/auth/login",
+            "/user-settings"
+          ],
+          "subdomain": "photos"
+        },
+        "jellyfin": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "Jellyfin",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "groups",
+              "openid",
+              "profile"
+            ],
+            "token_endpoint_auth_method": "client_secret_post",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/sso/OID/redirect/authelia"
+          ],
+          "subdomain": "tv"
+        },
+        "jellyseerr": {
+          "customRedirects": [
+            "http://request.sub0.net/login?provider=sub0.net&callback=true"
+          ],
+          "extraConfig": {
+            "authorization_policy": "one_factor",
+            "client_name": "Jellyseerr",
+            "scopes": [
+              "openid",
+              "email",
+              "profile",
+              "groups"
+            ],
+            "token_endpoint_auth_method": "client_secret_post"
+          },
+          "redirects": [
+            "/login?provider=sub0.net&callback=true"
+          ],
+          "subdomain": "request"
+        },
+        "kasm": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "Kasm",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "",
+            "require_pkce": false,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "profile",
+              "email",
+              "groups"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/api/oidc_callback"
+          ],
+          "subdomain": "vm"
+        },
+        "librechat": {
+          "customRedirects": [],
+          "extraConfig": {
+            "authorization_policy": "one_factor",
+            "client_name": "LibreChat",
+            "public": false,
+            "scopes": [
+              "openid",
+              "profile",
+              "email"
+            ],
+            "token_endpoint_auth_method": "client_secret_post",
+            "userinfo_signing_algorithm": "none"
+          },
+          "redirects": [
+            "/oauth/openid/callback"
+          ],
+          "subdomain": "ai"
+        },
+        "mealie": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "Mealie",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "email",
+              "profile",
+              "groups"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/login"
+          ],
+          "subdomain": "food"
+        },
+        "ocis": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "ownCloud Infinite Scale",
+            "grant_types": [
+              "authorization_code",
+              "refresh_token"
+            ],
+            "lifespan": "ocis",
+            "pkce_challenge_method": "S256",
+            "public": true,
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "offline_access",
+              "groups",
+              "profile",
+              "email"
+            ],
+            "token_endpoint_auth_method": "none",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/",
+            "/oidc-callback.html",
+            "/oidc-silent-redirect.html",
+            "/apps/openidconnect/redirect"
+          ],
+          "subdomain": "drive"
+        },
+        "ocis-android": {
+          "customRedirects": [
+            "oc://android.owncloud.com"
+          ],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "ownCloud Infinite Scale (Android)",
+            "grant_types": [
+              "authorization_code",
+              "refresh_token"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "offline_access",
+              "groups",
+              "profile",
+              "email"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [],
+          "subdomain": "drive"
+        },
+        "ocis-desktop": {
+          "customRedirects": [
+            "http://127.0.0.1",
+            "http://localhost"
+          ],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "ownCloud Infinite Scale (Desktop Client)",
+            "grant_types": [
+              "authorization_code",
+              "refresh_token"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "offline_access",
+              "groups",
+              "profile",
+              "email"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [],
+          "subdomain": "drive"
+        },
+        "ocis-ios": {
+          "customRedirects": [
+            "oc://ios.owncloud.com",
+            "oc.ios://ios.owncloud.com"
+          ],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "ownCloud Infinite Scale (iOS)",
+            "grant_types": [
+              "authorization_code",
+              "refresh_token"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "offline_access",
+              "groups",
+              "profile",
+              "email"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [],
+          "subdomain": "drive"
+        },
+        "paperless": {
+          "customRedirects": [],
+          "extraConfig": {
+            "access_token_signed_response_alg": "none",
+            "authorization_policy": "one_factor",
+            "client_name": "Paperless",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "profile",
+              "email",
+              "groups"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic",
+            "userinfo_signed_response_alg": "none"
+          },
+          "redirects": [
+            "/accounts/oidc/authelia/login/callback/"
+          ],
+          "subdomain": "paperless"
+        },
+        "shelfmark": {
+          "customRedirects": [],
+          "extraConfig": {
+            "authorization_policy": "one_factor",
+            "client_name": "Shelfmark",
+            "grant_types": [
+              "authorization_code"
+            ],
+            "pkce_challenge_method": "S256",
+            "require_pkce": true,
+            "response_types": [
+              "code"
+            ],
+            "scopes": [
+              "openid",
+              "email",
+              "profile"
+            ],
+            "token_endpoint_auth_method": "client_secret_basic"
+          },
+          "redirects": [
+            "/api/auth/oidc/callback"
+          ],
+          "subdomain": "bookrequest"
+        }
+      }
+    },
+    "sshd": {
+      "enable": true
+    },
+    "ups": {
+      "enable": true,
+      "monitor": "mon",
+      "name": "ups",
+      "passwordKey": "ups/password",
+      "user": "upsmon"
+    },
+    "wake-on-lan": {
+      "device": "enp2s0",
+      "enable": true
+    },
+    "wifi": {
+      "driver": "",
+      "enable": false
+    },
+    "zfs": {
+      "enable": true
+    }
+  },
+  "hardware": {
+    "bluetooth": {
+      "enable": false
+    }
+  },
+  "hostName": "midnight",
+  "programs": {
+    "hyprland": {
+      "enable": false
+    }
+  },
+  "services": {
+    "blueman": {
+      "enable": false
+    },
+    "greetd": {
+      "enable": false
+    },
+    "openssh": {
+      "enable": true
+    },
+    "pipewire": {
+      "enable": false
+    },
+    "tailscale": {
+      "enable": true
+    }
+  },
+  "stateVersion": "24.11",
+  "timeZone": "Etc/UTC",
+  "users": {
+    "authelia-sub0.net": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "bazarr": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "books": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "caddy": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "copyparty": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "dhcpcd": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "git": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "immich": {
+      "extraGroups": [
+        "video",
+        "render"
+      ],
+      "isNormalUser": false
+    },
+    "jellyfin": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "jellyseerr": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "librechat": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "messagebus": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "mongodb": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "nginx": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "nixbld1": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld10": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld11": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld12": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld13": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld14": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld15": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld16": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld17": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld18": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld19": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld2": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld20": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld21": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld22": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld23": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld24": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld25": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld26": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld27": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld28": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld29": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld3": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld30": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld31": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld32": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld4": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld5": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld6": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld7": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld8": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nixbld9": {
+      "extraGroups": [
+        "nixbld"
+      ],
+      "isNormalUser": false
+    },
+    "nobody": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "node-exporter": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "nscd": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "nutmon": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "ocis": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "paperless": {
+      "extraGroups": [
+        "redis-paperless"
+      ],
+      "isNormalUser": false
+    },
+    "parthiv": {
+      "extraGroups": [
+        "samba-users",
+        "systemd-journal",
+        "wheel"
+      ],
+      "isNormalUser": true
+    },
+    "postgres": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "prowlarr": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "radarr": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "recyclarr": {
+      "extraGroups": [
+        "radarr-api",
+        "sonarr-api"
+      ],
+      "isNormalUser": false
+    },
+    "redis-authelia-sub0.net": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "redis-immich": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "redis-paperless": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "root": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "sonarr": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "sshd": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "systemd-coredump": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "systemd-network": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "systemd-oom": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "systemd-resolve": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "systemd-timesync": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "transmission": {
+      "extraGroups": [],
+      "isNormalUser": false
+    },
+    "unmanic": {
+      "extraGroups": [
+        "video"
+      ],
+      "isNormalUser": false
+    }
+  }
+}

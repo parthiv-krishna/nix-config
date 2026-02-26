@@ -12,6 +12,7 @@ in
     enable = lib.mkEnableOption "WiFi support";
     driver = lib.mkOption {
       type = lib.types.str;
+      default = "";
       description = "wifi driver, will be reloaded upon resume from suspend";
       example = "mt7921e";
     };

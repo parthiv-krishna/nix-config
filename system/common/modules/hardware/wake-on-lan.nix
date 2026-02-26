@@ -12,6 +12,7 @@ in
     enable = lib.mkEnableOption "Wake on LAN support";
     device = lib.mkOption {
       type = lib.types.str;
+      default = "";
       description = "device to enable Wake on LAN for";
       example = "enp2s0";
     };
