@@ -1,17 +1,24 @@
-Review the  nix configuration in this directory. Of particular note is that I have a system/ and a home/ section, each of which contains host-specific configuration, and then common configuration which is further subdivided into required and modules. All hosts import all of the required modules, then some hosts enable some things in the modules/ directory. 
+# Nix Configuration Restructuring Plan
 
-Our goal will be to transform this nix configuration into a new format. The goal here is to remove the structural distinction between `modules` and `required`. In addition, we want to remove the structural distinction between `home` and `system`. As it stands right now, there is some awkwardness in certain things (e.g. hyprland stuff) being configured in both home and system, and the two configurations don't really talk to each other appropriately. 
+## Current Structure
 
-Of particular importance is the use of lib.custom.scanPaths. This means that simply adding a file into one of the required or modules directories auto-imports it into all system configurations. I Want to maintain this functionality.
+Review the nix configuration in this directory. Of particular note is that I have a system/ and a home/ section, each of which contains host-specific configuration, and then common configuration which is further subdivided into required and modules. All hosts import all of the required modules, then some hosts enable some things in the modules/ directory. 
 
+## Goals
 
-My desired format is as follows
+Transform this nix configuration into a new format:
+1. Remove the structural distinction between `modules` and `required`
+2. Remove the structural distinction between `home` and `system`
+3. Maintain `lib.custom.scanPaths` functionality (auto-import files)
 
+Currently, there is awkwardness in certain things (e.g. hyprland) being configured in both home and system, and the two configurations don't really talk to each other appropriately.
 
+## Desired Directory Structure
+
+```
 hosts/
     standalone/
-        # replicate current home-manager-only setup
-        default.nix
+        default.nix          # home-manager-only setup
     icicle/
         hardware-configuration.nix
         default.nix
@@ -28,39 +35,38 @@ hosts/
 modules/
     features/
         apps/
-            default.nix # lib.custom.scanPaths import everything
+            default.nix      # lib.custom.scanPaths import everything
+            bash.nix
             brave.nix
             discord.nix
             dolphin.nix
             element-desktop.nix
+            git.nix
             librewolf.nix
             ... other apps from gui-apps.nix
             audacity.nix
             musescore.nix
             reaper.nix
-
             nixvim/
                 ... nixvim config
-
             opencode/
             kitty.nix
-            ... review config for any other apps. each distinct app should get its own file, which is not how i have it done right now
-
+            ... each distinct app gets its own file
             
         desktop/
-            default.nix # lib.custom.scanPaths import everything and shared desktop configuration that COULD be reused across desktops, like idle behavior configuration, the theme.nix stuff
+            default.nix      # lib.custom.scanPaths + shared desktop config (idle behavior, theme.nix)
             hyprland/
-                hypridle.nix # should probably read from cfg.custom.desktop.idle.{dim,lock,sleep}
-                default.nix # contains system/common/modules/hyprland/hyprland.nix and home/common/modules/hyprland/hyprland.nix configuration together
+                hypridle.nix # reads from cfg.custom.features.desktop.idle.{dim,lock,sleep}
+                default.nix  # merged system + home hyprland config
                 ... various hyprland home modules
-            gnome/ # future development, dont implement now 
+            gnome/           # future development
             
         hardware/
-            default.nix # lib.custom.scanPaths import everything
+            default.nix      # lib.custom.scanPaths import everything
             audio.nix
             bluetooth.nix
             gpu/
-                default.nix # lib.custom.scanPaths import everything
+                default.nix
                 intel.nix
                 nvidia.nix
             ups.nix
@@ -68,86 +74,260 @@ modules/
             wifi.nix
 
         meta/
-            default.nix # lib.custom.scanPaths import everything
+            default.nix      # lib.custom.scanPaths import everything
             auto-upgrade.nix
             impermanence.nix
-            parthiv.nix # will this be needed??
+            parthiv.nix
             sops.nix
             unfree.nix
 
         networking/
-            default.nix # lib.custom.scanPaths import everything
+            default.nix      # lib.custom.scanPaths import everything
             sshd.nix
             tailscale.nix
             wake-on-lan.nix
 
-
         selfhosted/
-            default.nix # lib.custom.scanPaths import everything, core selfhosted fucntionality as it is now
-            ... all selfhosted stuff
+            default.nix      # lib.custom.scanPaths + core selfhosted functionality
+            ... all selfhosted stuff (deferred - keep as-is for now)
 
         storage/
-            default.nix # lib.custom.scanPaths import everything
+            default.nix      # lib.custom.scanPaths import everything
             samba.nix
             restic.nix
             zfs.nix
 
-
     manifests/
-        required.nix # enables all required stuff (whatever was in home/common/required and system/common/required)
-        desktop-environment.nix # enables hyprland and all gui-apps from old gui-apps.nix
-        server.nix # enables server related stuff (right now, just sshd)
-        sound-engineering.nix # enables all sound-engineering apps
-
-Note how there is no longer a distinction between home/system, and modules/required! 
-
-Existing lib/ and scripts/ and tools/ can be kept as is.
-
-
-Now we have to figure out how these leaf files look. We have basically three categories:
-
-1. Feature files. These are the ones I am least sure of how to make them look. At a high level, each feature should be a nixos module that has an enable option at the path defined by its directory path. For example, `features/hardware/gpu/nvidia.nix should have a `custom.features.hardware.gpu.nvidia.enable = mkEnableOption ...`. It could also have other options within it as needed, like the cudaCapability etc. 
-
-What I'm not sure about is then how we merge both nixos and home config. What I want is that both the nixos config and the home config can read from the same combined custom.features.<feature_path>.* options, to configure both home and system-level config completely transparently. These should all get exposed back up somehow, I'm not sure how this looks. 
-
-My dream would be for us to make some lib.custom.mkFeature which can automatically determine its path. Then it takes in `extraOptions ? null` and create options at that path, and takes in `systemConfig ? null` and `homeConfig ? null`. Then we can just make these features by keeping all the boilerplate in `lib.custom.mkFeature` and just allowing each file to declare the relevant extraOptions, systemConfig, and homeConfig (all of which are optional). I'm not sure if this is at all possible.
-
-
-2. Manifest files. These should be fairly simple. They should have their own enable flag at `custom.manifests.<manifest>.enable`. When enabled, would just enable various features using `custom.<feature_path>.enable = lib.mkDefault true`. They can also configure sensible defaults for non-enable options if it makes sense to do so. They can also assert some things; right now, all I can think of is that the required module should assert that it's enabled, for example. However, it should still use nix's mkEnableOption (which defaults to false) because I want each host-specific file to actually list the required manifest as enabled, rather than it being a morepassive thing. 
-
-3. Host files. Leave disks.nix and hardware-configuration.nix exactly as is; these are more or less completely static files that are somewhat generated. But we should simplify the host specific-files. For default.nix, I want this to look very much like a manifest. It should contain some minimal boilerplate at the top (or better yet, we should create a lib.custom.mkHost for this boilerplate. All I can think  of here is to just have the boilerplate code that imports the disks.nix and hardware-configuration.nix. Then maybe mkHost takes in a single argument which is the custom configuration:
-
-e.g. for icicle (incomplete):
-
+        required.nix                # enables all required stuff
+        desktop-environment.nix     # enables hyprland and all gui-apps
+        server.nix                  # enables server related stuff (sshd)
+        sound-engineering.nix       # enables all sound-engineering apps
 ```
-custom = {
+
+Note: No more distinction between home/system, and modules/required!
+
+Existing lib/, scripts/, and tools/ can be kept as-is.
+
+---
+
+## Implementation Details
+
+### 1. Feature Files (`lib.custom.mkFeature`)
+
+Each feature is created using `mkFeature` which handles all boilerplate:
+
+```nix
+# modules/features/hardware/bluetooth.nix
+{ lib, ... }:
+lib.custom.mkFeature {
+  path = ["hardware" "bluetooth"];  # becomes custom.features.hardware.bluetooth
+  
+  # extraOptions are added alongside the auto-generated `enable` option
+  extraOptions = { };
+  
+  # NixOS system-level config (optional)
+  systemConfig = cfg: {
+    hardware.bluetooth.enable = true;
+    services.blueman.enable = true;
+  };
+  
+  # Home-manager config (optional)
+  homeConfig = cfg: {
+    # home-manager settings if any
+  };
+}
+```
+
+#### What `mkFeature` Returns
+
+An attrset with two modules:
+```nix
+{
+  nixos = { /* NixOS module */ };
+  home = { /* home-manager module */ };
+}
+```
+
+#### How It Works
+
+**In NixOS mode:**
+- Options are defined at `custom.features.{path}.*` in NixOS
+- `systemConfig cfg` is applied to NixOS config
+- `homeConfig cfg` is injected into `home-manager.sharedModules`
+- The `cfg` comes from NixOS options
+
+**In Standalone mode:**
+- Options are defined at `custom.features.{path}.*` in home-manager
+- `homeConfig cfg` is applied to home-manager config
+- The `cfg` comes from home-manager options
+- `systemConfig` is ignored (no NixOS)
+
+#### Dual-Mode Config Resolution
+
+Home-manager modules need to work in both modes:
+- **NixOS mode**: Read config from `osConfig.custom.features.*`
+- **Standalone mode**: Read config from `config.custom.features.*` (shadow options)
+
+Shadow options are always defined in home-manager but ignored when `osConfig` is available.
+
+### 2. Manifest Files
+
+Standard NixOS modules that enable bundles of features:
+
+```nix
+# modules/manifests/desktop-environment.nix
+{ config, lib, ... }:
+{
+  options.custom.manifests.desktop-environment.enable = 
+    lib.mkEnableOption "desktop environment manifest";
+  
+  config = lib.mkIf config.custom.manifests.desktop-environment.enable {
+    custom.features.desktop.hyprland.enable = lib.mkDefault true;
+    custom.features.apps.kitty.enable = lib.mkDefault true;
+    custom.features.apps.brave.enable = lib.mkDefault true;
+    # ... more features
+  };
+}
+```
+
+- Use `mkDefault` so hosts can override with `= false`
+- Can set sensible defaults for non-enable options
+- Can include assertions (e.g., required manifest asserts it's enabled)
+
+### 3. Host Files (`lib.custom.mkHost`)
+
+`mkHost` handles boilerplate for host configuration:
+
+```nix
+# hosts/icicle/default.nix
+{ lib, inputs, ... }:
+lib.custom.mkHost {
+  hostName = "icicle";
+  stateVersion = "24.11";  # populates both system.stateVersion and home.stateVersion
+  
+  # Optional: extra imports like nixos-hardware modules
+  extraImports = [
+    inputs.nixos-hardware.nixosModules.framework-13-7040-amd
+  ];
+  
+  # The custom configuration block
+  config = {
     manifests = {
-        required.enable = true;
-        desktop-environment.enable = true;
-        sound-engineering.enable = true;
+      required.enable = true;
+      desktop-environment.enable = true;
+      sound-engineering.enable = true;
     };
 
     features = {
-        desktop.idle = {
-            dim = 15;
-            lock = 20;
-            sleep = 30;
-        };
+      desktop.idle = {
+        dim = 15;
+        lock = 20;
+        sleep = 30;
+      };
+      
+      apps.opencode.enable = true;
 
-        opencode.enable = true;
-
-        wifi = {
-            enable = true;
-            driver = "mt7921e";
-        };
+      hardware.wifi = {
+        enable = true;
+        driver = "mt7921e";
+      };
     };
-
-};
-
+  };
+}
 ```
 
-This looks super clean and is a very clear and obvious list of how this system is configured! It doesn't matter that some of the desktop config is in home, some is in system, opencode is in home, wifi is in system, etc. It's completely transparent at the system level configuration. This works because we assume all of these machines will just have one user. 
+`mkHost` automatically:
+- Imports `./hardware-configuration.nix` and `./disks.nix`
+- Sets `networking.hostName`
+- Sets `system.stateVersion` and `home.stateVersion`
+- Applies the `custom = { ... }` config block
 
+### 4. Module Loading (`lib.custom.loadFeatures`)
 
-NOTE: right now, the selfhosted code is totally spaghetti and breaks the abstraction I've requested. For now, we can just have midnight/nimbus import the selfhosted code and let the selfhosted code handle splitting itself amongst the two. I'll fix this later.
+New helper to load features with the right mode:
 
+```nix
+loadFeatures = { path, mode }:
+  let
+    files = scanPaths path;
+    features = map import files;
+    modules = map (f: f.${mode}) features;  # mode = "nixos" or "home"
+  in
+  { imports = modules; };
+```
+
+### 5. Flake Integration
+
+```nix
+# flake.nix
+nixosConfigurations.icicle = lib.nixosSystem {
+  modules = [
+    (lib.custom.loadFeatures { path = ./modules/features; mode = "nixos"; })
+    ./modules/manifests  # standard scanPaths
+    ./hosts/icicle
+  ];
+};
+
+homeConfigurations.parthiv = home-manager.lib.homeManagerConfiguration {
+  modules = [
+    (lib.custom.loadFeatures { path = ./modules/features; mode = "home"; })
+    ./hosts/standalone
+  ];
+};
+```
+
+---
+
+## Library Structure
+
+New file `lib/infra.nix` containing:
+- `mkFeature` - create feature modules
+- `mkHost` - create host configurations  
+- `loadFeatures` - load features with mode selection
+
+Existing `lib/default.nix` keeps:
+- `scanPaths` - directory scanning
+- `relativeToRoot` - path helpers
+
+---
+
+## Notes
+
+- **Selfhosted**: Currently spaghetti code that breaks the abstraction. For now, midnight/nimbus will import selfhosted directly and let it handle splitting. Fix later.
+- **Single user assumption**: This design assumes all machines have one user (parthiv), making the unified config transparent.
+- **Apps category**: Everything user-facing is an "app" (bash, git, brave, etc.). Meta is for nixos/configuration infrastructure.
+
+---
+
+## Implementation Plan
+
+### Step 1: Establish Baseline ✓
+- Verify current configs evaluate
+- Save baseline JSON extracts for comparison
+- Fixed issues found:
+  - grafana secret_key missing
+  - Options without defaults (cudaCapability, device, driver, sopsFile, micVolume)
+
+### Step 2: Create Prototype
+Build two minimal test configurations:
+
+**2a. Current structure mock** (`prototype/current/`):
+- 2 hosts (testhost, standalone)
+- 2 required modules per home/system
+- 2 optional modules per home/system
+- One module spans both home and system (simplified hyprland)
+
+**2b. New structure mock** (`prototype/new/`):
+- Same features but using mkFeature/mkHost/loadFeatures
+- Validate the approach works
+- Ensure evaluation matches current structure
+
+### Step 3: Full Migration Plan
+Create complete tree of new feature, manifest, and host files with comments indicating:
+- Source file(s) for each new file
+- Any merging (e.g., hyprland home+system → single file)
+- Any splitting (e.g., gui-apps.nix → multiple app files)
+
+### Step 4: Execute Migration
+- Migrate files according to plan
+- Verify evaluation matches baseline at the end
