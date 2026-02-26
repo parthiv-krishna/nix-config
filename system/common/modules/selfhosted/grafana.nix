@@ -73,6 +73,9 @@ lib.custom.mkSelfHostedService {
           org_name = config.constants.domains.public;
           org_role = "Viewer";
         };
+        security = {
+          secret_key = "$__file{${config.sops.secrets."${secretsRoot}/secret_key".path}}";
+        };
         "auth.generic_oauth" = {
           enabled = true;
           name = "${config.constants.domains.public} SSO";
@@ -96,6 +99,9 @@ lib.custom.mkSelfHostedService {
     };
 
     sops.secrets = {
+      "${secretsRoot}/secret_key" = {
+        owner = "grafana";
+      };
       "${secretsRoot}/client_id" = {
         owner = "grafana";
       };
