@@ -1,5 +1,6 @@
 {
   lib,
+  inputs ? {},
   ...
 }@args:
 let
@@ -36,7 +37,7 @@ let
 in
 {
   custom = {
-    inherit scanPaths;
+    inherit scanPaths inputs;
     inherit (infra) mkFeature loadFeatures;
   }
   // mergedImportedAttrs;

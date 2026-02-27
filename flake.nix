@@ -88,8 +88,14 @@
         in
         lib.nixosSystem {
           modules = [
-            ./system/common/modules
-            ./system/${hostName}
+            inputs.home-manager.nixosModules.home-manager
+            (customLib.custom.loadFeatures {
+              path = ./modules/features;
+              mode = "nixos";
+              inherit customLib;
+            })
+            ./modules/manifests
+            ./hosts/${hostName}
           ];
           specialArgs = {
             inherit inputs;
@@ -105,19 +111,26 @@
         let
           mkHomeConfig =
             username:
+            let
+              customLib = (mkCustomLib systems.x86).extend (
+                _final: _prev: {
+                  inherit (inputs.home-manager.lib) hm;
+                }
+              );
+            in
             inputs.home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages.${systems.x86};
               modules = [
-                ./home/common/modules
-                ./home/standalone.nix
+                (customLib.custom.loadFeatures {
+                  path = ./modules/features;
+                  mode = "home";
+                  inherit customLib;
+                })
+                ./hosts/standalone
               ];
               extraSpecialArgs = {
                 inherit inputs username;
-                lib = (mkCustomLib systems.x86).extend (
-                  _final: _prev: {
-                    inherit (inputs.home-manager.lib) hm;
-                  }
-                );
+                lib = customLib;
               };
             };
           usernames = [

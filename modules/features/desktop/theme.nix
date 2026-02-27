@@ -1,6 +1,6 @@
 # Theme configuration feature - home-only
 # Provides font and colorscheme configuration via nix-colors
-{ lib, pkgs, inputs }:
+{ lib, inputs }:
 lib.custom.mkFeature {
   path = [ "desktop" "theme" ];
 
@@ -8,8 +8,8 @@ lib.custom.mkFeature {
     font = {
       package = lib.mkOption {
         type = lib.types.package;
-        default = pkgs.monaspace;
         description = "Font package to use";
+        # Default is set in homeConfig where pkgs is available
       };
 
       family = lib.mkOption {
@@ -46,13 +46,13 @@ lib.custom.mkFeature {
     };
   };
 
-  homeConfig = cfg: { inputs, ... }: {
+  homeConfig = cfg: { pkgs, ... }: {
     imports = [
       inputs.nix-colors.homeManagerModules.default
     ];
 
     colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
-    home.packages = [ cfg.font.package ];
+    home.packages = [ pkgs.monaspace ];
   };
 }

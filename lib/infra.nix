@@ -75,17 +75,33 @@ let
 
   # loadFeatures: Recursively load all features from a directory in the specified mode
   # Note: customLib must be passed in since we need the fully extended lib with lib.custom
+  #
+  # Directory handling:
+  # - If a directory has a default.nix, treat it as a single feature (import default.nix)
+  # - If a directory has no default.nix, recurse into it to find features
+  # - Regular .nix files (except default.nix at top level) are features
   loadFeatures =
     { path, mode, customLib }:
     let
-      # Recursively find all .nix files (excluding default.nix)
+      # Find feature files, handling directories with default.nix as single features
       findFeatureFiles = dir:
         let
           entries = builtins.readDir dir;
+          hasDefaultNix = entries ? "default.nix" && entries."default.nix" == "regular";
+          
           processEntry = name: type:
             let entryPath = dir + "/${name}"; in
             if type == "directory" then
-              findFeatureFiles entryPath
+              let
+                subEntries = builtins.readDir entryPath;
+                subHasDefault = subEntries ? "default.nix" && subEntries."default.nix" == "regular";
+              in
+              if subHasDefault then
+                # Directory has default.nix - treat as single feature
+                [ (entryPath + "/default.nix") ]
+              else
+                # Directory has no default.nix - recurse into it
+                findFeatureFiles entryPath
             else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
               [ entryPath ]
             else
@@ -95,9 +111,23 @@ let
         lib.flatten results;
 
       files = findFeatureFiles path;
-      # Each file is a function { lib } -> { nixos = ...; home = ...; }
+      # Each file is a function { lib, inputs? } -> { nixos = ...; home = ...; }
       # We pass customLib so feature files can access lib.custom.mkFeature
-      features = map (f: import f { lib = customLib; }) files;
+      # inputs is available via customLib.custom.inputs
+      inputs = customLib.custom.inputs or {};
+      # Try to import with inputs first, fall back to just lib if it fails
+      importFeature = f:
+        let
+          fn = import f;
+          # Check if function accepts inputs by trying it
+          # If it has inputs in its args, use them; otherwise just pass lib
+          args = builtins.functionArgs fn;
+        in
+        if args ? inputs then
+          fn { lib = customLib; inherit inputs; }
+        else
+          fn { lib = customLib; };
+      features = map importFeature files;
       # Extract the appropriate module from each feature
       modules = map (f: f.${mode}) features;
     in
