@@ -1,0 +1,13 @@
+# ProtonVPN GUI client feature - home-only
+{ lib }:
+lib.custom.mkFeature {
+  path = [ "apps" "protonvpn-gui" ];
+
+  homeConfig = cfg: { pkgs, ... }: {
+    home.packages = [ pkgs.protonvpn-gui ];
+
+    custom.persistence.directories = [
+      ".config/Proton"
+    ];
+  };
+}
