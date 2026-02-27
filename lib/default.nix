@@ -16,8 +16,12 @@ let
     in
     builtins.map (name: dirPath + "/${name}") nixFileNames;
 
+  # Import infrastructure helpers (mkFeature, loadFeatures)
+  infra = import ./infra.nix { inherit lib; };
+
   # cannot use imports = scanPaths ./.; as this is not a nixos module
-  filesToImport = scanPaths ./.;
+  # Exclude infra.nix since it's imported separately above
+  filesToImport = builtins.filter (p: !lib.hasSuffix "infra.nix" p) (scanPaths ./.);
   # load attribute set from each file
   importedAttrsList = builtins.map (
     filePath:
@@ -33,6 +37,7 @@ in
 {
   custom = {
     inherit scanPaths;
+    inherit (infra) mkFeature loadFeatures;
   }
   // mergedImportedAttrs;
 }
