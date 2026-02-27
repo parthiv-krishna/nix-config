@@ -1,0 +1,62 @@
+# Hypridle idle daemon feature - home-only
+# Reads idle settings from parent hyprland feature via osConfig in NixOS mode,
+# or from its own options in standalone mode.
+{ lib }:
+lib.custom.mkFeature {
+  path = [ "desktop" "hyprland" "hypridle" ];
+
+  homeConfig = cfg: { config, osConfig ? null, ... }:
+  let
+    # In NixOS mode, read idle settings from the parent hyprland feature via osConfig
+    # In standalone mode, use defaults (user can override via home-manager options)
+    idleMinutes =
+      if osConfig != null && osConfig ? custom.features.desktop.hyprland.idleMinutes
+      then osConfig.custom.features.desktop.hyprland.idleMinutes
+      else {
+        lock = 5;
+        screenOff = 10;
+        suspend = 15;
+      };
+  in
+  {
+    # lock after inactivity
+    services.hypridle = {
+      enable = true;
+      settings = {
+        general = {
+          lock_cmd = "hyprlock";
+          before_sleep_cmd = "hyprlock";
+          after_sleep_cmd = "hyprctl dispatch dpms on";
+        };
+        listener = [
+          {
+            # Dim screen before lock (80% of lock time)
+            timeout = (idleMinutes.lock * 60 * 4) / 5;
+            on-timeout = "brightnessctl -s set 10";
+            on-resume = "brightnessctl -r";
+            ignore_inhibit = true;
+          }
+          {
+            timeout = idleMinutes.lock * 60;
+            on-timeout = "hyprlock";
+            on-resume = "hyprctl dispatch dpms on";
+            ignore_inhibit = true;
+          }
+          {
+            timeout = idleMinutes.screenOff * 60;
+            on-timeout = "hyprctl dispatch dpms off";
+            on-resume = "hyprctl dispatch dpms on";
+            ignore_inhibit = true;
+          }
+          {
+            timeout = idleMinutes.suspend * 60;
+            on-timeout = "systemctl suspend";
+            ignore_inhibit = true;
+          }
+        ];
+      };
+    };
+
+    programs.hyprlock.enable = true;
+  };
+}
