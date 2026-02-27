@@ -95,7 +95,7 @@ lib.custom.mkSelfHostedService {
     ];
 
     # unfree build requirements for cuda support
-    unfree.allowedPackages = [
+    custom.features.meta.unfree.allowedPackages = [
       "cudnn"
       "libcufile"
       "libcusparse_lt"

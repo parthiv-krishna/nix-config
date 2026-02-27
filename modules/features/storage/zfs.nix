@@ -25,7 +25,7 @@ lib.custom.mkFeature {
       };
     };
 
-    custom.discord-notifiers = {
+    custom.features.meta.discord-notifiers.notifiers = {
       zfs-scrub.enable = true;
       # zfs-snapshot-frequent.enable = true;
       # zfs-snapshot-hourly.enable = true;

@@ -6,7 +6,7 @@ lib.custom.mkFeature {
   homeConfig = cfg: { pkgs, ... }: {
     home.packages = [ pkgs.protonmail-desktop ];
 
-    custom.persistence.directories = [
+    custom.features.meta.impermanence.directories = [
       ".config/Proton Mail"
     ];
   };

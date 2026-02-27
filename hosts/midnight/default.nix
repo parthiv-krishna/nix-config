@@ -37,8 +37,8 @@ in
       apps.opencode.enable = true;
 
       hardware = {
-        intel-gpu.enable = true;
-        nvidia = {
+        gpu.intel.enable = true;
+        gpu.nvidia = {
           enable = true;
           cudaCapability = "8.6"; # RTX 3060
         };

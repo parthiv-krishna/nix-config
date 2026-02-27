@@ -11,12 +11,9 @@
   networking.hostName = "nimbus";
   time.timeZone = "Etc/UTC";
 
-  # Use GRUB boot loader (required for Oracle Cloud)
+  # Use systemd-boot EFI boot loader
   boot = {
-    loader.grub = {
-      enable = true;
-      device = "/dev/sda";
-    };
+    loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
   };
 

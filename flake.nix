@@ -88,6 +88,9 @@
         in
         lib.nixosSystem {
           modules = [
+            inputs.disko.nixosModules.default
+            inputs.impermanence.nixosModules.impermanence
+            inputs.sops-nix.nixosModules.sops
             inputs.home-manager.nixosModules.home-manager
             (customLib.custom.loadFeatures {
               path = ./modules/features;
@@ -121,6 +124,10 @@
             inputs.home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages.${systems.x86};
               modules = [
+                # Third-party modules needed by features
+                inputs.nix-colors.homeManagerModules.default
+                inputs.nixvim.homeModules.nixvim
+                inputs.sops-nix.homeManagerModules.sops
                 (customLib.custom.loadFeatures {
                   path = ./modules/features;
                   mode = "home";

@@ -7,9 +7,9 @@ lib.custom.mkFeature {
   homeConfig = cfg: { pkgs, ... }: {
     home.packages = [ pkgs.discord ];
 
-    unfree.allowedPackages = [ "discord" ];
+    custom.features.meta.unfree.allowedPackages = [ "discord" ];
 
-    custom.persistence.directories = [
+    custom.features.meta.impermanence.directories = [
       ".config/discord"
     ];
   };

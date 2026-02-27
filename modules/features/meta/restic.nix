@@ -9,7 +9,9 @@ lib.custom.mkFeature {
     secretRepository = "${secretRoot}/repository";
 
     # generate scripts to stop/start services for backups
-    servicesToStop = config.custom.selfhosted.backupServices;
+    # Note: custom.selfhosted is defined in the selfhosted module (not migrated yet)
+    # Default to empty list if not defined
+    servicesToStop = config.custom.selfhosted.backupServices or [];
 
     stopServicesScript = pkgs.writeShellScript "stop-services-for-backup" ''
       echo "stopping services for backup..."
@@ -67,7 +69,7 @@ lib.custom.mkFeature {
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";
     };
 
-    custom.discord-notifiers.restic-backups-main.enable = true;
+    custom.features.meta.discord-notifiers.notifiers.restic-backups-main.enable = true;
 
     sops.secrets = {
       "${secretPassword}" = { };

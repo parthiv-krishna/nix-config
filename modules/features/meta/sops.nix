@@ -12,9 +12,7 @@ lib.custom.mkFeature {
   };
 
   systemConfig = cfg: { config, inputs, ... }: {
-    imports = [
-      inputs.sops-nix.nixosModules.sops
-    ];
+    # Note: sops-nix nixosModule is imported at flake level
 
     sops = {
       defaultSopsFile = "${inputs.nix-config-secrets}/${config.networking.hostName}.yaml";
@@ -33,34 +31,27 @@ lib.custom.mkFeature {
   };
 
   # Home config should only apply on NixOS (check for targets.genericLinux.enable)
-  homeConfig = cfg: { config, inputs, pkgs, lib, ... }: {
-    imports = [
-      inputs.sops-nix.homeManagerModules.sops
-    ];
+  # Note: sops-nix homeManagerModule is imported via home-manager sharedModules at flake level
+  homeConfig = cfg: { config, inputs, pkgs, lib, ... }: 
+    lib.mkIf (!config.targets.genericLinux.enable) {
+      sops = {
+        age.keyFile = "/persist/home/parthiv/.age/parthiv.age";
+        defaultSopsFile = "${inputs.nix-config-secrets}/${cfg.sopsFile}";
+        validateSopsFiles = false;
 
-    # Only apply on NixOS systems (not standalone home-manager)
-    sops = lib.mkIf (!config.targets.genericLinux.enable) {
-      age.keyFile = "/persist/home/parthiv/.age/parthiv.age";
-      defaultSopsFile = "${inputs.nix-config-secrets}/${cfg.sopsFile}";
-      validateSopsFiles = false;
-
-      secrets = {
-        # compute SSH private key from sops secret
-        "sshKeys/parthiv".path = "/home/parthiv/.ssh/id_ed25519";
+        secrets = {
+          # compute SSH private key from sops secret
+          "sshKeys/parthiv".path = "/home/parthiv/.ssh/id_ed25519";
+        };
       };
-    };
 
-    home = lib.mkIf (!config.targets.genericLinux.enable) {
-      packages = with pkgs; [
-        sops
-      ];
-      sessionVariables = {
-        SOPS_AGE_KEY_FILE = "/persist/home/parthiv/.age/parthiv.age";
+      home = {
+        packages = [ pkgs.sops ];
+        sessionVariables = {
+          SOPS_AGE_KEY_FILE = "/persist/home/parthiv/.age/parthiv.age";
+        };
       };
-    };
 
-    custom.persistence.directories = lib.mkIf (!config.targets.genericLinux.enable) [
-      ".age"
-    ];
-  };
+      custom.features.meta.impermanence.directories = [ ".age" ];
+    };
 }

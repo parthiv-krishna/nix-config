@@ -9,12 +9,23 @@ lib.custom.mkFeature {
       default = "/dev/root_vg/root";
       description = "Path to root partition (will be wiped on boot)";
     };
+    
+    # Home persistence options
+    directories = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "List of home directories to persist.";
+    };
+    
+    files = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "List of home files to persist.";
+    };
   };
 
-  systemConfig = cfg: { config, inputs, lib, ... }: {
-    imports = [
-      inputs.impermanence.nixosModules.impermanence
-    ];
+  systemConfig = cfg: { config, lib, ... }: {
+    # Note: impermanence module is imported at flake level
 
     # startup script from https://github.com/nix-community/impermanence
     # 1. backup current state of root
@@ -68,33 +79,15 @@ lib.custom.mkFeature {
     programs.fuse.userAllowOther = true;
   };
 
-  homeConfig = cfg: { config, lib, options, ... }: {
-    # wrapper around persistence options
-    # passed through to home.persistence."/persist/home/parthiv" on NixOS hosts
-    # no-op on standalone home-manager systems
-    options.custom.persistence = {
-      directories = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [ ];
-        description = "List of directories to persist.";
-      };
-
-      files = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [ ];
-        description = "List of files to persist.";
-      };
-    };
-
-    # skip non-nixos hosts
-    config = lib.optionalAttrs (options ? home.persistence) {
+  homeConfig = cfg: { lib, options, ... }: 
+    # skip non-nixos hosts (those without home.persistence option)
+    lib.optionalAttrs (options ? home.persistence) {
       home.persistence."/persist" = {
         directories = [
           ".ssh"
           "Documents"
-        ] ++ config.custom.persistence.directories;
-        inherit (config.custom.persistence) files;
+        ] ++ cfg.directories;
+        files = cfg.files;
       };
     };
-  };
 }

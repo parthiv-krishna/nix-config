@@ -1,5 +1,6 @@
 # Theme configuration feature - home-only
 # Provides font and colorscheme configuration via nix-colors
+# Note: nix-colors homeManagerModule is imported via parthiv.nix sharedModules
 { lib, inputs }:
 lib.custom.mkFeature {
   path = [ "desktop" "theme" ];
@@ -7,9 +8,9 @@ lib.custom.mkFeature {
   extraOptions = {
     font = {
       package = lib.mkOption {
-        type = lib.types.package;
-        description = "Font package to use";
-        # Default is set in homeConfig where pkgs is available
+        type = lib.types.nullOr lib.types.package;
+        default = null;
+        description = "Font package to use (defaults to monaspace if null)";
       };
 
       family = lib.mkOption {
@@ -47,12 +48,9 @@ lib.custom.mkFeature {
   };
 
   homeConfig = cfg: { pkgs, ... }: {
-    imports = [
-      inputs.nix-colors.homeManagerModules.default
-    ];
-
+    # nix-colors module is imported via parthiv.nix sharedModules
     colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
-    home.packages = [ pkgs.monaspace ];
+    home.packages = [ (if cfg.font.package != null then cfg.font.package else pkgs.monaspace) ];
   };
 }

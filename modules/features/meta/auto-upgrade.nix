@@ -31,7 +31,7 @@ lib.custom.mkFeature {
       };
     };
 
-    custom.discord-notifiers = {
+    custom.features.meta.discord-notifiers.notifiers = {
       nixos-upgrade.enable = true;
       nix-gc-after-upgrade.enable = true;
     };

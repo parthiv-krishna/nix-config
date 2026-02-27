@@ -24,7 +24,7 @@ lib.custom.mkFeature {
         package = config.boot.kernelPackages.nvidiaPackages.stable;
       };
 
-      unfree.allowedPackages = [
+      custom.features.meta.unfree.allowedPackages = [
         "cuda_cccl"
         "cuda_cudart"
         "cuda_cuobjdump"

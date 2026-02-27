@@ -1,116 +1,156 @@
 # Nixvim editor feature - home-only
 # Full neovim configuration with LSP, UI plugins, git integration, and utilities
+# 
+# Note: This is a plain module pair (not using mkFeature) because it needs to use
+# imports, and imports cannot be conditional (mkFeature wraps config in mkIf).
+# The nixvim homeManagerModule is added to sharedModules in parthiv.nix.
 { lib, inputs }:
-lib.custom.mkFeature {
-  path = [ "apps" "nixvim" ];
+let
+  optionPath = [ "custom" "features" "apps" "nixvim" ];
+  
+  # Helper to set a value at a nested attribute path
+  setAttrByPath = path: value:
+    lib.foldr (name: acc: { ${name} = acc; }) value path;
 
-  # Home-level configuration: nixvim with all plugins and settings
-  homeConfig = _cfg: { config, lib, ... }: {
-    imports = lib.flatten [
-      inputs.nixvim.homeModules.nixvim
-      (lib.custom.scanPaths ./.)
-    ];
+  # Helper to get a value from a nested attribute path
+  getAttrByPath = path: attrs:
+    lib.foldl (acc: name: acc.${name}) attrs path;
 
-    programs.nixvim.config = {
-      enable = true;
+  optionsDef = {
+    enable = lib.mkEnableOption "the apps.nixvim feature";
+  };
 
-      viAlias = true;
-      vimAlias = true;
-      defaultEditor = true;
+  # Home-manager module with the nixvim configuration
+  homeModule = { config, lib, ... }:
+    let
+      cfg = getAttrByPath optionPath config;
+    in
+    {
+      imports = lib.custom.scanPaths ./.;
 
-      opts = {
-        # line numbers
-        number = true;
-        relativenumber = true;
+      options = setAttrByPath optionPath optionsDef;
 
-        # search
-        hlsearch = true;
-        incsearch = true;
-        ignorecase = true;
-        showmatch = true;
-        smartcase = true;
-
-        # whitespace
-        expandtab = true;
-        shiftwidth = 2;
-        tabstop = 2;
-        smartindent = true;
-
-        # persistent undo
-        undofile = true;
-
-        # auto reload files changed on disk
-        autoread = true;
-      };
-
-      colorschemes = {
-        # Use base16 colorscheme with nix-colors
-        base16 = {
+      config = lib.mkIf cfg.enable {
+        programs.nixvim.config = {
           enable = true;
-          colorscheme = config.colorScheme.slug;
+
+          viAlias = true;
+          vimAlias = true;
+          defaultEditor = true;
+
+          opts = {
+            # line numbers
+            number = true;
+            relativenumber = true;
+
+            # search
+            hlsearch = true;
+            incsearch = true;
+            ignorecase = true;
+            showmatch = true;
+            smartcase = true;
+
+            # whitespace
+            expandtab = true;
+            shiftwidth = 2;
+            tabstop = 2;
+            smartindent = true;
+
+            # persistent undo
+            undofile = true;
+
+            # auto reload files changed on disk
+            autoread = true;
+          };
+
+          colorschemes = {
+            # Use base16 colorscheme with nix-colors
+            base16 = {
+              enable = true;
+              colorscheme = config.colorScheme.slug;
+            };
+          };
+
+          globals = {
+            mapleader = " ";
+          };
+
+          keymaps = [
+            # swap gj/j and gk/k
+            {
+              key = "j";
+              action = "gj";
+              mode = "n";
+            }
+            {
+              key = "k";
+              action = "gk";
+              mode = "n";
+            }
+            {
+              key = "gj";
+              action = "j";
+              mode = "n";
+            }
+            {
+              key = "gk";
+              action = "k";
+              mode = "n";
+            }
+            # swap g<down>/<down> and g<up>/<up>
+            {
+              key = "<down>";
+              action = "g<down>";
+            }
+            {
+              key = "<up>";
+              action = "g<up>";
+            }
+            {
+              key = "g<up>";
+              action = "<up>";
+            }
+            {
+              key = "g<down>";
+              action = "<down>";
+            }
+            # remove search highlight
+            {
+              key = "<Leader>n";
+              action = ":noh<CR>";
+            }
+            # vertical split
+            {
+              key = "<Leader>v";
+              action = ":vs<CR>";
+            }
+            # horizontal split
+            {
+              key = "<Leader>h";
+              action = ":sv<CR>";
+            }
+          ];
+
         };
       };
-
-      globals = {
-        mapleader = " ";
-      };
-
-      keymaps = [
-        # swap gj/j and gk/k
-        {
-          key = "j";
-          action = "gj";
-          mode = "n";
-        }
-        {
-          key = "k";
-          action = "gk";
-          mode = "n";
-        }
-        {
-          key = "gj";
-          action = "j";
-          mode = "n";
-        }
-        {
-          key = "gk";
-          action = "k";
-          mode = "n";
-        }
-        # swap g<down>/<down> and g<up>/<up>
-        {
-          key = "<down>";
-          action = "g<down>";
-        }
-        {
-          key = "<up>";
-          action = "g<up>";
-        }
-        {
-          key = "g<up>";
-          action = "<up>";
-        }
-        {
-          key = "g<down>";
-          action = "<down>";
-        }
-        # remove search highlight
-        {
-          key = "<Leader>n";
-          action = ":noh<CR>";
-        }
-        # vertical split
-        {
-          key = "<Leader>v";
-          action = ":vs<CR>";
-        }
-        # horizontal split
-        {
-          key = "<Leader>h";
-          action = ":sv<CR>";
-        }
-      ];
-
     };
-  };
+in
+{
+  # NixOS module - just defines options and adds home module to sharedModules
+  nixos = { config, lib, ... }:
+    let
+      cfg = getAttrByPath optionPath config;
+    in
+    {
+      options = setAttrByPath optionPath optionsDef;
+
+      config = {
+        # Add home module to sharedModules unconditionally (options need to exist)
+        # The actual config is conditional on cfg.enable inside homeModule
+        home-manager.sharedModules = [ homeModule ];
+      };
+    };
+
+  # Home-manager module (for standalone mode)
+  home = homeModule;
 }

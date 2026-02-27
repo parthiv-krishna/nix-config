@@ -7,9 +7,9 @@ lib.custom.mkFeature {
   homeConfig = cfg: { pkgs, ... }: {
     home.packages = [ pkgs.reaper ];
 
-    unfree.allowedPackages = [ "reaper" ];
+    custom.features.meta.unfree.allowedPackages = [ "reaper" ];
 
-    custom.persistence.directories = [
+    custom.features.meta.impermanence.directories = [
       ".config/REAPER"
     ];
   };

@@ -32,7 +32,7 @@ let
     ];
 
     serviceConfig = {
-      unfree.allowedPackages = [
+      custom.features.meta.unfree.allowedPackages = [
         "ocis_5-bin"
       ];
 

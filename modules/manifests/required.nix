@@ -19,7 +19,7 @@
       meta.parthiv.enable = lib.mkDefault true;
       meta.restic.enable = lib.mkDefault true;
       meta.unfree.enable = lib.mkDefault true;
-      meta.constants.enable = lib.mkDefault true;
+      # Note: constants is a plain module (always loaded), not a feature
       meta.discord-notifiers.enable = lib.mkDefault true;
     };
   };

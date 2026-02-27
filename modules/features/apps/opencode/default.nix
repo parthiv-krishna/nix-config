@@ -80,6 +80,6 @@ lib.custom.mkFeature {
       };
     };
 
-    custom.persistence.directories = [ ".local/share/opencode" ];
+    custom.features.meta.impermanence.directories = [ ".local/share/opencode" ];
   };
 }

@@ -25,15 +25,24 @@ lib.custom.mkFeature {
       ];
     };
 
+    # Home-manager is configured at the flake level
+    # Features inject their home config via home-manager.sharedModules
+    # Host-specific home options are in the host file
     home-manager = {
       extraSpecialArgs = {
         inherit inputs;
       };
       sharedModules = [
-        (lib.custom.relativeToRoot "home/common/modules")
+        # Import sops-nix for all home-manager users
+        inputs.sops-nix.homeManagerModules.sops
+        # Import nix-colors for theming
+        inputs.nix-colors.homeManagerModules.default
+        # Note: impermanence home-manager module is auto-imported by NixOS module
+        # Import nixvim
+        inputs.nixvim.homeModules.nixvim
       ];
-      users = {
-        parthiv = import (lib.custom.relativeToRoot "home/${config.networking.hostName}.nix");
+      users.parthiv = {
+        home.stateVersion = config.system.stateVersion;
       };
       backupFileExtension = "bak";
     };

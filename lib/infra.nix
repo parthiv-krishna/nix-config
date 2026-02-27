@@ -44,18 +44,27 @@ let
         {
           options = setAttrByPath optionPath optionsDef;
 
-          config = lib.mkIf cfg.enable (
-            lib.mkMerge [
-              (if systemConfig != null then systemConfig cfg moduleArgs else { })
-              (if homeConfig != null then {
-                home-manager.sharedModules = [
-                  ({ config, lib, pkgs, ... }@hmArgs: {
-                    config = homeConfig cfg hmArgs;
+          config = lib.mkMerge [
+            # Always add home-manager options so they can be referenced by other features
+            (if homeConfig != null then {
+              home-manager.sharedModules = [
+                ({ config, lib, pkgs, ... }@hmArgs: 
+                  let
+                    hmCfg = getAttrByPath optionPath config;
+                  in
+                  {
+                    # Define options in home-manager scope
+                    options = setAttrByPath optionPath optionsDef;
+                    # Apply config only when feature is enabled
+                    config = lib.mkIf hmCfg.enable (homeConfig hmCfg hmArgs);
                   })
-                ];
-              } else { })
-            ]
-          );
+              ];
+            } else { })
+            # Apply system config when enabled
+            (lib.mkIf cfg.enable (
+              if systemConfig != null then systemConfig cfg moduleArgs else { }
+            ))
+          ];
         };
 
       # Home-manager module (for standalone mode)

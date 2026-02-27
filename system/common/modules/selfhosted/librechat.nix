@@ -110,6 +110,6 @@ lib.custom.mkSelfHostedService {
     };
 
     # librechat uses mongodb
-    unfree.allowedPackages = [ "mongodb" ];
+    custom.features.meta.unfree.allowedPackages = [ "mongodb" ];
   };
 }

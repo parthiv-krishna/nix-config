@@ -20,7 +20,7 @@ lib.custom.mkFeature {
       ];
     };
 
-    unfree.allowedPackages = [
+    custom.features.meta.unfree.allowedPackages = [
       "intel-ocl"
     ];
 
