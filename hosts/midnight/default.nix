@@ -21,9 +21,9 @@ in
   networking.hostId = "746e646d"; # mdnt
 
   # Use the systemd-boot EFI boot loader.
-  boot = {
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
   };
 
   custom = {
@@ -36,12 +36,14 @@ in
       apps.opencode.enable = true;
 
       hardware = {
-        # intel gpu drivers
-        gpu.intel.enable = true;
-        # nvidia drivers
-        gpu.nvidia = {
-          enable = true;
-          cudaCapability = "8.6"; # RTX 3060
+        gpu = {
+          # intel gpu drivers
+          intel.enable = true;
+          # nvidia drivers
+          nvidia = {
+            enable = true;
+            cudaCapability = "8.6"; # RTX 3060
+          };
         };
         # seagate disk management for all drives
         seagate-hdd = {
