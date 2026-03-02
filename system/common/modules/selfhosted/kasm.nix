@@ -45,7 +45,7 @@ lib.custom.mkSelfHostedService {
       listenPort = port;
     };
 
-    unfree.allowedPackages = [ "kasmweb" ];
+    custom.features.meta.unfree.allowedPackages = [ "kasmweb" ];
 
     services.caddy.virtualHosts =
       let

@@ -213,7 +213,7 @@ let
         };
       };
 
-      custom.discord-notifiers = {
+      custom.features.meta.discord-notifiers.notifiers = {
         gluetun-vpn-refresh.enable = true;
       };
     };

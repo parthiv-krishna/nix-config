@@ -88,8 +88,17 @@
         in
         lib.nixosSystem {
           modules = [
-            ./system/common/modules
-            ./system/${hostName}
+            inputs.disko.nixosModules.default
+            inputs.impermanence.nixosModules.impermanence
+            inputs.sops-nix.nixosModules.sops
+            inputs.home-manager.nixosModules.home-manager
+            (customLib.custom.loadFeatures {
+              path = ./modules/features;
+              mode = "nixos";
+              inherit customLib;
+            })
+            ./modules/manifests
+            ./hosts/${hostName}
           ];
           specialArgs = {
             inherit inputs;
@@ -105,19 +114,31 @@
         let
           mkHomeConfig =
             username:
+            let
+              customLib = (mkCustomLib systems.x86).extend (
+                _final: _prev: {
+                  inherit (inputs.home-manager.lib) hm;
+                }
+              );
+            in
             inputs.home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages.${systems.x86};
               modules = [
-                ./home/common/modules
-                ./home/standalone.nix
+                # Third-party modules needed by features
+                inputs.nix-colors.homeManagerModules.default
+                inputs.nixvim.homeModules.nixvim
+                inputs.sops-nix.homeManagerModules.sops
+                (customLib.custom.loadFeatures {
+                  path = ./modules/features;
+                  mode = "home";
+                  inherit customLib;
+                })
+                ./modules/manifests
+                ./hosts/standalone
               ];
               extraSpecialArgs = {
                 inherit inputs username;
-                lib = (mkCustomLib systems.x86).extend (
-                  _final: _prev: {
-                    inherit (inputs.home-manager.lib) hm;
-                  }
-                );
+                lib = customLib;
               };
             };
           usernames = [
