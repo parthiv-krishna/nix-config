@@ -34,7 +34,8 @@ let
         {
           config,
           lib,
-          pkgs, # deadnix: skip - passed through moduleArgs to systemConfig/homeConfig
+          # deadnix: skip
+          pkgs,
           ...
         }@moduleArgs:
         let
@@ -51,7 +52,8 @@ let
                     (
                       {
                         lib,
-                        pkgs, # deadnix: skip - passed through hmArgs to homeConfig
+                        # deadnix: skip
+                        pkgs,
                         osConfig,
                         ...
                       }@hmArgs:
@@ -79,7 +81,8 @@ let
         {
           config,
           lib,
-          pkgs, # deadnix: skip - passed through moduleArgs to homeConfig
+          # deadnix: skip
+          pkgs,
           ...
         }@moduleArgs:
         let
