@@ -8,7 +8,7 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { config,  ... }:
+    { config, ... }:
     {
       programs.wofi = {
         enable = true;

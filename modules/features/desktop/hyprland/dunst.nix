@@ -8,7 +8,7 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { config,  ... }:
+    { config, ... }:
     {
       services.dunst = {
         enable = true;

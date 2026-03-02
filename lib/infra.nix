@@ -34,8 +34,6 @@ let
         {
           config,
           lib,
-          pkgs,
-          inputs,
           ...
         }@moduleArgs:
         let
@@ -51,10 +49,7 @@ let
                   home-manager.sharedModules = [
                     (
                       {
-                        config,
                         lib,
-                        pkgs,
-                        inputs,
                         osConfig,
                         ...
                       }@hmArgs:
@@ -66,9 +61,7 @@ let
                         imports = homeImports;
                         # Still define options for standalone compatibility
                         options = lib.setAttrByPath optionPath optionsDef;
-                        config = lib.mkIf hmCfg.enable (
-                          if homeConfig != null then homeConfig hmCfg hmArgs else { }
-                        );
+                        config = lib.mkIf hmCfg.enable (if homeConfig != null then homeConfig hmCfg hmArgs else { });
                       }
                     )
                   ];
@@ -84,8 +77,6 @@ let
         {
           config,
           lib,
-          pkgs,
-          inputs,
           ...
         }@moduleArgs:
         let

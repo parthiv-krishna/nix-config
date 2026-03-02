@@ -59,6 +59,8 @@ lib.custom.mkFeature {
     {
       colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
-      home.packages = [ (if cfg.font.package != null then cfg.font.package else pkgs.nerd-fonts.zed-mono) ];
+      home.packages = [
+        (if cfg.font.package != null then cfg.font.package else pkgs.nerd-fonts.zed-mono)
+      ];
     };
 }

@@ -18,17 +18,19 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig =
-    cfg:
-    _:
-    {
-      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
-    };
+  systemConfig = cfg: _: {
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
+  };
 
   homeConfig =
     cfg:
-    _:
+    { config, lib, ... }:
+    let
+      # Merge packages from osConfig (via cfg) and home-manager config
+      hmPackages = config.custom.features.meta.unfree.allowedPackages or [ ];
+      allPackages = cfg.allowedPackages ++ hmPackages;
+    in
     {
-      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
+      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) allPackages;
     };
 }

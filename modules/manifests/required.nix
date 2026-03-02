@@ -15,6 +15,7 @@
       networking.tailscale.enable = lib.mkDefault true;
 
       meta = {
+        colors.enable = lib.mkDefault true;
         sops.enable = lib.mkDefault true;
         impermanence.enable = lib.mkDefault true;
         auto-upgrade.enable = lib.mkDefault true;

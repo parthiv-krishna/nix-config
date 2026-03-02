@@ -8,7 +8,7 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { config, pkgs,  ... }:
+    { config, pkgs, ... }:
     let
       margin = "24px";
     in

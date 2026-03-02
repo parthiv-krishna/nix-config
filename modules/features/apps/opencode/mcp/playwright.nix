@@ -1,5 +1,4 @@
-_:
-{
+_: {
   mkConfig = pkgs: {
     type = "local";
     command = [

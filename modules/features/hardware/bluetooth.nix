@@ -5,15 +5,12 @@ lib.custom.mkFeature {
     "bluetooth"
   ];
 
-  systemConfig =
-    _cfg:
-    _:
-    {
-      hardware.bluetooth = {
-        enable = true;
-        powerOnBoot = true;
-      };
-
-      services.blueman.enable = true;
+  systemConfig = _cfg: _: {
+    hardware.bluetooth = {
+      enable = true;
+      powerOnBoot = true;
     };
+
+    services.blueman.enable = true;
+  };
 }
