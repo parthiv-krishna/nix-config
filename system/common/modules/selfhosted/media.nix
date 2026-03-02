@@ -463,7 +463,7 @@ in
         };
       };
 
-      custom.discord-notifiers = {
+      custom.features.meta.discord-notifiers.notifiers = {
         vpn-test.enable = true;
         vpn-refresh.enable = true;
       };

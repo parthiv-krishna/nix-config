@@ -29,7 +29,13 @@ let
     in
     {
       nixos =
-        { config, lib, ... }@moduleArgs:
+        {
+          config,
+          lib,
+          pkgs,
+          inputs,
+          ...
+        }@moduleArgs:
         let
           cfg = lib.getAttrFromPath optionPath config;
         in
@@ -42,7 +48,13 @@ let
                 {
                   home-manager.sharedModules = [
                     (
-                      { config, lib, ... }@hmArgs:
+                      {
+                        config,
+                        lib,
+                        pkgs,
+                        inputs,
+                        ...
+                      }@hmArgs:
                       let
                         hmCfg = lib.getAttrFromPath optionPath config;
                       in
@@ -61,7 +73,13 @@ let
         };
 
       home =
-        { config, lib, ... }@moduleArgs:
+        {
+          config,
+          lib,
+          pkgs,
+          inputs,
+          ...
+        }@moduleArgs:
         let
           cfg = lib.getAttrFromPath optionPath config;
         in
