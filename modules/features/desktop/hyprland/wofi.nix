@@ -8,7 +8,7 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { config, ... }:
+    { config,  ... }:
     {
       programs.wofi = {
         enable = true;
@@ -36,8 +36,8 @@ lib.custom.mkFeature {
             border: 2px solid #${base0D};
             border-radius: 12px;
             background-color: #${base00};
-            font-family: ${config.custom.font.family};
-            font-size: ${toString config.custom.font.sizes.normal}px;
+            font-family: ${config.custom.features.desktop.theme.font.family};
+            font-size: ${toString config.custom.features.desktop.theme.font.sizes.normal}px;
             font-weight: 500;
           }
 

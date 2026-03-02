@@ -261,10 +261,6 @@ lib.custom.mkFeature {
         };
       };
 
-      home.packages = [
-        config.custom.font.package
-      ];
-
       fonts.fontconfig.enable = true;
     };
 }

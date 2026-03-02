@@ -7,15 +7,15 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { config, ... }:
+    { config,  ... }:
     {
       programs.kitty = {
         enable = true;
 
         settings = with config.colorScheme.palette; {
           # font
-          font_family = config.custom.font.monoFamily;
-          font_size = config.custom.font.sizes.normal;
+          font_family = config.custom.features.desktop.theme.font.monoFamily;
+          font_size = config.custom.features.desktop.theme.font.sizes.normal;
           bold_font = "auto";
           italic_font = "auto";
           bold_italic_font = "auto";

@@ -10,13 +10,14 @@
   # for non-NixOS systems, ensure we have basic system integration
   targets.genericLinux.enable = true;
 
+  # let home-manager manage itself
+  programs.home-manager.enable = true;
+
   colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
-  custom.features.apps = {
-    git.enable = true;
-    bash.enable = true;
-    tmux.enable = true;
-    nixvim.enable = true;
-    opencode.enable = true;
+  custom = {
+    manifests.required.enable = true;
+
+    features.apps.opencode.enable = true;
   };
 }

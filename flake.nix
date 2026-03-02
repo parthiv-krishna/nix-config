@@ -133,6 +133,7 @@
                   mode = "home";
                   inherit customLib;
                 })
+                ./modules/manifests
                 ./hosts/standalone
               ];
               extraSpecialArgs = {

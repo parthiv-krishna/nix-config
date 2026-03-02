@@ -8,7 +8,7 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { config, ... }:
+    { config,  ... }:
     {
       services.dunst = {
         enable = true;
@@ -46,7 +46,7 @@ lib.custom.mkFeature {
             sort = "yes";
 
             # text and font
-            font = "${config.custom.font.monoFamily} ${toString config.custom.font.sizes.small}";
+            font = "${config.custom.features.desktop.theme.font.monoFamily} ${toString config.custom.features.desktop.theme.font.sizes.small}";
             line_height = 0;
             markup = "full";
             format = "<b>%s</b>\\n%b";

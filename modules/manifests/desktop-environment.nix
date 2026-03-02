@@ -6,7 +6,15 @@
   config = lib.mkIf config.custom.manifests.desktop-environment.enable {
     custom.features = {
       desktop = {
-        hyprland.enable = lib.mkDefault true;
+        hyprland = {
+          enable = lib.mkDefault true;
+          dunst.enable = lib.mkDefault true;
+          gtk.enable = lib.mkDefault true;
+          hypridle.enable = lib.mkDefault true;
+          hyprpaper.enable = lib.mkDefault true;
+          waybar.enable = lib.mkDefault true;
+          wofi.enable = lib.mkDefault true;
+        };
         theme.enable = lib.mkDefault true;
       };
 

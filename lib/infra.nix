@@ -7,12 +7,14 @@ let
   #   extraOptions: additional options beyond the auto-generated `enable`
   #   systemConfig: function (cfg: moduleArgs: { ... }) returning NixOS config
   #   homeConfig: function (cfg: moduleArgs: { ... }) returning home-manager config
+  #   homeImports: list of paths to import in the home module (for complex features like nixvim)
   mkFeature =
     {
       path,
       extraOptions ? { },
       systemConfig ? null,
       homeConfig ? null,
+      homeImports ? [ ],
     }:
     let
       optionPath = [
@@ -44,7 +46,7 @@ let
 
           config = lib.mkMerge [
             (
-              if homeConfig != null then
+              if homeConfig != null || homeImports != [ ] then
                 {
                   home-manager.sharedModules = [
                     (
@@ -53,14 +55,20 @@ let
                         lib,
                         pkgs,
                         inputs,
+                        osConfig,
                         ...
                       }@hmArgs:
                       let
-                        hmCfg = lib.getAttrFromPath optionPath config;
+                        # In NixOS mode, read cfg from osConfig (the NixOS-level config)
+                        hmCfg = lib.getAttrFromPath optionPath osConfig;
                       in
                       {
+                        imports = homeImports;
+                        # Still define options for standalone compatibility
                         options = lib.setAttrByPath optionPath optionsDef;
-                        config = lib.mkIf hmCfg.enable (homeConfig hmCfg hmArgs);
+                        config = lib.mkIf hmCfg.enable (
+                          if homeConfig != null then homeConfig hmCfg hmArgs else { }
+                        );
                       }
                     )
                   ];
@@ -84,6 +92,7 @@ let
           cfg = lib.getAttrFromPath optionPath config;
         in
         {
+          imports = homeImports;
           options = lib.setAttrByPath optionPath optionsDef;
 
           config = lib.mkIf cfg.enable (if homeConfig != null then homeConfig cfg moduleArgs else { });

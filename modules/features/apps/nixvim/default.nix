@@ -1,139 +1,115 @@
 { lib }:
-let
-  optionPath = [
-    "custom"
-    "features"
+lib.custom.mkFeature {
+  path = [
     "apps"
     "nixvim"
   ];
 
-  optionsDef = {
-    enable = lib.mkEnableOption "the apps.nixvim feature";
-  };
+  homeImports = lib.custom.scanPaths ./.;
 
-  homeModule =
-    { config, lib, ... }:
-    let
-      cfg = lib.getAttrFromPath optionPath config;
-    in
+  homeConfig =
+    _cfg:
+    { config, ... }:
     {
-      imports = lib.custom.scanPaths ./.;
+      programs.nixvim.config = {
+        enable = true;
 
-      options = lib.setAttrByPath optionPath optionsDef;
+        viAlias = true;
+        vimAlias = true;
+        defaultEditor = true;
 
-      config = lib.mkIf cfg.enable {
-        programs.nixvim.config = {
-          enable = true;
+        opts = {
+          # line numbers
+          number = true;
+          relativenumber = true;
 
-          viAlias = true;
-          vimAlias = true;
-          defaultEditor = true;
+          # search
+          hlsearch = true;
+          incsearch = true;
+          ignorecase = true;
+          showmatch = true;
+          smartcase = true;
 
-          opts = {
-            # line numbers
-            number = true;
-            relativenumber = true;
+          # whitespace
+          expandtab = true;
+          shiftwidth = 2;
+          tabstop = 2;
+          smartindent = true;
 
-            # search
-            hlsearch = true;
-            incsearch = true;
-            ignorecase = true;
-            showmatch = true;
-            smartcase = true;
+          # persistent undo
+          undofile = true;
 
-            # whitespace
-            expandtab = true;
-            shiftwidth = 2;
-            tabstop = 2;
-            smartindent = true;
-
-            # persistent undo
-            undofile = true;
-
-            # auto reload files changed on disk
-            autoread = true;
-          };
-
-          colorschemes = {
-            # Use base16 colorscheme with nix-colors
-            base16 = {
-              enable = true;
-              colorscheme = config.colorScheme.slug;
-            };
-          };
-
-          globals = {
-            mapleader = " ";
-          };
-
-          keymaps = [
-            # swap gj/j and gk/k
-            {
-              key = "j";
-              action = "gj";
-              mode = "n";
-            }
-            {
-              key = "k";
-              action = "gk";
-              mode = "n";
-            }
-            {
-              key = "gj";
-              action = "j";
-              mode = "n";
-            }
-            {
-              key = "gk";
-              action = "k";
-              mode = "n";
-            }
-            # swap g<down>/<down> and g<up>/<up>
-            {
-              key = "<down>";
-              action = "g<down>";
-            }
-            {
-              key = "<up>";
-              action = "g<up>";
-            }
-            {
-              key = "g<up>";
-              action = "<up>";
-            }
-            {
-              key = "g<down>";
-              action = "<down>";
-            }
-            # remove search highlight
-            {
-              key = "<Leader>n";
-              action = ":noh<CR>";
-            }
-            # vertical split
-            {
-              key = "<Leader>v";
-              action = ":vs<CR>";
-            }
-            # horizontal split
-            {
-              key = "<Leader>h";
-              action = ":sv<CR>";
-            }
-          ];
-
+          # auto reload files changed on disk
+          autoread = true;
         };
+
+        colorschemes = {
+          # Use base16 colorscheme with nix-colors
+          base16 = {
+            enable = true;
+            colorscheme = config.colorScheme.slug;
+          };
+        };
+
+        globals = {
+          mapleader = " ";
+        };
+
+        keymaps = [
+          # swap gj/j and gk/k
+          {
+            key = "j";
+            action = "gj";
+            mode = "n";
+          }
+          {
+            key = "k";
+            action = "gk";
+            mode = "n";
+          }
+          {
+            key = "gj";
+            action = "j";
+            mode = "n";
+          }
+          {
+            key = "gk";
+            action = "k";
+            mode = "n";
+          }
+          # swap g<down>/<down> and g<up>/<up>
+          {
+            key = "<down>";
+            action = "g<down>";
+          }
+          {
+            key = "<up>";
+            action = "g<up>";
+          }
+          {
+            key = "g<up>";
+            action = "<up>";
+          }
+          {
+            key = "g<down>";
+            action = "<down>";
+          }
+          # remove search highlight
+          {
+            key = "<Leader>n";
+            action = ":noh<CR>";
+          }
+          # vertical split
+          {
+            key = "<Leader>v";
+            action = ":vs<CR>";
+          }
+          # horizontal split
+          {
+            key = "<Leader>h";
+            action = ":sv<CR>";
+          }
+        ];
       };
     };
-in
-{
-  nixos = _: {
-    options = lib.setAttrByPath optionPath optionsDef;
-
-    config = {
-      home-manager.sharedModules = [ homeModule ];
-    };
-  };
-
-  home = homeModule;
 }
