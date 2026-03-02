@@ -1,12 +1,18 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "element-desktop" ];
+  path = [
+    "apps"
+    "element-desktop"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [ pkgs.element-desktop ];
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.element-desktop ];
 
-    custom.features.meta.impermanence.directories = [
-      ".config/Element"
-    ];
-  };
+      custom.features.meta.impermanence.directories = [
+        ".config/Element"
+      ];
+    };
 }

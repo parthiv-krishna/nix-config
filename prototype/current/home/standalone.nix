@@ -7,7 +7,7 @@
 
   # On standalone, we might enable fewer things
   custom = {
-    gui-apps.enable = false;  # No GUI on standalone (e.g., WSL)
+    gui-apps.enable = false; # No GUI on standalone (e.g., WSL)
     hyprland.enable = false;
   };
 

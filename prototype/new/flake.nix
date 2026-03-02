@@ -16,15 +16,15 @@
       system = "x86_64-linux";
 
       # Build custom lib with all helpers
-      customLib = lib.extend (
-        _: _: import ./lib { inherit lib; }
-      );
+      customLib = lib.extend (_: _: import ./lib { inherit lib; });
 
       # Helper to load features with mode
-      loadFeatures = mode: customLib.custom.loadFeatures {
-        path = ./modules/features;
-        inherit mode customLib;
-      };
+      loadFeatures =
+        mode:
+        customLib.custom.loadFeatures {
+          path = ./modules/features;
+          inherit mode customLib;
+        };
     in
     {
       # NixOS configuration for testhost

@@ -1,6 +1,9 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "meta" "unfree" ];
+  path = [
+    "meta"
+    "unfree"
+  ];
 
   extraOptions = {
     allowedPackages = lib.mkOption {
@@ -15,13 +18,17 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig = cfg: { ... }: {
-    nixpkgs.config.allowUnfreePredicate =
-      pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
-  };
+  systemConfig =
+    cfg:
+    _:
+    {
+      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
+    };
 
-  homeConfig = cfg: { ... }: {
-    nixpkgs.config.allowUnfreePredicate =
-      pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
-  };
+  homeConfig =
+    cfg:
+    _:
+    {
+      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowedPackages;
+    };
 }

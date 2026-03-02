@@ -1,5 +1,5 @@
 # System required modules - always imported
-{ lib, inputs, ... }:
+{ lib, ... }:
 {
   imports = lib.custom.scanPaths ./.;
 }

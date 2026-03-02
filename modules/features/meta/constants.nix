@@ -21,9 +21,11 @@ let
     else
       throw "Unsupported constant type: ${builtins.typeOf value}";
 
-  constantsModule = { lib, ... }: {
-    options.constants = wrapAsOption pureConstants;
-  };
+  constantsModule =
+    _:
+    {
+      options.constants = wrapAsOption pureConstants;
+    };
 in
 {
   nixos = constantsModule;

@@ -1,5 +1,5 @@
 # Standalone home-manager configuration (non-NixOS)
-{ ... }:
+_:
 {
   home.username = "testuser";
   home.homeDirectory = "/home/testuser";

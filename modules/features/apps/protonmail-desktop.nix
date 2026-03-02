@@ -1,12 +1,18 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "protonmail-desktop" ];
+  path = [
+    "apps"
+    "protonmail-desktop"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [ pkgs.protonmail-desktop ];
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.protonmail-desktop ];
 
-    custom.features.meta.impermanence.directories = [
-      ".config/Proton Mail"
-    ];
-  };
+      custom.features.meta.impermanence.directories = [
+        ".config/Proton Mail"
+      ];
+    };
 }

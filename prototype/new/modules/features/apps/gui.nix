@@ -1,12 +1,18 @@
 # GUI apps feature - home-only
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "gui" ];
+  path = [
+    "apps"
+    "gui"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [
-      pkgs.firefox
-      pkgs.element-desktop
-    ];
-  };
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [
+        pkgs.firefox
+        pkgs.element-desktop
+      ];
+    };
 }

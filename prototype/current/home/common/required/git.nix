@@ -1,5 +1,5 @@
 # Git configuration - always enabled
-{ ... }:
+_:
 {
   programs.git = {
     enable = true;

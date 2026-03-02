@@ -1,195 +1,201 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "desktop" "hyprland" "waybar" ];
+  path = [
+    "desktop"
+    "hyprland"
+    "waybar"
+  ];
 
-  homeConfig = cfg: { config, pkgs, ... }:
-  let
-    margin = "24px";
-  in
-  {
-    programs.waybar = {
-      enable = true;
+  homeConfig =
+    _cfg:
+    { config, pkgs, ... }:
+    let
+      margin = "24px";
+    in
+    {
+      programs.waybar = {
+        enable = true;
 
-      settings = [
-        {
-          layer = "top";
-          position = "top";
-          modules-left = [ "hyprland/workspaces" ];
-          modules-center = [ ];
-          modules-right = [
-            "tray"
-            "pulseaudio"
-            "audio"
-            "network"
-            "battery"
-            "clock"
-          ];
-
-          "hyprland/workspaces" = {
-            format = "{id} {name}";
-          };
-
-          tray = {
-            spacing = 10;
-          };
-
-          network = {
-            interval = 5;
-            format-wifi = "  {essid} ({signalStrength}%)";
-            format-ethernet = "  {ifname}";
-            format-disconnected = "  Offline";
-            class = {
-              wifi = "wifi";
-              ethernet = "ethernet";
-              disconnected = "disconnected";
-            };
-          };
-
-          pulseaudio = {
-            format = "{icon} {volume}%";
-            format-muted = " Muted ({volume}%)";
-            on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
-            scroll-step = 5;
-            format-icons = [
-              ""
-              ""
-              ""
+        settings = [
+          {
+            layer = "top";
+            position = "top";
+            modules-left = [ "hyprland/workspaces" ];
+            modules-center = [ ];
+            modules-right = [
+              "tray"
+              "pulseaudio"
+              "audio"
+              "network"
+              "battery"
+              "clock"
             ];
-          };
 
-          battery = {
-            interval = 5;
-            states = {
-              warning = 25;
-              critical = 10;
+            "hyprland/workspaces" = {
+              format = "{id} {name}";
             };
-            format = "{icon} {capacity}%";
-            format-charging = " {capacity}%";
-            format-plugged = " {capacity}%";
-            format-full = "{icon} {capacity}%";
-            format-icons = [
-              ""
-              ""
-              ""
-              ""
-              ""
-            ];
-            class = {
-              charging = "charging";
-              full = "full";
-              warning = "warning";
-              critical = "critical";
+
+            tray = {
+              spacing = 10;
             };
-          };
 
-          clock = {
-            format = "{:%a, %d %b %H:%M}";
-            tooltip-format = "{:%Y-%m-%d %H:%M:%S}";
-          };
-        }
-      ];
+            network = {
+              interval = 5;
+              format-wifi = "  {essid} ({signalStrength}%)";
+              format-ethernet = "  {ifname}";
+              format-disconnected = "  Offline";
+              class = {
+                wifi = "wifi";
+                ethernet = "ethernet";
+                disconnected = "disconnected";
+              };
+            };
 
-      style = with config.colorScheme.palette; ''
-        * {
-          font-family: ${config.custom.font.family};
-          font-size: ${toString config.custom.font.sizes.xlarge}px;
-          color: #${base05};
-        }
+            pulseaudio = {
+              format = "{icon} {volume}%";
+              format-muted = " Muted ({volume}%)";
+              on-click = "${pkgs.pavucontrol}/bin/pavucontrol";
+              scroll-step = 5;
+              format-icons = [
+                ""
+                ""
+                ""
+              ];
+            };
 
-        window#waybar {
-          background: #${base00};
-          border-bottom: 2px solid #${base0D};
-        }
+            battery = {
+              interval = 5;
+              states = {
+                warning = 25;
+                critical = 10;
+              };
+              format = "{icon} {capacity}%";
+              format-charging = " {capacity}%";
+              format-plugged = " {capacity}%";
+              format-full = "{icon} {capacity}%";
+              format-icons = [
+                ""
+                ""
+                ""
+                ""
+                ""
+              ];
+              class = {
+                charging = "charging";
+                full = "full";
+                warning = "warning";
+                critical = "critical";
+              };
+            };
 
-        #workspaces button {
-          background: transparent;
-          color: #${base05};
-          padding: 0 10px;
-          margin-right: 4px;
-          border-radius: 6px;
-          border: 2px solid transparent;
-          min-width: 32px;
-          min-height: 24px;
-          font-weight: bold;
-          font-size: ${toString config.custom.font.sizes.xlarge}px;
-          transition: background 0.2s, color 0.2s, border 0.2s;
-        }
-        #workspaces button.active {
-          background: transparent;
-          color: #${base0D};
-          border: 2px solid #${base0D};
-        }
-        #workspaces button.urgent {
-          background: #${base08};
-          color: #${base00};
-        }
-        #workspaces button:hover {
-          background: #${base0C};
-          color: #${base00};
-        }
+            clock = {
+              format = "{:%a, %d %b %H:%M}";
+              tooltip-format = "{:%Y-%m-%d %H:%M:%S}";
+            };
+          }
+        ];
 
-        #tray {
-          margin-right: ${margin};
-        }
+        style = with config.colorScheme.palette; ''
+          * {
+            font-family: ${config.custom.font.family};
+            font-size: ${toString config.custom.font.sizes.xlarge}px;
+            color: #${base05};
+          }
 
-        #pulseaudio {
-          margin-right: ${margin};
-          color: #${base05};
-        }
-        #pulseaudio.muted {
-          color: #${base08};
-        }
+          window#waybar {
+            background: #${base00};
+            border-bottom: 2px solid #${base0D};
+          }
 
-        #network {
-          margin-right: ${margin};
-        }
-        #network.wifi {
-          color: #${base0B};
-        }
-        #network.ethernet {
-          color: #${base0B};
-        }
-        #network.disconnected {
-          color: #${base08};
-        }
+          #workspaces button {
+            background: transparent;
+            color: #${base05};
+            padding: 0 10px;
+            margin-right: 4px;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            min-width: 32px;
+            min-height: 24px;
+            font-weight: bold;
+            font-size: ${toString config.custom.font.sizes.xlarge}px;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+          }
+          #workspaces button.active {
+            background: transparent;
+            color: #${base0D};
+            border: 2px solid #${base0D};
+          }
+          #workspaces button.urgent {
+            background: #${base08};
+            color: #${base00};
+          }
+          #workspaces button:hover {
+            background: #${base0C};
+            color: #${base00};
+          }
 
-        #battery {
-          margin-right: ${margin};
-          color: #${base05};
-        }
-        #battery.charging {
-          color: #${base0D};
-        }
-        #battery.full {
-          color: #${base0B};
-        }
-        #battery.warning {
-          color: #${base0A};
-        }
-        #battery.critical {
-          color: #${base08};
-        }
+          #tray {
+            margin-right: ${margin};
+          }
 
-        #clock {
-          margin-right: ${margin};
-          color: #${base0D};
-        }
-      '';
+          #pulseaudio {
+            margin-right: ${margin};
+            color: #${base05};
+          }
+          #pulseaudio.muted {
+            color: #${base08};
+          }
+
+          #network {
+            margin-right: ${margin};
+          }
+          #network.wifi {
+            color: #${base0B};
+          }
+          #network.ethernet {
+            color: #${base0B};
+          }
+          #network.disconnected {
+            color: #${base08};
+          }
+
+          #battery {
+            margin-right: ${margin};
+            color: #${base05};
+          }
+          #battery.charging {
+            color: #${base0D};
+          }
+          #battery.full {
+            color: #${base0B};
+          }
+          #battery.warning {
+            color: #${base0A};
+          }
+          #battery.critical {
+            color: #${base08};
+          }
+
+          #clock {
+            margin-right: ${margin};
+            color: #${base0D};
+          }
+        '';
+      };
+
+      wayland.windowManager.hyprland.settings = {
+        exec-once = [
+          "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
+          "${pkgs.pasystray}/bin/pasystray"
+          "${pkgs.blueman}/bin/blueman-applet"
+          "waybar"
+        ];
+
+        windowrulev2 = [
+          # open audio control centered/floating
+          "float, class:org.pulseaudio.pavucontrol"
+          "center, class:org.pulseaudio.pavucontrol"
+        ];
+      };
     };
-
-    wayland.windowManager.hyprland.settings = {
-      exec-once = [
-        "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
-        "${pkgs.pasystray}/bin/pasystray"
-        "${pkgs.blueman}/bin/blueman-applet"
-        "waybar"
-      ];
-
-      windowrulev2 = [
-        # open audio control centered/floating
-        "float, class:org.pulseaudio.pavucontrol"
-        "center, class:org.pulseaudio.pavucontrol"
-      ];
-    };
-  };
 }

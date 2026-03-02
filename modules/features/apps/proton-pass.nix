@@ -1,12 +1,18 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "proton-pass" ];
+  path = [
+    "apps"
+    "proton-pass"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [ pkgs.proton-pass ];
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.proton-pass ];
 
-    custom.features.meta.impermanence.directories = [
-      ".config/Proton Pass"
-    ];
-  };
+      custom.features.meta.impermanence.directories = [
+        ".config/Proton Pass"
+      ];
+    };
 }

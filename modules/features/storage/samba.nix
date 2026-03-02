@@ -1,8 +1,18 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "storage" "samba" ];
+  path = [
+    "storage"
+    "samba"
+  ];
 
-  systemConfig = cfg: { config, lib, pkgs, ... }:
+  systemConfig =
+    _cfg:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       rootPath = "/var/lib/samba";
       publicPath = "${rootPath}/data/public";

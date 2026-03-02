@@ -1,6 +1,9 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "hardware" "ups" ];
+  path = [
+    "hardware"
+    "ups"
+  ];
 
   extraOptions = {
     name = lib.mkOption {
@@ -25,40 +28,44 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig = cfg: { config, pkgs, ... }: let
-    passwordFile = config.sops.secrets.${cfg.passwordKey}.path;
-  in lib.mkMerge [
-    {
-      environment.systemPackages = with pkgs; [
-        nut
-      ];
+  systemConfig =
+    cfg:
+    { config, pkgs, ... }:
+    let
+      passwordFile = config.sops.secrets.${cfg.passwordKey}.path;
+    in
+    lib.mkMerge [
+      {
+        environment.systemPackages = with pkgs; [
+          nut
+        ];
 
-      power.ups = {
-        enable = true;
-        mode = "netserver";
-        ups.${cfg.name} = {
-          driver = "usbhid-ups";
-          port = "auto";
-          description = "USB HID UPS";
-        };
-        users.${cfg.user} = {
-          inherit passwordFile;
-          upsmon = "primary";
-        };
-        upsmon = {
+        power.ups = {
           enable = true;
-          monitor.${cfg.monitor} = {
-            system = "${cfg.name}@localhost";
-            inherit (cfg) user;
-            inherit passwordFile;
-            type = "primary";
-            powerValue = 1;
+          mode = "netserver";
+          ups.${cfg.name} = {
+            driver = "usbhid-ups";
+            port = "auto";
+            description = "USB HID UPS";
           };
+          users.${cfg.user} = {
+            inherit passwordFile;
+            upsmon = "primary";
+          };
+          upsmon = {
+            enable = true;
+            monitor.${cfg.monitor} = {
+              system = "${cfg.name}@localhost";
+              inherit (cfg) user;
+              inherit passwordFile;
+              type = "primary";
+              powerValue = 1;
+            };
+          };
+          openFirewall = true;
         };
-        openFirewall = true;
-      };
 
-      sops.secrets.${cfg.passwordKey} = { };
-    }
-  ];
+        sops.secrets.${cfg.passwordKey} = { };
+      }
+    ];
 }

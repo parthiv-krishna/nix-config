@@ -1,10 +1,8 @@
 { lib }:
 let
-  setAttrByPath = path: value:
-    lib.foldr (name: acc: { ${name} = acc; }) value path;
+  setAttrByPath = path: value: lib.foldr (name: acc: { ${name} = acc; }) value path;
 
-  getAttrByPath = path: attrs:
-    lib.foldl (acc: name: acc.${name}) attrs path;
+  getAttrByPath = path: attrs: lib.foldl (acc: name: acc.${name}) attrs path;
 
   # mkFeature: Create a feature module that works in both NixOS and standalone home-manager
   #
@@ -21,16 +19,21 @@ let
       homeConfig ? null,
     }:
     let
-      optionPath = [ "custom" "features" ] ++ path;
+      optionPath = [
+        "custom"
+        "features"
+      ]
+      ++ path;
       featureName = lib.concatStringsSep "." path;
 
       optionsDef = {
         enable = lib.mkEnableOption "the ${featureName} feature";
-      } // extraOptions;
+      }
+      // extraOptions;
     in
     {
       nixos =
-        { config, lib, pkgs, ... }@moduleArgs:
+        { config, lib, ... }@moduleArgs:
         let
           cfg = getAttrByPath optionPath config;
         in
@@ -38,58 +41,66 @@ let
           options = setAttrByPath optionPath optionsDef;
 
           config = lib.mkMerge [
-            (if homeConfig != null then {
-              home-manager.sharedModules = [
-                ({ config, lib, pkgs, ... }@hmArgs: 
-                  let
-                    hmCfg = getAttrByPath optionPath config;
-                  in
-                  {
-                    options = setAttrByPath optionPath optionsDef;
-                    config = lib.mkIf hmCfg.enable (homeConfig hmCfg hmArgs);
-                  })
-              ];
-            } else { })
-            (lib.mkIf cfg.enable (
-              if systemConfig != null then systemConfig cfg moduleArgs else { }
-            ))
+            (
+              if homeConfig != null then
+                {
+                  home-manager.sharedModules = [
+                    (
+                      { config, lib, ... }@hmArgs:
+                      let
+                        hmCfg = getAttrByPath optionPath config;
+                      in
+                      {
+                        options = setAttrByPath optionPath optionsDef;
+                        config = lib.mkIf hmCfg.enable (homeConfig hmCfg hmArgs);
+                      }
+                    )
+                  ];
+                }
+              else
+                { }
+            )
+            (lib.mkIf cfg.enable (if systemConfig != null then systemConfig cfg moduleArgs else { }))
           ];
         };
 
       home =
-        { config, lib, pkgs, ... }@moduleArgs:
+        { config, lib, ... }@moduleArgs:
         let
           cfg = getAttrByPath optionPath config;
         in
         {
           options = setAttrByPath optionPath optionsDef;
 
-          config = lib.mkIf cfg.enable (
-            if homeConfig != null then homeConfig cfg moduleArgs else { }
-          );
+          config = lib.mkIf cfg.enable (if homeConfig != null then homeConfig cfg moduleArgs else { });
         };
     };
 
   # loadFeatures: Recursively load all features from a directory
   # Directory with default.nix is treated as single feature, otherwise recurse
   loadFeatures =
-    { path, mode, customLib }:
+    {
+      path,
+      mode,
+      customLib,
+    }:
     let
-      findFeatureFiles = dir:
+      findFeatureFiles =
+        dir:
         let
           entries = builtins.readDir dir;
-          
-          processEntry = name: type:
-            let entryPath = dir + "/${name}"; in
+
+          processEntry =
+            name: type:
+            let
+              entryPath = dir + "/${name}";
+            in
             if type == "directory" then
               let
                 subEntries = builtins.readDir entryPath;
                 subHasDefault = subEntries ? "default.nix" && subEntries."default.nix" == "regular";
               in
-              if subHasDefault then
-                [ (entryPath + "/default.nix") ]
-              else
-                findFeatureFiles entryPath
+              if subHasDefault then [ (entryPath + "/default.nix") ] else findFeatureFiles entryPath
             else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
               [ entryPath ]
             else
@@ -99,20 +110,26 @@ let
         lib.flatten results;
 
       files = findFeatureFiles path;
-      inputs = customLib.custom.inputs or {};
-      importFeature = f:
+      inputs = customLib.custom.inputs or { };
+      importFeature =
+        f:
         let
           fn = import f;
           args = builtins.functionArgs fn;
         in
         if args ? inputs then
-          fn { lib = customLib; inherit inputs; }
+          fn {
+            lib = customLib;
+            inherit inputs;
+          }
         else
           fn { lib = customLib; };
       features = map importFeature files;
       modules = map (f: f.${mode}) features;
     in
-    { imports = modules; };
+    {
+      imports = modules;
+    };
 in
 {
   inherit mkFeature loadFeatures;

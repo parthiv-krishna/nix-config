@@ -1,5 +1,10 @@
 # GUI apps module - home side
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.custom.gui-apps;
 in

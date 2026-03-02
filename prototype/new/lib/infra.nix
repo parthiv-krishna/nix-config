@@ -2,15 +2,13 @@
 { lib }:
 let
   # Helper to set a value at a nested attribute path
-  setAttrByPath = path: value:
-    lib.foldr (name: acc: { ${name} = acc; }) value path;
+  setAttrByPath = path: value: lib.foldr (name: acc: { ${name} = acc; }) value path;
 
   # Helper to get a value from a nested attribute path
-  getAttrByPath = path: attrs:
-    lib.foldl (acc: name: acc.${name}) attrs path;
+  getAttrByPath = path: attrs: lib.foldl (acc: name: acc.${name}) attrs path;
 
   # mkFeature: Create a feature module that works in both NixOS and standalone home-manager
-  # 
+  #
   # Arguments:
   #   path: list of strings defining the option path, e.g., ["hardware" "bluetooth"]
   #   extraOptions: additional options beyond the auto-generated `enable`
@@ -27,17 +25,22 @@ let
       homeConfig ? null,
     }:
     let
-      optionPath = [ "custom" "features" ] ++ path;
+      optionPath = [
+        "custom"
+        "features"
+      ]
+      ++ path;
       featureName = lib.concatStringsSep "." path;
 
       optionsDef = {
         enable = lib.mkEnableOption "the ${featureName} feature";
-      } // extraOptions;
+      }
+      // extraOptions;
     in
     {
       # NixOS module
       nixos =
-        { config, lib, pkgs, ... }@moduleArgs:
+        { config, lib, ... }@moduleArgs:
         let
           cfg = getAttrByPath optionPath config;
         in
@@ -47,43 +50,57 @@ let
           config = lib.mkIf cfg.enable (
             lib.mkMerge [
               (if systemConfig != null then systemConfig cfg moduleArgs else { })
-              (if homeConfig != null then {
-                home-manager.sharedModules = [
-                  ({ config, lib, pkgs, ... }@hmArgs: {
-                    config = homeConfig cfg hmArgs;
-                  })
-                ];
-              } else { })
+              (
+                if homeConfig != null then
+                  {
+                    home-manager.sharedModules = [
+                      (
+                        hmArgs:
+                        {
+                          config = homeConfig cfg hmArgs;
+                        }
+                      )
+                    ];
+                  }
+                else
+                  { }
+              )
             ]
           );
         };
 
       # Home-manager module (for standalone mode)
       home =
-        { config, lib, pkgs, ... }@moduleArgs:
+        { config, lib, ... }@moduleArgs:
         let
           cfg = getAttrByPath optionPath config;
         in
         {
           options = setAttrByPath optionPath optionsDef;
 
-          config = lib.mkIf cfg.enable (
-            if homeConfig != null then homeConfig cfg moduleArgs else { }
-          );
+          config = lib.mkIf cfg.enable (if homeConfig != null then homeConfig cfg moduleArgs else { });
         };
     };
 
   # loadFeatures: Recursively load all features from a directory in the specified mode
   # Note: customLib must be passed in since we need the fully extended lib with lib.custom
   loadFeatures =
-    { path, mode, customLib }:
+    {
+      path,
+      mode,
+      customLib,
+    }:
     let
       # Recursively find all .nix files (excluding default.nix)
-      findFeatureFiles = dir:
+      findFeatureFiles =
+        dir:
         let
           entries = builtins.readDir dir;
-          processEntry = name: type:
-            let entryPath = dir + "/${name}"; in
+          processEntry =
+            name: type:
+            let
+              entryPath = dir + "/${name}";
+            in
             if type == "directory" then
               findFeatureFiles entryPath
             else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
@@ -101,7 +118,9 @@ let
       # Extract the appropriate module from each feature
       modules = map (f: f.${mode}) features;
     in
-    { imports = modules; };
+    {
+      imports = modules;
+    };
 in
 {
   inherit mkFeature loadFeatures;

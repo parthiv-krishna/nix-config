@@ -4,11 +4,11 @@
   # Home identity
   homeDirectory = config.home.homeDirectory or null;
   username = config.home.username or null;
-  stateVersion = config.home.stateVersion;
-  
+  inherit (config.home) stateVersion;
+
   # Custom options (our module options)
-  custom = config.custom or {};
-  
+  custom = config.custom or { };
+
   # Enabled home-manager programs
   programs = {
     git.enable = config.programs.git.enable or false;
@@ -18,12 +18,12 @@
     waybar.enable = config.programs.waybar.enable or false;
     wofi.enable = config.programs.wofi.enable or false;
   };
-  
+
   # Wayland (hyprland)
   wayland = {
     windowManager.hyprland.enable = config.wayland.windowManager.hyprland.enable or false;
   };
-  
+
   # Services
   services = {
     hypridle.enable = config.services.hypridle.enable or false;

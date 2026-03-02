@@ -1,4 +1,4 @@
-{ lib }:
+_:
 {
   mkConfig = pkgs: {
     type = "local";

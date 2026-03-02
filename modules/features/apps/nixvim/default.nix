@@ -1,18 +1,22 @@
 { lib }:
 let
-  optionPath = [ "custom" "features" "apps" "nixvim" ];
-  
-  setAttrByPath = path: value:
-    lib.foldr (name: acc: { ${name} = acc; }) value path;
+  optionPath = [
+    "custom"
+    "features"
+    "apps"
+    "nixvim"
+  ];
 
-  getAttrByPath = path: attrs:
-    lib.foldl (acc: name: acc.${name}) attrs path;
+  setAttrByPath = path: value: lib.foldr (name: acc: { ${name} = acc; }) value path;
+
+  getAttrByPath = path: attrs: lib.foldl (acc: name: acc.${name}) attrs path;
 
   optionsDef = {
     enable = lib.mkEnableOption "the apps.nixvim feature";
   };
 
-  homeModule = { config, lib, ... }:
+  homeModule =
+    { config, lib, ... }:
     let
       cfg = getAttrByPath optionPath config;
     in
@@ -127,14 +131,13 @@ let
     };
 in
 {
-  nixos = _:
-    {
-      options = setAttrByPath optionPath optionsDef;
+  nixos = _: {
+    options = setAttrByPath optionPath optionsDef;
 
-      config = {
-        home-manager.sharedModules = [ homeModule ];
-      };
+    config = {
+      home-manager.sharedModules = [ homeModule ];
     };
+  };
 
   home = homeModule;
 }

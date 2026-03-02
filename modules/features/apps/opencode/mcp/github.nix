@@ -1,6 +1,7 @@
 { lib }:
 {
-  mkConfig = pkgs:
+  mkConfig =
+    pkgs:
     let
       githubMcpWrapper = pkgs.writeShellScript "github-mcp-wrapper" ''
         exec ${pkgs.nodejs}/bin/npx -y @modelcontextprotocol/server-github "$@"

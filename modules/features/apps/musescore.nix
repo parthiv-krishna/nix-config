@@ -1,12 +1,18 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "musescore" ];
+  path = [
+    "apps"
+    "musescore"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [ pkgs.musescore ];
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.musescore ];
 
-    custom.features.meta.impermanence.directories = [
-      ".config/MuseScore"
-    ];
-  };
+      custom.features.meta.impermanence.directories = [
+        ".config/MuseScore"
+      ];
+    };
 }

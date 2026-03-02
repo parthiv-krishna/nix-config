@@ -1,5 +1,5 @@
 # testhost configuration - NixOS host
-{ lib, inputs, ... }:
+{ inputs, ... }:
 {
   imports = [
     ./hardware-configuration.nix

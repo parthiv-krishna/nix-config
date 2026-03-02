@@ -1,6 +1,9 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "hardware" "audio" ];
+  path = [
+    "hardware"
+    "audio"
+  ];
 
   extraOptions = {
     micVolume = lib.mkOption {
@@ -10,13 +13,16 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig = cfg: { ... }: {
-    services.pipewire.wireplumber.extraConfig = {
-      "10-default-volume" = {
-        "wireplumber.settings" = {
-          "device.routes.default-source-volume" = cfg.micVolume;
+  systemConfig =
+    cfg:
+    _:
+    {
+      services.pipewire.wireplumber.extraConfig = {
+        "10-default-volume" = {
+          "wireplumber.settings" = {
+            "device.routes.default-source-volume" = cfg.micVolume;
+          };
         };
       };
     };
-  };
 }

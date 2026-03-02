@@ -1,6 +1,6 @@
 {
   lib,
-  inputs ? {},
+  inputs ? { },
   ...
 }@args:
 let

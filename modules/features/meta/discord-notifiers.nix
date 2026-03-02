@@ -1,28 +1,34 @@
 { lib }:
 let
   # Define the notifier submodule type here so mkFeature can use it in extraOptions
-  notifierSubmodule = lib.types.submodule ({ name, config, ... }: {
-    options = {
-      enable = lib.mkEnableOption "this Discord notifier";
+  notifierSubmodule = lib.types.submodule (
+    { name, ... }:
+    {
+      options = {
+        enable = lib.mkEnableOption "this Discord notifier";
 
-      watchedService = lib.mkOption {
-        type = lib.types.str;
-        default = name;
-        description = "Name of the systemd service to watch (without .service suffix). Defaults to the notifier name.";
-        example = "auto-upgrade";
-      };
+        watchedService = lib.mkOption {
+          type = lib.types.str;
+          default = name;
+          description = "Name of the systemd service to watch (without .service suffix). Defaults to the notifier name.";
+          example = "auto-upgrade";
+        };
 
-      webhookSecretPath = lib.mkOption {
-        type = lib.types.str;
-        default = "";
-        description = "Path to file containing Discord webhook URL";
-        example = "/run/secrets/discord-webhook";
+        webhookSecretPath = lib.mkOption {
+          type = lib.types.str;
+          default = "";
+          description = "Path to file containing Discord webhook URL";
+          example = "/run/secrets/discord-webhook";
+        };
       };
-    };
-  });
+    }
+  );
 in
 lib.custom.mkFeature {
-  path = [ "meta" "discord-notifiers" ];
+  path = [
+    "meta"
+    "discord-notifiers"
+  ];
 
   extraOptions = {
     notifiers = lib.mkOption {
@@ -32,7 +38,14 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig = cfg: { config, pkgs, lib, ... }: 
+  systemConfig =
+    cfg:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     let
       notifiersCfg = cfg.notifiers;
 
@@ -55,9 +68,11 @@ lib.custom.mkFeature {
       mkNotifierService =
         name: notifierCfg:
         let
-          webhookPath = if notifierCfg.webhookSecretPath != "" 
-            then notifierCfg.webhookSecretPath 
-            else config.sops.secrets."discord/webhook".path;
+          webhookPath =
+            if notifierCfg.webhookSecretPath != "" then
+              notifierCfg.webhookSecretPath
+            else
+              config.sops.secrets."discord/webhook".path;
           mkWebhookScript =
             successFlag:
             pkgs.writeShellScript "discord-notifier-${name}-${if successFlag then "success" else "failure"}" ''
@@ -110,7 +125,7 @@ lib.custom.mkFeature {
           ]
         ) enabledNotifiers
       );
-    in 
+    in
     lib.mkIf (enabledNotifiers != { }) {
       systemd.services = notifierServices;
       sops.secrets."discord/webhook" = { };

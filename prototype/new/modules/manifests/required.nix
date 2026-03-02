@@ -1,8 +1,7 @@
 # Required manifest - enables core features every host needs
 { config, lib, ... }:
 {
-  options.custom.manifests.required.enable =
-    lib.mkEnableOption "required core features";
+  options.custom.manifests.required.enable = lib.mkEnableOption "required core features";
 
   config = lib.mkIf config.custom.manifests.required.enable {
     custom.features = {

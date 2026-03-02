@@ -2,8 +2,8 @@
 { config }:
 {
   # Host identity
-  hostName = config.networking.hostName;
-  
+  inherit (config.networking) hostName;
+
   # Boot configuration
   boot = {
     loader = {
@@ -11,13 +11,13 @@
       grub.enable = config.boot.loader.grub.enable or false;
     };
   };
-  
+
   # Users
-  users = builtins.mapAttrs (name: user: {
+  users = builtins.mapAttrs (_name: user: {
     isNormalUser = user.isNormalUser or false;
-    extraGroups = user.extraGroups or [];
-  }) (config.users.users or {});
-  
+    extraGroups = user.extraGroups or [ ];
+  }) (config.users.users or { });
+
   # Key services
   services = {
     greetd.enable = config.services.greetd.enable or false;
@@ -26,23 +26,23 @@
     blueman.enable = config.services.blueman.enable or false;
     pipewire.enable = config.services.pipewire.enable or false;
   };
-  
-  # Hardware  
+
+  # Hardware
   hardware = {
     bluetooth.enable = config.hardware.bluetooth.enable or false;
   };
-  
+
   # Programs
   programs = {
     hyprland.enable = config.programs.hyprland.enable or false;
   };
-  
+
   # Custom options (our module options)
-  custom = config.custom or {};
-  
+  custom = config.custom or { };
+
   # Time zone
   timeZone = config.time.timeZone or null;
-  
+
   # System state version
-  stateVersion = config.system.stateVersion;
+  inherit (config.system) stateVersion;
 }

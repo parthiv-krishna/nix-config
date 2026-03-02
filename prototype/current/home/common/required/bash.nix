@@ -1,5 +1,5 @@
 # Bash configuration - always enabled
-{ ... }:
+_:
 {
   programs.bash = {
     enable = true;

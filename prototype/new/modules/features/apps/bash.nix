@@ -1,15 +1,21 @@
 # Bash feature - home-only
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "bash" ];
+  path = [
+    "apps"
+    "bash"
+  ];
 
-  homeConfig = cfg: { ... }: {
-    programs.bash = {
-      enable = true;
-      shellAliases = {
-        ll = "ls -la";
-        ".." = "cd ..";
+  homeConfig =
+    _cfg:
+    _:
+    {
+      programs.bash = {
+        enable = true;
+        shellAliases = {
+          ll = "ls -la";
+          ".." = "cd ..";
+        };
       };
     };
-  };
 }

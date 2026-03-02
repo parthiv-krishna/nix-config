@@ -1,6 +1,7 @@
 { config, lib, ... }:
 {
-  options.custom.manifests.desktop-environment.enable = lib.mkEnableOption "desktop environment features";
+  options.custom.manifests.desktop-environment.enable =
+    lib.mkEnableOption "desktop environment features";
 
   config = lib.mkIf config.custom.manifests.desktop-environment.enable {
     custom.features = {

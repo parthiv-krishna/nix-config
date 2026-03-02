@@ -1,6 +1,9 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "hardware" "wake-on-lan" ];
+  path = [
+    "hardware"
+    "wake-on-lan"
+  ];
 
   extraOptions = {
     device = lib.mkOption {
@@ -11,28 +14,31 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig = cfg: { pkgs, ... }: lib.mkMerge [
-    {
-      # enable wake on LAN
-      networking.interfaces."${cfg.device}".wakeOnLan = {
-        enable = true;
-        policy = [ "magic" ];
-      };
-
-      environment.systemPackages = with pkgs; [
-        ethtool
-      ];
-
-      systemd.services.enable-wol = {
-        description = "Enable Wake-on-LAN";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.ethtool}/bin/ethtool -s ${cfg.device} wol g";
+  systemConfig =
+    cfg:
+    { pkgs, ... }:
+    lib.mkMerge [
+      {
+        # enable wake on LAN
+        networking.interfaces."${cfg.device}".wakeOnLan = {
+          enable = true;
+          policy = [ "magic" ];
         };
-      };
 
-    }
-  ];
+        environment.systemPackages = with pkgs; [
+          ethtool
+        ];
+
+        systemd.services.enable-wol = {
+          description = "Enable Wake-on-LAN";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.ethtool}/bin/ethtool -s ${cfg.device} wol g";
+          };
+        };
+
+      }
+    ];
 }

@@ -1,13 +1,18 @@
 # Desktop/Hyprland module - system side
 # This demonstrates the split between system and home config
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.custom.desktop;
 in
 {
   options.custom.desktop = {
     enable = lib.mkEnableOption "Desktop environment";
-    
+
     idleMinutes = {
       lock = lib.mkOption {
         type = lib.types.int;

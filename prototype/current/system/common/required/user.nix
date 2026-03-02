@@ -1,5 +1,5 @@
 # User configuration with home-manager integration
-{ config, inputs, lib, ... }:
+{ config, inputs, ... }:
 let
   # Get the prototype root directory
   prototypeRoot = ../../..;

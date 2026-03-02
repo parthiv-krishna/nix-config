@@ -1,8 +1,14 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "dolphin" ];
+  path = [
+    "apps"
+    "dolphin"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [ pkgs.kdePackages.dolphin ];
-  };
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.kdePackages.dolphin ];
+    };
 }

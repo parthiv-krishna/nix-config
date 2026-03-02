@@ -1,12 +1,18 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "apps" "audacity" ];
+  path = [
+    "apps"
+    "audacity"
+  ];
 
-  homeConfig = cfg: { pkgs, ... }: {
-    home.packages = [ pkgs.audacity ];
+  homeConfig =
+    _cfg:
+    { pkgs, ... }:
+    {
+      home.packages = [ pkgs.audacity ];
 
-    custom.features.meta.impermanence.directories = [
-      ".config/audacity"
-    ];
-  };
+      custom.features.meta.impermanence.directories = [
+        ".config/audacity"
+      ];
+    };
 }

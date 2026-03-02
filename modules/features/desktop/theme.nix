@@ -1,6 +1,9 @@
 { lib, inputs }:
 lib.custom.mkFeature {
-  path = [ "desktop" "theme" ];
+  path = [
+    "desktop"
+    "theme"
+  ];
 
   extraOptions = {
     font = {
@@ -44,9 +47,12 @@ lib.custom.mkFeature {
     };
   };
 
-  homeConfig = cfg: { pkgs, ... }: {
-    colorScheme = inputs.nix-colors.colorSchemes.onedark;
+  homeConfig =
+    cfg:
+    { pkgs, ... }:
+    {
+      colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
-    home.packages = [ (if cfg.font.package != null then cfg.font.package else pkgs.monaspace) ];
-  };
+      home.packages = [ (if cfg.font.package != null then cfg.font.package else pkgs.monaspace) ];
+    };
 }

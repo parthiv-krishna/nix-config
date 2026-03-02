@@ -1,5 +1,5 @@
 # Minimal hardware config for testing
-{ ... }:
+_:
 {
   boot.loader.grub.device = "nodev";
   fileSystems."/" = {

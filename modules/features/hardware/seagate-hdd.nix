@@ -1,6 +1,9 @@
 { lib }:
 lib.custom.mkFeature {
-  path = [ "hardware" "seagate-hdd" ];
+  path = [
+    "hardware"
+    "seagate-hdd"
+  ];
 
   extraOptions = {
     disks = lib.mkOption {
@@ -40,35 +43,38 @@ lib.custom.mkFeature {
     };
   };
 
-  systemConfig = cfg: { pkgs, ... }: {
-    environment.systemPackages = with pkgs; [
-      openseachest
-    ];
+  systemConfig =
+    cfg:
+    { pkgs, ... }:
+    {
+      environment.systemPackages = with pkgs; [
+        openseachest
+      ];
 
-    systemd.services."seagate-spindown" = {
-      description = "Configure Seagate Exos EPC spindown timers";
-      wantedBy = [ "multi-user.target" ];
-      script = ''
-        ${builtins.concatStringsSep "\n" (
-          map (dev: ''
-              ${pkgs.openseachest}/bin/openSeaChest_PowerControl -d `realpath ${dev}` \
-                --idle_a ${toString cfg.timers.idleA} \
-                --idle_b ${toString cfg.timers.idleB} \
-                --idle_c ${toString cfg.timers.idleC} \
-                --standby_z ${toString cfg.timers.standbyZ}
+      systemd.services."seagate-spindown" = {
+        description = "Configure Seagate Exos EPC spindown timers";
+        wantedBy = [ "multi-user.target" ];
+        script = ''
+          ${builtins.concatStringsSep "\n" (
+            map (dev: ''
+                ${pkgs.openseachest}/bin/openSeaChest_PowerControl -d `realpath ${dev}` \
+                  --idle_a ${toString cfg.timers.idleA} \
+                  --idle_b ${toString cfg.timers.idleB} \
+                  --idle_c ${toString cfg.timers.idleC} \
+                  --standby_z ${toString cfg.timers.standbyZ}
 
-            echo "Set ${dev} to \
-            idle_a=${toString cfg.timers.idleA}ms, \
-            idle_b=${toString cfg.timers.idleB}ms, \
-            idle_c=${toString cfg.timers.idleC}ms, \
-            standby_z=${toString cfg.timers.standbyZ}ms"
-          '') cfg.disks
-        )}
-      '';
-      serviceConfig = {
-        Type = "oneshot";
-        User = "root";
+              echo "Set ${dev} to \
+              idle_a=${toString cfg.timers.idleA}ms, \
+              idle_b=${toString cfg.timers.idleB}ms, \
+              idle_c=${toString cfg.timers.idleC}ms, \
+              standby_z=${toString cfg.timers.standbyZ}ms"
+            '') cfg.disks
+          )}
+        '';
+        serviceConfig = {
+          Type = "oneshot";
+          User = "root";
+        };
       };
     };
-  };
 }

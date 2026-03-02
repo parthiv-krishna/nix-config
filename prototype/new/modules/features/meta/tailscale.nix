@@ -1,9 +1,15 @@
 # Tailscale feature - system-only
 { lib }:
 lib.custom.mkFeature {
-  path = [ "meta" "tailscale" ];
+  path = [
+    "meta"
+    "tailscale"
+  ];
 
-  systemConfig = cfg: { ... }: {
-    services.tailscale.enable = true;
-  };
+  systemConfig =
+    _cfg:
+    _:
+    {
+      services.tailscale.enable = true;
+    };
 }
