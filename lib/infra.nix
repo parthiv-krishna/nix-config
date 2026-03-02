@@ -1,9 +1,5 @@
 { lib }:
 let
-  setAttrByPath = path: value: lib.foldr (name: acc: { ${name} = acc; }) value path;
-
-  getAttrByPath = path: attrs: lib.foldl (acc: name: acc.${name}) attrs path;
-
   # mkFeature: Create a feature module that works in both NixOS and standalone home-manager
   #
   # Arguments:
@@ -35,10 +31,10 @@ let
       nixos =
         { config, lib, ... }@moduleArgs:
         let
-          cfg = getAttrByPath optionPath config;
+          cfg = lib.getAttrFromPath optionPath config;
         in
         {
-          options = setAttrByPath optionPath optionsDef;
+          options = lib.setAttrByPath optionPath optionsDef;
 
           config = lib.mkMerge [
             (
@@ -48,10 +44,10 @@ let
                     (
                       { config, lib, ... }@hmArgs:
                       let
-                        hmCfg = getAttrByPath optionPath config;
+                        hmCfg = lib.getAttrFromPath optionPath config;
                       in
                       {
-                        options = setAttrByPath optionPath optionsDef;
+                        options = lib.setAttrByPath optionPath optionsDef;
                         config = lib.mkIf hmCfg.enable (homeConfig hmCfg hmArgs);
                       }
                     )
@@ -67,10 +63,10 @@ let
       home =
         { config, lib, ... }@moduleArgs:
         let
-          cfg = getAttrByPath optionPath config;
+          cfg = lib.getAttrFromPath optionPath config;
         in
         {
-          options = setAttrByPath optionPath optionsDef;
+          options = lib.setAttrByPath optionPath optionsDef;
 
           config = lib.mkIf cfg.enable (if homeConfig != null then homeConfig cfg moduleArgs else { });
         };

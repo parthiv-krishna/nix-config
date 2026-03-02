@@ -7,10 +7,6 @@ let
     "nixvim"
   ];
 
-  setAttrByPath = path: value: lib.foldr (name: acc: { ${name} = acc; }) value path;
-
-  getAttrByPath = path: attrs: lib.foldl (acc: name: acc.${name}) attrs path;
-
   optionsDef = {
     enable = lib.mkEnableOption "the apps.nixvim feature";
   };
@@ -18,12 +14,12 @@ let
   homeModule =
     { config, lib, ... }:
     let
-      cfg = getAttrByPath optionPath config;
+      cfg = lib.getAttrFromPath optionPath config;
     in
     {
       imports = lib.custom.scanPaths ./.;
 
-      options = setAttrByPath optionPath optionsDef;
+      options = lib.setAttrByPath optionPath optionsDef;
 
       config = lib.mkIf cfg.enable {
         programs.nixvim.config = {
@@ -132,7 +128,7 @@ let
 in
 {
   nixos = _: {
-    options = setAttrByPath optionPath optionsDef;
+    options = lib.setAttrByPath optionPath optionsDef;
 
     config = {
       home-manager.sharedModules = [ homeModule ];
