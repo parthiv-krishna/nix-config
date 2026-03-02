@@ -1,4 +1,3 @@
-# GTK theme feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" "gtk" ];

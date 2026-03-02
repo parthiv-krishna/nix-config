@@ -1,4 +1,3 @@
-# MuseScore music notation software feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "musescore" ];

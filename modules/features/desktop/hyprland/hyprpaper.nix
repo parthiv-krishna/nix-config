@@ -1,5 +1,3 @@
-# Hyprpaper wallpaper daemon feature - home-only
-# Generates a wallpaper from the color scheme using nix-colors
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" "hyprpaper" ];

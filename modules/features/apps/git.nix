@@ -1,4 +1,3 @@
-# Git configuration feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "git" ];

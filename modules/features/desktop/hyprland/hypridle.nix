@@ -1,14 +1,9 @@
-# Hypridle idle daemon feature - home-only
-# Reads idle settings from parent hyprland feature via osConfig in NixOS mode,
-# or from its own options in standalone mode.
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" "hypridle" ];
 
   homeConfig = cfg: { config, osConfig ? null, ... }:
   let
-    # In NixOS mode, read idle settings from the parent hyprland feature via osConfig
-    # In standalone mode, use defaults (user can override via home-manager options)
     idleMinutes =
       if osConfig != null && osConfig ? custom.features.desktop.hyprland.idleMinutes
       then osConfig.custom.features.desktop.hyprland.idleMinutes
@@ -30,7 +25,7 @@ lib.custom.mkFeature {
         };
         listener = [
           {
-            # Dim screen before lock (80% of lock time)
+            # dim screen before lock
             timeout = (idleMinutes.lock * 60 * 4) / 5;
             on-timeout = "brightnessctl -s set 10";
             on-resume = "brightnessctl -r";

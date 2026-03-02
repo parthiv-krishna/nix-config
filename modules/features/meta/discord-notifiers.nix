@@ -1,5 +1,3 @@
-# Service notifications via Discord - system-only
-# This defines a submodule for each notifier
 { lib }:
 let
   # Define the notifier submodule type here so mkFeature can use it in extraOptions

@@ -1,4 +1,3 @@
-# Signal encrypted messenger feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "signal-desktop" ];

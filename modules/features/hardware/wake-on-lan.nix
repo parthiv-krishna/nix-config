@@ -1,4 +1,3 @@
-# Wake on LAN support feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "hardware" "wake-on-lan" ];

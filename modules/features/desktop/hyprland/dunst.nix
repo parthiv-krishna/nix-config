@@ -1,4 +1,3 @@
-# Dunst notification daemon feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" "dunst" ];

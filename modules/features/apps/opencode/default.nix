@@ -1,4 +1,3 @@
-# OpenCode LLM agent feature - home-only
 { lib }:
 let
   reasoningVariants = {

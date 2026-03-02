@@ -1,4 +1,3 @@
-# Tmux configuration feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "tmux" ];

@@ -1,4 +1,3 @@
-# Element Matrix client feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "element-desktop" ];

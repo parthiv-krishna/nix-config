@@ -1,4 +1,3 @@
-# Samba file sharing feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "storage" "samba" ];

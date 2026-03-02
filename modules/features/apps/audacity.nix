@@ -1,4 +1,3 @@
-# Audacity audio editor feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "audacity" ];

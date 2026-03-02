@@ -1,4 +1,3 @@
-# Librewolf privacy-focused browser feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "librewolf" ];

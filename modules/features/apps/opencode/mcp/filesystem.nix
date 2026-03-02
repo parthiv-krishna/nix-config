@@ -1,4 +1,3 @@
-# Filesystem MCP plugin configuration
 { lib }:
 {
   mkConfig = pkgs: {

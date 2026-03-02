@@ -1,4 +1,3 @@
-# Playwright MCP plugin configuration
 { lib }:
 {
   mkConfig = pkgs: {

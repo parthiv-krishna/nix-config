@@ -1,4 +1,3 @@
-# Weekly auto-upgrades feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "meta" "auto-upgrade" ];

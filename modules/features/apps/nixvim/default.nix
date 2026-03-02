@@ -1,18 +1,10 @@
-# Nixvim editor feature - home-only
-# Full neovim configuration with LSP, UI plugins, git integration, and utilities
-# 
-# Note: This is a plain module pair (not using mkFeature) because it needs to use
-# imports, and imports cannot be conditional (mkFeature wraps config in mkIf).
-# The nixvim homeManagerModule is added to sharedModules in parthiv.nix.
-{ lib, inputs }:
+{ lib }:
 let
   optionPath = [ "custom" "features" "apps" "nixvim" ];
   
-  # Helper to set a value at a nested attribute path
   setAttrByPath = path: value:
     lib.foldr (name: acc: { ${name} = acc; }) value path;
 
-  # Helper to get a value from a nested attribute path
   getAttrByPath = path: attrs:
     lib.foldl (acc: name: acc.${name}) attrs path;
 
@@ -20,7 +12,6 @@ let
     enable = lib.mkEnableOption "the apps.nixvim feature";
   };
 
-  # Home-manager module with the nixvim configuration
   homeModule = { config, lib, ... }:
     let
       cfg = getAttrByPath optionPath config;
@@ -136,21 +127,14 @@ let
     };
 in
 {
-  # NixOS module - just defines options and adds home module to sharedModules
-  nixos = { config, lib, ... }:
-    let
-      cfg = getAttrByPath optionPath config;
-    in
+  nixos = _:
     {
       options = setAttrByPath optionPath optionsDef;
 
       config = {
-        # Add home module to sharedModules unconditionally (options need to exist)
-        # The actual config is conditional on cfg.enable inside homeModule
         home-manager.sharedModules = [ homeModule ];
       };
     };
 
-  # Home-manager module (for standalone mode)
   home = homeModule;
 }

@@ -1,4 +1,3 @@
-# NVIDIA GPU drivers feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "hardware" "gpu" "nvidia" ];

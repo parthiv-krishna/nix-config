@@ -1,4 +1,3 @@
-# Seagate disk management feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "hardware" "seagate-hdd" ];

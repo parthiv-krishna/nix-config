@@ -1,4 +1,3 @@
-# Proton Mail desktop client feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "protonmail-desktop" ];

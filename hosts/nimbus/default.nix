@@ -1,5 +1,4 @@
-# Unified configuration for nimbus (Oracle Cloud ARM server)
-
+# Configuration for nimbus (Oracle Cloud server)
 { lib, ... }:
 {
   imports = [
@@ -11,7 +10,7 @@
   networking.hostName = "nimbus";
   time.timeZone = "Etc/UTC";
 
-  # Use systemd-boot EFI boot loader
+  # Use the systemd-boot EFI boot loader.
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -33,6 +32,6 @@
     };
   };
 
-  # Should not be changed until a clean install
+  # should not be changed until a clean install
   system.stateVersion = "24.11";
 }

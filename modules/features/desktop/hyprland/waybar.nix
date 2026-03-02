@@ -1,4 +1,3 @@
-# Waybar status bar feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" "waybar" ];

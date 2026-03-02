@@ -1,4 +1,3 @@
-# Required core features for all hosts
 { config, lib, ... }:
 {
   options.custom.manifests.required.enable = lib.mkEnableOption "required core features";

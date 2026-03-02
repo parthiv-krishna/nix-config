@@ -1,4 +1,3 @@
-# Tailscale VPN client feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "networking" "tailscale" ];

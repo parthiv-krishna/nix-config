@@ -1,4 +1,3 @@
-# Server features
 { config, lib, ... }:
 {
   options.custom.manifests.server.enable = lib.mkEnableOption "server features";

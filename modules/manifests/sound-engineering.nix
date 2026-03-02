@@ -1,4 +1,3 @@
-# Sound engineering / audio production features
 { config, lib, ... }:
 {
   options.custom.manifests.sound-engineering.enable = lib.mkEnableOption "sound engineering features";

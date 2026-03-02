@@ -1,4 +1,3 @@
-# GitHub MCP plugin configuration
 { lib }:
 {
   mkConfig = pkgs:

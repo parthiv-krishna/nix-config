@@ -1,12 +1,13 @@
+# home-manager config for standalone usage on non-NixOS hosts
 { username, inputs, ... }:
 {
   home.username = username;
   home.homeDirectory = "/home/${username}";
   home.stateVersion = "24.11";
 
+  # for non-NixOS systems, ensure we have basic system integration
   targets.genericLinux.enable = true;
 
-  # Set default colorScheme for nixvim (nix-colors is imported at flake level)
   colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
   custom.features = {

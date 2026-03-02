@@ -1,4 +1,3 @@
-# UPS support feature (direct-attached) - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "hardware" "ups" ];

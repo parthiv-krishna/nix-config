@@ -1,4 +1,3 @@
-# Desktop environment features
 { config, lib, ... }:
 {
   options.custom.manifests.desktop-environment.enable = lib.mkEnableOption "desktop environment features";

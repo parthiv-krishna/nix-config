@@ -1,18 +1,16 @@
-# Unified configuration for icicle (Framework Laptop 13 AMD 7040 series)
+# Configuration for icicle (Framework Laptop 13 AMD 7040 series)
 { inputs, ... }:
 {
   imports = [
-    # Hardware configuration
     ./hardware-configuration.nix
     ./disks.nix
-
-    # Hardware-specific optimizations
+    # hardware-specific optimizations
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
   ];
 
   networking.hostName = "icicle";
 
-  # Use the systemd-boot EFI boot loader
+  # Use the systemd-boot EFI boot loader.
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -21,14 +19,12 @@
   time.timeZone = "America/Los_Angeles";
 
   custom = {
-    # Manifests
     manifests = {
       required.enable = true;
       desktop-environment.enable = true;
       sound-engineering.enable = true;
     };
 
-    # Features
     features = {
       apps.opencode.enable = true;
 
@@ -57,6 +53,6 @@
     };
   };
 
-  # Should not be changed until a clean install
+  # should not be changed until a clean install
   system.stateVersion = "24.11";
 }

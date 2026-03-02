@@ -1,4 +1,3 @@
-# MCP plugin configurations for opencode
 { lib }:
 let
   filesystem = import ./filesystem.nix { inherit lib; };

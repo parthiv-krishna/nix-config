@@ -1,5 +1,4 @@
-# Unified configuration for midnight (home server)
-
+# Configuration for midnight (home server)
 { lib, ... }:
 let
   dataDisks = [
@@ -12,7 +11,6 @@ in
   imports = [
     ./hardware-configuration.nix
     ./disks.nix
-    # Import selfhosted directly until refactored
     (lib.custom.relativeToRoot "system/common/modules/selfhosted")
   ];
 
@@ -22,6 +20,7 @@ in
   # required for ZFS
   networking.hostId = "746e646d"; # mdnt
 
+  # Use the systemd-boot EFI boot loader.
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -37,16 +36,21 @@ in
       apps.opencode.enable = true;
 
       hardware = {
+        # intel gpu drivers
         gpu.intel.enable = true;
+        # nvidia drivers
         gpu.nvidia = {
           enable = true;
           cudaCapability = "8.6"; # RTX 3060
         };
+        # seagate disk management for all drives
         seagate-hdd = {
           enable = true;
           disks = dataDisks ++ parityDisks;
         };
+        # UPS monitoring
         ups.enable = true;
+        # wake on LAN support
         wake-on-lan = {
           enable = true;
           device = "enp2s0";
@@ -54,11 +58,14 @@ in
       };
 
       storage = {
+        # smb share
         samba.enable = true;
+        # zfs-related services
         zfs.enable = true;
       };
 
       meta = {
+        # tell impermanence to wipe our ssd-root partition on boot
         impermanence.rootPartitionPath = "/dev/disk/by-partlabel/ssd-root";
         sops.sopsFile = "midnight.yaml";
       };

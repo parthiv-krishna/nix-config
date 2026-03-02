@@ -1,6 +1,3 @@
-# Hyprland desktop environment feature - system and home combined
-# This is the flagship example of mkFeature: ONE feature definition that configures
-# BOTH system and home levels.
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" ];

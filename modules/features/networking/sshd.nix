@@ -1,4 +1,3 @@
-# OpenSSH server feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "networking" "sshd" ];

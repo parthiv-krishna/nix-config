@@ -1,4 +1,3 @@
-# ProtonVPN GUI client feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "protonvpn-gui" ];

@@ -1,4 +1,3 @@
-# Root wiping and persistence feature - MERGE (system and home)
 { lib }:
 lib.custom.mkFeature {
   path = [ "meta" "impermanence" ];
@@ -25,8 +24,6 @@ lib.custom.mkFeature {
   };
 
   systemConfig = cfg: { config, lib, ... }: {
-    # Note: impermanence module is imported at flake level
-
     # startup script from https://github.com/nix-community/impermanence
     # 1. backup current state of root
     # 2. clear out backups older than 30d

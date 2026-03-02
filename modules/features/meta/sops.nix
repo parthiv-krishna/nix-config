@@ -1,4 +1,3 @@
-# Secrets management feature - MERGE (system and home)
 { lib }:
 lib.custom.mkFeature {
   path = [ "meta" "sops" ];
@@ -12,8 +11,6 @@ lib.custom.mkFeature {
   };
 
   systemConfig = cfg: { config, inputs, ... }: {
-    # Note: sops-nix nixosModule is imported at flake level
-
     sops = {
       defaultSopsFile = "${inputs.nix-config-secrets}/${config.networking.hostName}.yaml";
       validateSopsFiles = false;
@@ -30,8 +27,6 @@ lib.custom.mkFeature {
     };
   };
 
-  # Home config should only apply on NixOS (check for targets.genericLinux.enable)
-  # Note: sops-nix homeManagerModule is imported via home-manager sharedModules at flake level
   homeConfig = cfg: { config, inputs, pkgs, lib, ... }: 
     lib.mkIf (!config.targets.genericLinux.enable) {
       sops = {

@@ -1,5 +1,3 @@
-# REAPER digital audio workstation feature - home-only
-# Note: REAPER is unfree software
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "reaper" ];

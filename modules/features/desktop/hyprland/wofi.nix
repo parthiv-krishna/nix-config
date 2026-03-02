@@ -1,4 +1,3 @@
-# Wofi application launcher feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "desktop" "hyprland" "wofi" ];

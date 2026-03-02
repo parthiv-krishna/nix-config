@@ -1,4 +1,3 @@
-# Backup configuration feature - system-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "meta" "restic" ];

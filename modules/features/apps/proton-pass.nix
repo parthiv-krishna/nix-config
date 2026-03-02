@@ -1,4 +1,3 @@
-# Proton Pass password manager feature - home-only
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "proton-pass" ];

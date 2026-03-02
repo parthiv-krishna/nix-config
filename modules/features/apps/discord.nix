@@ -1,5 +1,3 @@
-# Discord chat client feature - home-only
-# Note: Discord is unfree software
 { lib }:
 lib.custom.mkFeature {
   path = [ "apps" "discord" ];

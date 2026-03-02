@@ -1,4 +1,3 @@
-# Unfree package allowlist feature - MERGE (system and home)
 { lib }:
 lib.custom.mkFeature {
   path = [ "meta" "unfree" ];
