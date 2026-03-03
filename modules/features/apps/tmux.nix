@@ -47,26 +47,30 @@ lib.custom.mkFeature {
           unbind-key C-a
           bind C-a send-key C-a
 
+          # clipboard passthrough
+          set -g set-clipboard on
+          set -g allow-passthrough all
+
           # nix-colors theme configuration
-          # Status bar colors
+          # status bar colors
           set-option -g status-style "fg=#${base05},bg=#${base00}"
           set-option -g status-left-style "fg=#${base0B},bg=#${base01}"
           set-option -g status-right-style "fg=#${base05},bg=#${base01}"
 
-          # Window status colors
+          # window status colors
           set-window-option -g window-status-style "fg=#${base05},bg=#${base00}"
           set-window-option -g window-status-current-style "fg=#${base00},bg=#${base0D}"
           set-window-option -g window-status-activity-style "fg=#${base08},bg=#${base00}"
 
-          # Pane border colors
+          # pane border colors
           set-option -g pane-border-style "fg=#${base03}"
           set-option -g pane-active-border-style "fg=#${base0D}"
 
-          # Message colors
+          # message colors
           set-option -g message-style "fg=#${base05},bg=#${base02}"
           set-option -g message-command-style "fg=#${base05},bg=#${base02}"
 
-          # Copy mode colors
+          # copy mode colors
           set-window-option -g mode-style "fg=#${base00},bg=#${base0A}"
         '';
       };
