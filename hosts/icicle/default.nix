@@ -35,6 +35,7 @@
           micVolume = 0.5;
         };
         bluetooth.enable = true;
+        gpu.amd.enable = true;
         wifi = {
           enable = true;
           driver = "mt7921e";
