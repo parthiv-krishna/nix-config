@@ -5,24 +5,34 @@
   config = lib.mkIf config.custom.manifests.required.enable {
     custom.features = {
       apps = {
-        git.enable = lib.mkDefault true;
         bash.enable = lib.mkDefault true;
-        tmux.enable = lib.mkDefault true;
+        btop.enable = lib.mkDefault true;
+        curl.enable = lib.mkDefault true;
+        dig.enable = lib.mkDefault true;
+        fastfetch.enable = lib.mkDefault true;
+        fzf.enable = lib.mkDefault true;
+        git.enable = lib.mkDefault true;
         nixvim.enable = lib.mkDefault true;
-        cli-utils.enable = lib.mkDefault true;
+        ripgrep.enable = lib.mkDefault true;
+        tmux.enable = lib.mkDefault true;
+        trash-cli.enable = lib.mkDefault true;
+        unzip.enable = lib.mkDefault true;
+        wget.enable = lib.mkDefault true;
+        yazi.enable = lib.mkDefault true;
+        zip.enable = lib.mkDefault true;
       };
 
       networking.tailscale.enable = lib.mkDefault true;
 
       meta = {
-        colors.enable = lib.mkDefault true;
-        sops.enable = lib.mkDefault true;
-        impermanence.enable = lib.mkDefault true;
         auto-upgrade.enable = lib.mkDefault true;
+        colors.enable = lib.mkDefault true;
+        discord-notifiers.enable = lib.mkDefault true;
+        impermanence.enable = lib.mkDefault true;
         parthiv.enable = lib.mkDefault true;
         restic.enable = lib.mkDefault true;
+        sops.enable = lib.mkDefault true;
         unfree.enable = lib.mkDefault true;
-        discord-notifiers.enable = lib.mkDefault true;
       };
     };
   };

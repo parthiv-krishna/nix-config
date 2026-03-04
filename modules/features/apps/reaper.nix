@@ -11,10 +11,9 @@ lib.custom.mkFeature {
     {
       home.packages = [ pkgs.reaper ];
 
-      custom.features.meta.unfree.allowedPackages = [ "reaper" ];
-
-      custom.features.meta.impermanence.directories = [
-        ".config/REAPER"
-      ];
+      custom.features.meta = {
+        unfree.allowedPackages = [ "reaper" ];
+        impermanence.directories = [ ".config/REAPER" ];
+      };
     };
 }

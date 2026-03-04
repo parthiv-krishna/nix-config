@@ -22,6 +22,7 @@
     manifests = {
       required.enable = true;
       desktop-environment.enable = true;
+      laptop.enable = true;
       sound-engineering.enable = true;
     };
 
