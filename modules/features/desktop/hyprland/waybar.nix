@@ -97,8 +97,8 @@ lib.custom.mkFeature {
 
         style = with config.colorScheme.palette; ''
           * {
-            font-family: ${config.custom.features.desktop.theme.font.family};
-            font-size: ${toString config.custom.features.desktop.theme.font.sizes.xlarge}px;
+            font-family: ${config.custom.features.meta.theme.font.family};
+            font-size: ${toString config.custom.features.meta.theme.font.sizes.xlarge}px;
             color: #${base05};
           }
 
@@ -117,7 +117,7 @@ lib.custom.mkFeature {
             min-width: 32px;
             min-height: 24px;
             font-weight: bold;
-            font-size: ${toString config.custom.features.desktop.theme.font.sizes.xlarge}px;
+            font-size: ${toString config.custom.features.meta.theme.font.sizes.xlarge}px;
             transition: background 0.2s, color 0.2s, border 0.2s;
           }
           #workspaces button.active {

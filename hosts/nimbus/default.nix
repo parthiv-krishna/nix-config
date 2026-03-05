@@ -1,10 +1,9 @@
 # Configuration for nimbus (Oracle Cloud server)
-{ lib, ... }:
+{ ... }:
 {
   imports = [
     ./hardware-configuration.nix
     ./disks.nix
-    (lib.custom.relativeToRoot "system/common/modules/selfhosted")
   ];
 
   networking.hostName = "nimbus";
@@ -28,6 +27,17 @@
       meta = {
         impermanence.rootPartitionPath = "/dev/root_vg/root";
         sops.sopsFile = "nimbus.yaml";
+      };
+
+      selfhosted = {
+        enable = true;
+
+        grafana.enable = true;
+        homepage.enable = true;
+        prometheus.enable = true;
+        prometheus-caddy.enable = true;
+        prometheus-node.enable = true;
+        prometheus-systemd.enable = true;
       };
     };
   };

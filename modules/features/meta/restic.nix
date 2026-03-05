@@ -19,9 +19,7 @@ lib.custom.mkFeature {
       secretRepository = "${secretRoot}/repository";
 
       # generate scripts to stop/start services for backups
-      # Note: custom.selfhosted is defined in the selfhosted module (not migrated yet)
-      # Default to empty list if not defined
-      servicesToStop = config.custom.selfhosted.backupServices or [ ];
+      servicesToStop = config.custom.features.selfhosted.backupServices or [ ];
 
       stopServicesScript = pkgs.writeShellScript "stop-services-for-backup" ''
         echo "stopping services for backup..."

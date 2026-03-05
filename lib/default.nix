@@ -2,7 +2,7 @@
   lib,
   inputs ? { },
   ...
-}@args:
+}:
 let
   scanPaths =
     dirPath:
@@ -17,26 +17,25 @@ let
     in
     builtins.map (name: dirPath + "/${name}") nixFileNames;
 
-  infra = import ./infra.nix { inherit lib; };
-
-  # cannot use imports = scanPaths ./.; as this is not a nixos module
-  filesToImport = builtins.filter (p: !lib.hasSuffix "infra.nix" p) (scanPaths ./.);
-  # load attribute set from each file
+  # import all lib files, passing customLib so they can use other lib.custom functions
+  libFiles = scanPaths ./.;
   importedAttrsList = builtins.map (
     filePath:
     let
       moduleFunction = import filePath;
     in
     assert lib.isFunction moduleFunction;
-    moduleFunction args
-  ) filesToImport;
-  # merge into one attribute set
-  mergedImportedAttrs = lib.foldl lib.recursiveUpdate { } importedAttrsList;
+    moduleFunction { inherit lib customLib; }
+  ) libFiles;
+  mergedAttrs = lib.foldl lib.recursiveUpdate { } importedAttrsList;
+
+  # lib with custom extensions
+  customLib = lib // {
+    custom = mergedAttrs // {
+      inherit scanPaths inputs;
+    };
+  };
 in
 {
-  custom = {
-    inherit scanPaths inputs;
-    inherit (infra) mkFeature loadFeatures;
-  }
-  // mergedImportedAttrs;
+  inherit (customLib) custom;
 }

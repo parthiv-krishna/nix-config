@@ -64,34 +64,27 @@
       inherit (constants) hosts systems;
       forEachSystem = lib.genAttrs (lib.attrValues systems);
 
-      # helper function to create custom lib for a system
-      mkCustomLib =
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        lib.extend (
-          _: super:
-          import ./lib {
-            inherit inputs pkgs system;
-            lib = super;
-          }
-        );
+      # custom lib extensions (system-independent)
+      customLib = lib.extend (
+        _: super:
+        import ./lib {
+          inherit inputs;
+          lib = super;
+        }
+      );
     in
     {
       # nixos system configurations
       nixosConfigurations = lib.mapAttrs (
         hostName: hostConfig:
-        let
-          inherit (hostConfig) system;
-          customLib = mkCustomLib system;
-        in
         lib.nixosSystem {
           modules = [
             inputs.disko.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
             inputs.home-manager.nixosModules.home-manager
+            inputs.nixarr.nixosModules.default
+            "${inputs.copyparty}/contrib/nixos/modules/copyparty.nix"
             (customLib.custom.loadFeatures {
               path = ./modules/features;
               mode = "nixos";
@@ -104,7 +97,7 @@
             inherit inputs;
             lib = customLib;
           };
-          inherit system;
+          inherit (hostConfig) system;
         }
       ) hosts;
 
@@ -112,33 +105,30 @@
       # generate for each of the configured usernames
       homeConfigurations =
         let
+          hmLib = customLib.extend (
+            _final: _prev: {
+              inherit (inputs.home-manager.lib) hm;
+            }
+          );
           mkHomeConfig =
             username:
-            let
-              customLib = (mkCustomLib systems.x86).extend (
-                _final: _prev: {
-                  inherit (inputs.home-manager.lib) hm;
-                }
-              );
-            in
             inputs.home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages.${systems.x86};
               modules = [
-                # Third-party modules needed by features
                 inputs.nix-colors.homeManagerModules.default
                 inputs.nixvim.homeModules.nixvim
                 inputs.sops-nix.homeManagerModules.sops
-                (customLib.custom.loadFeatures {
+                (hmLib.custom.loadFeatures {
                   path = ./modules/features;
                   mode = "home";
-                  inherit customLib;
+                  customLib = hmLib;
                 })
                 ./modules/manifests
                 ./hosts/standalone
               ];
               extraSpecialArgs = {
                 inherit inputs username;
-                lib = customLib;
+                lib = hmLib;
               };
             };
           usernames = [

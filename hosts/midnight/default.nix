@@ -1,5 +1,5 @@
 # Configuration for midnight (home server)
-{ lib, ... }:
+_:
 let
   dataDisks = [
     "/dev/disk/by-id/ata-ST14000NM005G-2KG133_ZLW2BGMF"
@@ -11,7 +11,6 @@ in
   imports = [
     ./hardware-configuration.nix
     ./disks.nix
-    (lib.custom.relativeToRoot "system/common/modules/selfhosted")
   ];
 
   networking.hostName = "midnight";
@@ -30,6 +29,7 @@ in
     manifests = {
       required.enable = true;
       server.enable = true;
+      media.enable = true;
     };
 
     features = {
@@ -37,39 +37,56 @@ in
 
       hardware = {
         gpu = {
-          # intel gpu drivers
           intel.enable = true;
-          # nvidia drivers
           nvidia = {
             enable = true;
             cudaCapability = "8.6"; # RTX 3060
           };
         };
-        # seagate disk management for all drives
         seagate-hdd = {
           enable = true;
           disks = dataDisks ++ parityDisks;
         };
-        # UPS monitoring
         ups.enable = true;
-        # wake on LAN support
         wake-on-lan = {
           enable = true;
           device = "enp2s0";
         };
       };
 
-      storage = {
-        # smb share
-        samba.enable = true;
-        # zfs-related services
-        zfs.enable = true;
-      };
-
       meta = {
         # tell impermanence to wipe our ssd-root partition on boot
         impermanence.rootPartitionPath = "/dev/disk/by-partlabel/ssd-root";
         sops.sopsFile = "midnight.yaml";
+      };
+
+      selfhosted = {
+        enable = true;
+
+        actual.enable = true;
+        authelia.enable = true;
+        calibre-web-automated.enable = true;
+        copyparty.enable = true;
+        forgejo.enable = true;
+        immich.enable = true;
+        kasm.enable = true;
+        librechat.enable = true;
+        llama-swap.enable = true;
+        # mealie.enable = true;
+        ocis.enable = true;
+        paperless.enable = true;
+        prometheus-caddy.enable = true;
+        prometheus-node.enable = true;
+        prometheus-nut.enable = true;
+        prometheus-smartmon.enable = true;
+        prometheus-systemd.enable = true;
+        prometheus-zfs.enable = true;
+        shelfmark.enable = true;
+      };
+
+      storage = {
+        samba.enable = true;
+        zfs.enable = true;
       };
     };
   };

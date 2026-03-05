@@ -26,9 +26,10 @@
 
       meta = {
         auto-upgrade.enable = lib.mkDefault true;
-        colors.enable = lib.mkDefault true;
+        theme.enable = lib.mkDefault true;
         discord-notifiers.enable = lib.mkDefault true;
         impermanence.enable = lib.mkDefault true;
+        nix.enable = lib.mkDefault true;
         parthiv.enable = lib.mkDefault true;
         restic.enable = lib.mkDefault true;
         sops.enable = lib.mkDefault true;

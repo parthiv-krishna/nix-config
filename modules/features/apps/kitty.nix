@@ -14,8 +14,8 @@ lib.custom.mkFeature {
 
         settings = with config.colorScheme.palette; {
           # font
-          font_family = config.custom.features.desktop.theme.font.monoFamily;
-          font_size = config.custom.features.desktop.theme.font.sizes.normal;
+          font_family = config.custom.features.meta.theme.font.monoFamily;
+          font_size = config.custom.features.meta.theme.font.sizes.normal;
           bold_font = "auto";
           italic_font = "auto";
           bold_italic_font = "auto";
