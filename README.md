@@ -1,24 +1,38 @@
 # nix-config
 My nix flake for system configuration, intended to be usable on both NixOS and non-NixOS machines
 
-## Flake Organization
+## Philosophy
+
+I want to write modules once and use/configure them across systems without having to think about whether something is a feature of nixos or of home-manager. This led me to create "features" which are files that can contain nixos, home-manager, or both configurations mixed together. They also can define options that can affect the behavior across both domains. [Features](./modules/features) are enabled and configured on [hosts](./hosts) via the `custom.features.<feature_name>.*` options. [Manifests](./modules/manifests) of several related features can be enabled via `custom.manifests.<manifest_name>.enable`.
+
+This is probably overkill given the relatively small number of machines I have, but oh well.
+
+## Organization
 
 The flake is organized into several directories.
 
 ```
-home/  # home-manager configuration
-├── common/  # home configuration that can be used on multiple systems
-│   ├── modules/  # home configuration that can be enabled on some systems
-│   └── required/  # home configuration that must be enabled on all systems
-└── <hostname>.nix  # home configuration for <user>@<hostname>
-lib/  # helpers to extend the nixpkgs.lib. all files are
-│     # auto-imported and available at lib.custom
-system/  # nixos system configuration
-├── <hostname>/  # configuration for <hostname>. each contains a default.nix and hardware-configuration.nix
-└── common/  # system configuration that can be used across multiple systems
-    ├── disks/  # declarative disk configurations (using disko)
-    ├── modules/  # custom modules that can be enabled on some systems
-    └── required/  # system configuration that must be enabled on all systems
+hosts/
+├── <host_name>/
+│   ├── default.nix                 # features, manifests, and other host-specific stuff
+│   ├── disks.nix                   # disk configuration using disko
+│   └── hardware-configuration.nix  # auto-generated hardware config
+│
+└── standalone/default.nix          # standalone home-manager config
+
+lib/                                # helpers available at lib.custom.*
+
+modules/
+├── features/                       # atomic features available at custom.features.*
+│   ├── apps/                       # one app per file (probably hyperbolic)
+│   ├── desktop/                    # desktop environment features
+│   ├── hardware/                   # anything related to specific hardware on a machine
+│   ├── meta/                       # configuring nix/nixos
+│   ├── networking/                 # self explanatory
+│   ├── selfhosted/                 # selfhosted apps via lib.custom.mkSelfHostedFeature
+│   └── storage/                    # self explanatory
+│
+└── manifests/                      # groups of related features to enable together
 ```
 
 ## Usage
