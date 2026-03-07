@@ -83,8 +83,17 @@ lib.custom.mkFeature {
     };
 
   homeConfig =
-    cfg:
-    { lib, options, ... }:
+    _cfg:
+    {
+      lib,
+      config,
+      options,
+      ...
+    }:
+    let
+      # Read from home-manager config where other modules set directories/files
+      hmCfg = lib.getAttrFromPath [ "custom" "features" "meta" "impermanence" ] config;
+    in
     # skip non-nixos hosts (those without home.persistence option)
     lib.optionalAttrs (options ? home.persistence) {
       home.persistence."/persist" = {
@@ -92,8 +101,8 @@ lib.custom.mkFeature {
           ".ssh"
           "Documents"
         ]
-        ++ cfg.directories;
-        inherit (cfg) files;
+        ++ hmCfg.directories;
+        inherit (hmCfg) files;
       };
     };
 }
