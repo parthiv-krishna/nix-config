@@ -32,7 +32,7 @@
       hardware = {
         audio = {
           enable = true;
-          micVolume = 0.5;
+          micVolume = 0.25;
         };
         bluetooth.enable = true;
         gpu.amd.enable = true;
@@ -43,9 +43,9 @@
       };
 
       desktop.hyprland.idleMinutes = {
-        lock = 1;
-        screenOff = 2;
-        suspend = 3;
+        lock = 5;
+        screenOff = 6;
+        suspend = 10;
       };
 
       meta = {

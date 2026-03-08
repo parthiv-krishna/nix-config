@@ -24,23 +24,6 @@ lib.custom.mkFeature {
 
       hardware.amdgpu.initrd.enable = true;
 
-      boot.kernelParams = [
-        # disable scatter/gather
-        # "amdgpu.sg_display=0"
-
-        # disable panel self refresh
-        # https://gitlab.freedesktop.org/drm/amd/-/issues/3647
-        "amdgpu.dcdebugmask=0x10"
-
-        # disable micro engine scheduler
-        # https://gitlab.freedesktop.org/drm/amd/-/issues/2065
-        "amdgpu.mes=0"
-
-        # disable mid-command buffer preemption
-        # https://gitlab.freedesktop.org/drm/amd/-/issues/3131
-        "amdgpu.mcbp=0"
-      ];
-
       environment.sessionVariables = {
         # explicitly tell apps to use the AMD VA-API driver
         LIBVA_DRIVER_NAME = "radeonsi";
