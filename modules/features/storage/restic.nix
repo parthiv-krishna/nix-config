@@ -65,6 +65,13 @@ lib.custom.mkFeature {
 
           SNAPSHOT="$DATASET@${snapshotName}"
 
+          echo "deleting old snapshot if it exists"
+          ${pkgs.util-linux}/bin/umount ${backupPath} 2>/dev/null || true
+          if ${pkgs.zfs}/bin/zfs list -H "$SNAPSHOT" &>/dev/null; then
+            echo "removing stale ZFS snapshot: $SNAPSHOT"
+            ${pkgs.zfs}/bin/zfs destroy "$SNAPSHOT" || true
+          fi
+
           echo "creating ZFS snapshot: $SNAPSHOT"
           ${pkgs.zfs}/bin/zfs snapshot "$SNAPSHOT"
 
@@ -78,14 +85,18 @@ lib.custom.mkFeature {
         btrfs = pkgs.writeShellScript "btrfs-create-snapshot" ''
           set -euo pipefail
 
-          DEVICE=$(${pkgs.util-linux}/bin/findmnt -n -o SOURCE /persist)
+          # findmnt returns "device[/subvol]" format, strip the bracket suffix
+          DEVICE=$(${pkgs.util-linux}/bin/findmnt -n -o SOURCE /persist | ${pkgs.gnused}/bin/sed 's/\[.*\]$//')
           if [ -z "$DEVICE" ]; then
             echo "ERROR: Could not find device for /persist"
             exit 1
           fi
           echo "detected device: $DEVICE"
 
-          SUBVOL=$(${pkgs.btrfs-progs}/bin/btrfs subvolume show /persist 2>/dev/null | grep "Name:" | awk '{print $2}')
+          # FSROOT gives us the subvolume path directly (e.g., /persist)
+          SUBVOL=$(${pkgs.util-linux}/bin/findmnt -n -o FSROOT /persist)
+          # strip leading slash for path operations
+          SUBVOL="''${SUBVOL#/}"
           if [ -z "$SUBVOL" ]; then
             echo "ERROR: Could not determine BTRFS subvolume for /persist"
             exit 1
@@ -98,21 +109,33 @@ lib.custom.mkFeature {
 
           SNAPSHOT_PATH="$BTRFS_ROOT/${snapshotName}"
 
+          echo "deleting old snapshot if it exists"
+          if [ -d "$SNAPSHOT_PATH" ]; then
+            echo "removing stale snapshot: $SNAPSHOT_PATH"
+            ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$SNAPSHOT_PATH" || true
+          fi
+
           echo "creating BTRFS snapshot: $SNAPSHOT_PATH"
           ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot -r "$BTRFS_ROOT/$SUBVOL" "$SNAPSHOT_PATH"
 
           ${pkgs.util-linux}/bin/umount "$BTRFS_ROOT"
           rmdir "$BTRFS_ROOT"
 
+          echo "deleting old snapshot if it exists"
+          ${pkgs.util-linux}/bin/umount ${backupPath} 2>/dev/null || true
+
           echo "mounting snapshot at ${backupPath}"
           mkdir -p ${backupPath}
-          ${pkgs.util-linux}/bin/mount -t btrfs -o subvol=${snapshotName},ro "$DEVICE" ${backupPath}
+          ${pkgs.util-linux}/bin/mount -t btrfs -o subvol=/${snapshotName},ro "$DEVICE" ${backupPath}
 
           echo "snapshot ready at ${backupPath}"
         '';
 
         none = pkgs.writeShellScript "none-create-snapshot" ''
           set -euo pipefail
+
+          # clean up stale mount from a previous failed run
+          ${pkgs.util-linux}/bin/umount ${backupPath} 2>/dev/null || true
 
           echo "bind mounting /persist at ${backupPath}"
           mkdir -p ${backupPath}
@@ -142,22 +165,27 @@ lib.custom.mkFeature {
         btrfs = pkgs.writeShellScript "btrfs-destroy-snapshot" ''
           set -euo pipefail
 
-          DEVICE=$(${pkgs.util-linux}/bin/findmnt -n -o SOURCE ${backupPath} | head -1)
+          # findmnt returns "device[/subvol]" format, strip the bracket suffix
+          DEVICE=$(${pkgs.util-linux}/bin/findmnt -n -o SOURCE ${backupPath} 2>/dev/null | ${pkgs.coreutils}/bin/head -1 | ${pkgs.gnused}/bin/sed 's/\[.*\]$//')
 
           echo "unmounting snapshot from ${backupPath}"
           ${pkgs.util-linux}/bin/umount ${backupPath} || true
           rmdir ${backupPath} || true
 
-          BTRFS_ROOT="/mnt/btrfs-root"
-          mkdir -p "$BTRFS_ROOT"
-          ${pkgs.util-linux}/bin/mount -t btrfs -o subvol=/ "$DEVICE" "$BTRFS_ROOT"
+          if [ -n "$DEVICE" ]; then
+            BTRFS_ROOT="/mnt/btrfs-root"
+            mkdir -p "$BTRFS_ROOT"
+            ${pkgs.util-linux}/bin/mount -t btrfs -o subvol=/ "$DEVICE" "$BTRFS_ROOT"
 
-          SNAPSHOT_PATH="$BTRFS_ROOT/${snapshotName}"
-          echo "deleting BTRFS snapshot: $SNAPSHOT_PATH"
-          ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$SNAPSHOT_PATH" || true
+            SNAPSHOT_PATH="$BTRFS_ROOT/${snapshotName}"
+            echo "deleting BTRFS snapshot: $SNAPSHOT_PATH"
+            ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$SNAPSHOT_PATH" || true
 
-          ${pkgs.util-linux}/bin/umount "$BTRFS_ROOT"
-          rmdir "$BTRFS_ROOT"
+            ${pkgs.util-linux}/bin/umount "$BTRFS_ROOT"
+            rmdir "$BTRFS_ROOT"
+          else
+            echo "WARNING: Could not determine device, skipping snapshot deletion"
+          fi
 
           echo "snapshot cleanup complete"
         '';
@@ -207,6 +235,15 @@ lib.custom.mkFeature {
 
           ${createSnapshot.${cfg.snapshotType}}
 
+          echo "verifying ${backupPath}..."
+          ENTRIES=$(${pkgs.findutils}/bin/find ${backupPath} -maxdepth 2 -mindepth 1)
+          if [ -z "$ENTRIES" ]; then
+            echo "ERROR: ${backupPath} appears empty, aborting backup"
+            exit 1
+          fi
+          echo "$ENTRIES"
+          echo "verified ${backupPath}: $(echo "$ENTRIES" | wc -l) entries"
+
           echo "starting ${builtins.toString (builtins.length backupServices)} services..."
           ${lib.concatMapStringsSep "\n" (service: ''
             (echo "starting ${service}..." && systemctl start ${service} || true) &
@@ -225,8 +262,11 @@ lib.custom.mkFeature {
       };
 
       systemd.services.restic-backups-main = {
-        # need the snapshot mount to be visible outside the prestart
+        # PrivateTmp creates a mount namespace, which prevents mounts created
+        # in ExecStartPre from being visible in ExecStart. Disable both to
+        # ensure the snapshot mount persists across service phases.
         serviceConfig.PrivateMounts = lib.mkForce false;
+        serviceConfig.PrivateTmp = lib.mkForce false;
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
       };
