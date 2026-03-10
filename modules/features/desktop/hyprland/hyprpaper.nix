@@ -22,19 +22,20 @@ lib.custom.mkFeature {
         height = 1080;
         logoScale = 5.0;
       };
-      wallpaperFile = "wallpaper.png";
     in
     {
-      home.file.${wallpaperFile}.source = wallpaper;
-
       services.hyprpaper = {
         enable = true;
         settings = {
-          preload = [ "${config.home.homeDirectory}/${wallpaperFile}" ];
+          preload = [ (toString wallpaper) ];
           wallpaper = [
-            ",${config.home.homeDirectory}/${wallpaperFile}"
+            {
+              monitor = "";
+              path = toString wallpaper;
+            }
           ];
           ipc = false;
+          splash = false;
         };
       };
     };
