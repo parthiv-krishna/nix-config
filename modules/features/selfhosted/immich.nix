@@ -98,11 +98,11 @@ lib.custom.mkSelfHostedFeature {
       ];
 
       # Don't backup transcoded videos or thumbnails
-      services.restic.backups.main.exclude = [
-        "system/var/lib/immich/encoded-video"
-        "system/var/lib/immich/thumbs"
-        "system/var/lib/immich/matplotlib"
-        "system/var/lib/immich/hf-cache"
+      custom.features.storage.restic.excludePaths = [
+        "/var/lib/immich/encoded-video"
+        "/var/lib/immich/thumbs"
+        "/var/lib/immich/matplotlib"
+        "/var/lib/immich/hf-cache"
       ];
     };
 }

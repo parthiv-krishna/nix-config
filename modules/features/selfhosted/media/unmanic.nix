@@ -56,8 +56,8 @@ lib.custom.mkSelfHostedFeature {
         extraGroups = [ "video" ];
       };
 
-      services.restic.backups.main.exclude = [
-        "system/var/lib/containers"
+      custom.features.storage.restic.excludePaths = [
+        "/var/lib/containers"
       ];
     };
 }

@@ -166,9 +166,9 @@ lib.custom.mkFeature {
 
       sops.secrets."media/wg_config" = { };
 
-      services.restic.backups.main.exclude = [
-        "system/var/lib/media/library"
-        "system/var/lib/media/torrents"
+      custom.features.storage.restic.excludePaths = [
+        "/var/lib/media/library"
+        "/var/lib/media/torrents"
       ];
     };
 }

@@ -85,6 +85,10 @@ in
       };
 
       storage = {
+        restic = {
+          backupTime = "12:00"; # 5am PT, 1 hour after nimbus
+          snapshotType = "zfs";
+        };
         samba.enable = true;
         zfs.enable = true;
       };

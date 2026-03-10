@@ -39,6 +39,11 @@
         prometheus-node.enable = true;
         prometheus-systemd.enable = true;
       };
+
+      storage.restic = {
+        backupTime = "11:00"; # 4am PT
+        snapshotType = "btrfs";
+      };
     };
   };
 

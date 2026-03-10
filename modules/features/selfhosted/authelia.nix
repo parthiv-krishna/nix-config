@@ -38,7 +38,7 @@ lib.custom.mkSelfHostedFeature {
       # Register backup services (authelia + redis)
       custom.features.selfhosted.backupServices = [
         "authelia-${instanceName}.service"
-        "redis-${instanceName}.service"
+        "redis-authelia-${instanceName}.service"
       ];
 
       services = {

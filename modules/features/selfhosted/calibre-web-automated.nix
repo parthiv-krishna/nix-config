@@ -80,8 +80,8 @@ lib.custom.mkSelfHostedFeature {
         "d ${stateDir}/shelfmark/config 0755 ${booksUser} ${booksGroup} -"
       ];
 
-      services.restic.backups.main.exclude = [
-        "system/var/lib/containers"
+      custom.features.storage.restic.excludePaths = [
+        "/var/lib/containers"
       ];
     };
 }

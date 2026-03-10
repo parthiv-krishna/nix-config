@@ -52,6 +52,8 @@
         impermanence.rootPartitionPath = "/dev/root_vg/root";
         sops.sopsFile = "icicle.yaml";
       };
+
+      storage.restic.snapshotType = "btrfs";
     };
   };
 
