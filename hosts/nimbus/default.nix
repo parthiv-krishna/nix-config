@@ -38,6 +38,7 @@
         prometheus-caddy.enable = true;
         prometheus-node.enable = true;
         prometheus-systemd.enable = true;
+        vaultwarden.enable = true;
       };
 
       storage.restic = {
