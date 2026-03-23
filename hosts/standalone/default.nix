@@ -1,5 +1,5 @@
 # home-manager config for standalone usage on non-NixOS hosts
-{ username, inputs, ... }:
+{ username, ... }:
 {
   home = {
     inherit username;
@@ -12,8 +12,6 @@
 
   # let home-manager manage itself
   programs.home-manager.enable = true;
-
-  colorScheme = inputs.nix-colors.colorSchemes.onedark;
 
   custom = {
     manifests.required.enable = true;
