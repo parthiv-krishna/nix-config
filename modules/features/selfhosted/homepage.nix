@@ -31,8 +31,6 @@ lib.custom.mkSelfHostedFeature {
                 entryAttrs = {
                   inherit (service) description icon;
                   href = baseUrl;
-                }
-                // lib.optionalAttrs (service.status != null) {
                   siteMonitor = "${baseUrl}${service.status}";
                 };
                 entry = {

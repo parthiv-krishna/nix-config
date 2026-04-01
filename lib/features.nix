@@ -199,7 +199,7 @@ rec {
           custom.features.selfhosted.homepageServices.${name} = {
             inherit (homepage) category description icon;
             inherit name subdomain;
-            status = homepage.status or null;
+            status = homepage.status or "";
           };
         })
         (lib.optionalAttrs (oidcClient != null) {

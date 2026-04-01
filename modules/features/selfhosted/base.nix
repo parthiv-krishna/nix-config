@@ -33,9 +33,8 @@ lib.custom.mkFeature {
               description = "Subdomain for the service";
             };
             status = lib.mkOption {
-              type = lib.types.nullOr lib.types.str;
-              default = null;
-              description = "Health check path (e.g. '/health'). If set, ping will use public FQDN + this path.";
+              type = lib.types.str;
+              description = "Health check path (e.g. '/health'). siteMonitor will use public FQDN + this path.";
             };
           };
         }
