@@ -8,7 +8,7 @@ rec {
   #   systemConfig: function (cfg: moduleArgs: { ... }) returning NixOS config
   #   homeConfig: function (cfg: moduleArgs: { ... }) returning home-manager config
   #   homeImports: list of paths to import in the home module (for complex features like nixvim)
-  #   nixosExtraConfig: unconditional NixOS config (not wrapped in mkIf cfg.enable)
+  #   systemConfigUnconditional: unconditional NixOS config (not wrapped in mkIf cfg.enable)
   mkFeature =
     {
       path,
@@ -17,7 +17,7 @@ rec {
       systemConfig ? null,
       homeConfig ? null,
       homeImports ? [ ],
-      nixosExtraConfig ? { },
+      systemConfigUnconditional ? { },
     }:
     let
       optionPath = [
@@ -50,7 +50,7 @@ rec {
           options = lib.setAttrByPath optionPath optionsDef;
 
           config = lib.mkMerge [
-            nixosExtraConfig
+            systemConfigUnconditional
             (
               if homeConfig != null || homeImports != [ ] then
                 {
@@ -194,7 +194,7 @@ rec {
       inherit extraOptions;
 
       # Unconditional config: homepage/oidc entries visible to all hosts
-      nixosExtraConfig = lib.mkMerge [
+      systemConfigUnconditional = lib.mkMerge [
         (lib.optionalAttrs (homepage != null) {
           custom.features.selfhosted.homepageServices.${name} = {
             inherit (homepage) category description icon;
