@@ -43,6 +43,7 @@ lib.custom.mkSelfHostedFeature {
     let
       secretsRoot = "librechat";
       mkPublicHttpsUrl = lib.custom.mkPublicHttpsUrl config.constants;
+      domain = config.constants.domains.public;
     in
     {
       services.librechat = {
@@ -56,7 +57,7 @@ lib.custom.mkSelfHostedFeature {
           endpoints = {
             custom = [
               {
-                name = "sub0.net LLMs";
+                name = "${domain} LLMs";
                 apiKey = "not-needed";
                 baseURL = "${mkPublicHttpsUrl "llm"}/v1";
                 models = {
@@ -90,7 +91,7 @@ lib.custom.mkSelfHostedFeature {
         templates."librechat/environment" = {
           content = ''
             ALLOW_SOCIAL_LOGIN=true
-            OPENID_BUTTON_LABEL=Log in with sub0.net SSO
+            OPENID_BUTTON_LABEL=Log in with ${domain} SSO
             OPENID_ISSUER=${mkPublicHttpsUrl "login"}
             OPENID_CLIENT_ID=${config.sops.placeholder."${secretsRoot}/client_id"}
             OPENID_CLIENT_SECRET=${config.sops.placeholder."${secretsRoot}/client_secret_orig"}

@@ -50,6 +50,9 @@ lib.custom.mkFeature {
       snapshotName = "restic-backup";
       backupPath = "/persist.backup";
 
+      # Backup server hostname
+      backupHost = "backup.${config.constants.domains.public}";
+
       inherit (config.custom.features.selfhosted) backupServices;
 
       createSnapshot = {
@@ -271,9 +274,9 @@ lib.custom.mkFeature {
         after = [ "network-online.target" ];
       };
 
-      # trust backup.sub0.net
+      # trust backup server
       programs.ssh.knownHosts = {
-        "backup.sub0.net".publicKey =
+        ${backupHost}.publicKey =
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";
       };
 

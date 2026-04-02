@@ -40,6 +40,7 @@ lib.custom.mkSelfHostedFeature {
     { config, lib, ... }:
     let
       secretsRoot = "paperless";
+      domain = config.constants.domains.public;
     in
     {
       services.paperless = {
@@ -57,7 +58,7 @@ lib.custom.mkSelfHostedFeature {
         templates."paperless/environment" = {
           content = ''
             PAPERLESS_APPS=allauth.socialaccount.providers.openid_connect
-            PAPERLESS_SOCIALACCOUNT_PROVIDERS={"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"authelia","name":"sub0.net SSO","client_id":"${
+            PAPERLESS_SOCIALACCOUNT_PROVIDERS={"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"authelia","name":"${domain} SSO","client_id":"${
               config.sops.placeholder."${secretsRoot}/client_id"
             }","secret":"${
               config.sops.placeholder."${secretsRoot}/client_secret_orig"
