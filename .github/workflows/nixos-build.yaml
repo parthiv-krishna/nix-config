@@ -1,0 +1,53 @@
+name: "Build and Cache NixOS Configurations"
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            hosts: icicle midnight
+          - runner: ubuntu-24.04-arm64
+            hosts: nimbus
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Maximize disk space for Nix
+        uses: wimpysworld/nothing-but-nix@main
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v12
+        with:
+          extra-conf: |
+            build-dir = /nix/build
+      - name: Load SSH private key for secrets repo
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Build configurations
+        run: |
+          for host in ${{ matrix.hosts }}; do
+            echo "Building $host..."
+            nix build --no-link .#nixosConfigurations.$host.config.system.build.toplevel
+          done
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - name: Add cache host key
+        run: |
+          mkdir -p ~/.ssh
+          echo "cache.sub0.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHoePjXvae+ZXjjMaCEUG+UQj1wDaGjAvygU47rxhaGy" >> ~/.ssh/known_hosts
+      - name: Push to cache
+        continue-on-error: true
+        run: |
+          for host in ${{ matrix.hosts }}; do
+            echo "Pushing $host to cache..."
+            nix copy --to ssh://nix-cache@cache.sub0.net $(nix path-info .#nixosConfigurations.$host.config.system.build.toplevel)
+          done

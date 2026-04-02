@@ -68,6 +68,7 @@ in
         calibre-web-automated.enable = true;
         copyparty.enable = true;
         forgejo.enable = true;
+        harmonia.enable = true;
         immich.enable = true;
         kasm.enable = true;
         librechat.enable = true;
