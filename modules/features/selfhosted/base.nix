@@ -1,14 +1,37 @@
 # Selfhosted services base infrastructure
 #
 # This module provides:
-# - Shared options (homepageServices, oidcClients, backupServices) for cross-machine config
+# - Shared options (serviceMetadata, homepageMetadata, oidcClients, backupServices) for cross-machine config
 # - Caddy reverse proxy base configuration (enabled when enableReverseProxy is set)
 { lib }:
 lib.custom.mkFeature {
   path = [ "selfhosted" ];
 
   extraOptions = {
-    homepageServices = lib.mkOption {
+    serviceMetadata = lib.mkOption {
+      type = lib.types.attrsOf (
+        lib.types.submodule {
+          options = {
+            name = lib.mkOption {
+              type = lib.types.str;
+              description = "Service name";
+            };
+            subdomain = lib.mkOption {
+              type = lib.types.str;
+              description = "Subdomain for the service";
+            };
+            statusPath = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              description = "Health check path (e.g. '/health'). Null disables monitoring, empty string probes base URL.";
+            };
+          };
+        }
+      );
+      default = { };
+      description = "Metadata for all selfhosted services";
+    };
+
+    homepageMetadata = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.submodule {
           options = {
@@ -24,23 +47,11 @@ lib.custom.mkFeature {
               type = lib.types.str;
               description = "Icon identifier for the service";
             };
-            name = lib.mkOption {
-              type = lib.types.str;
-              description = "Service name";
-            };
-            subdomain = lib.mkOption {
-              type = lib.types.str;
-              description = "Subdomain for the service";
-            };
-            status = lib.mkOption {
-              type = lib.types.str;
-              description = "Health check path (e.g. '/health'). siteMonitor will use public FQDN + this path.";
-            };
           };
         }
       );
       default = { };
-      description = "Metadata for all self-hosted services with homepage entries";
+      description = "Display metadata for services shown on homepage dashboard";
     };
 
     backupServices = lib.mkOption {

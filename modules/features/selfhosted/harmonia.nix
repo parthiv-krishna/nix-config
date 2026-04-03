@@ -7,12 +7,12 @@ lib.custom.mkSelfHostedFeature {
   name = "harmonia";
   subdomain = "cache";
   inherit port;
+  statusPath = "/health";
 
   homepage = {
     category = "Network";
     description = "Nix binary cache";
     icon = "sh-nix";
-    status = "/health";
   };
 
   serviceConfig =

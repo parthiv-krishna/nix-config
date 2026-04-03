@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "bazarr";
   subdomain = "subtitles";
   port = 6767;
+  statusPath = "/ping";
 
   backupServices = [ "bazarr.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media Management";
     description = "Manage subtitles";
     icon = "sh-bazarr";
-    status = "/ping";
   };
 
   serviceConfig = _cfg: _: {

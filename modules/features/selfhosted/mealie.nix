@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "mealie";
   subdomain = "food";
   port = 9000;
+  statusPath = "/api/app/about";
 
   backupServices = [ "mealie.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Tools";
     description = "Recipes";
     icon = "sh-mealie";
-    status = "/api/app/about";
   };
 
   oidcClient = {

@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "ocis";
   subdomain = "drive";
   port = 9200;
+  statusPath = "/healthz";
 
   backupServices = [ "ocis.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Storage";
     description = "General storage";
     icon = "sh-owncloud";
-    status = "/healthz";
   };
 
   persistentDirectories = [

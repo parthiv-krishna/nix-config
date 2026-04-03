@@ -4,12 +4,12 @@ lib.custom.mkSelfHostedFeature {
   name = "kasm";
   subdomain = "vm";
   port = 4443;
+  statusPath = "/api/__healthcheck";
 
   homepage = {
     category = "Tools";
     description = "Virtual machines";
     icon = "sh-kasm-workspaces";
-    status = "/api/__healthcheck";
   };
 
   oidcClient = {

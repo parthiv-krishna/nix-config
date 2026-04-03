@@ -3,6 +3,7 @@
 lib.custom.mkSelfHostedFeature {
   name = "prometheus-smartmon";
   port = 9106;
+  statusPath = null; # Disable uptime monitoring (infrastructure)
 
   extraOptions = {
     devices = lib.mkOption {

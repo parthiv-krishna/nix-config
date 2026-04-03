@@ -3,6 +3,7 @@
 lib.custom.mkSelfHostedFeature {
   name = "prometheus-caddy";
   port = 2019;
+  statusPath = null; # Disable uptime monitoring (runs on multiple hosts)
 
   # Caddy admin API runs on port 2019 by default
   # mkSelfHostedFeature automatically creates virtualHosts that reverse proxy to the port

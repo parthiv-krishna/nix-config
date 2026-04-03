@@ -3,6 +3,7 @@
 lib.custom.mkSelfHostedFeature {
   name = "prometheus-node";
   port = 9101;
+  statusPath = null; # Disable uptime monitoring (runs on multiple hosts)
 
   serviceConfig = _cfg: _: {
     services.prometheus.exporters.node = {

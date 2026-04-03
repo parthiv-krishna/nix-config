@@ -3,6 +3,7 @@
 lib.custom.mkSelfHostedFeature {
   name = "prometheus-systemd";
   port = 9105;
+  statusPath = null; # Disable uptime monitoring (runs on multiple hosts)
 
   serviceConfig = _cfg: _: {
     services.prometheus.exporters.systemd = {

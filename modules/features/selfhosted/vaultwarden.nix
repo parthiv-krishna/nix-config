@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "vaultwarden";
   subdomain = "password";
   port = 8222;
+  statusPath = "/alive";
 
   backupServices = [ "vaultwarden.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Tools";
     description = "Password manager";
     icon = "sh-vaultwarden";
-    status = "/alive";
   };
 
   oidcClient = {

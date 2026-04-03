@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "jellyseerr";
   subdomain = "request";
   port = 5055;
+  statusPath = "/api/v1/status";
 
   backupServices = [ "jellyseerr.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media";
     description = "Request media";
     icon = "sh-jellyseerr";
-    status = "/api/v1/status";
   };
 
   oidcClient = {

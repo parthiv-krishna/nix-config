@@ -35,6 +35,7 @@
         grafana.enable = true;
         homepage.enable = true;
         prometheus.enable = true;
+        prometheus-blackbox.enable = true;
         prometheus-caddy.enable = true;
         prometheus-node.enable = true;
         prometheus-systemd.enable = true;

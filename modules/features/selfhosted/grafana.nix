@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "grafana";
   subdomain = "stats";
   port = 3000;
+  statusPath = "/api/health";
 
   backupServices = [ "grafana.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Network";
     description = "Charts and metrics";
     icon = "sh-grafana";
-    status = "/api/health";
   };
 
   oidcClient = {

@@ -4,12 +4,12 @@ lib.custom.mkSelfHostedFeature {
   name = "authelia";
   subdomain = "login";
   port = 9091;
+  statusPath = "/api/health";
 
   homepage = {
     category = "Network";
     description = "Authentication portal";
     icon = "sh-authelia";
-    status = "/api/health";
   };
 
   persistentDirectories = [

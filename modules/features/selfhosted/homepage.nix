@@ -20,28 +20,33 @@ lib.custom.mkSelfHostedFeature {
         # Automatically generate services defined by other selfhosted features
         services =
           let
-            inherit (config.custom.features.selfhosted) homepageServices;
+            inherit (config.custom.features.selfhosted) serviceMetadata homepageMetadata;
+
+            # Only show services that have both serviceMetadata AND homepageMetadata
+            servicesWithHomepage = lib.filterAttrs (name: _: homepageMetadata ? ${name}) serviceMetadata;
 
             servicesByCategory = lib.foldl' (
               acc: serviceName:
               let
-                service = homepageServices.${serviceName};
-                inherit (service) category;
-                baseUrl = lib.custom.mkPublicHttpsUrl config.constants service.subdomain;
+                svc = serviceMetadata.${serviceName};
+                hp = homepageMetadata.${serviceName};
+                baseUrl = lib.custom.mkPublicHttpsUrl config.constants svc.subdomain;
                 entryAttrs = {
-                  inherit (service) description icon;
+                  inherit (hp) description icon;
                   href = baseUrl;
-                  siteMonitor = "${baseUrl}${service.status}";
+                }
+                // lib.optionalAttrs (svc.statusPath != null) {
+                  siteMonitor = "${baseUrl}${svc.statusPath}";
                 };
                 entry = {
-                  "${service.name}: ${service.subdomain}.${domains.public}" = entryAttrs;
+                  "${svc.name}: ${svc.subdomain}.${domains.public}" = entryAttrs;
                 };
               in
               acc
               // {
-                ${category} = (acc.${category} or [ ]) ++ [ entry ];
+                ${hp.category} = (acc.${hp.category} or [ ]) ++ [ entry ];
               }
-            ) { } (builtins.attrNames homepageServices);
+            ) { } (builtins.attrNames servicesWithHomepage);
 
             template = with config.constants.homepage.categories; [
               {

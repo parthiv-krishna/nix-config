@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "librechat";
   subdomain = "ai";
   port = 3080;
+  statusPath = "/api/health";
 
   backupServices = [ "librechat.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Tools";
     description = "AI Chat Interface";
     icon = "sh-librechat";
-    status = "/api/health";
   };
 
   oidcClient = {

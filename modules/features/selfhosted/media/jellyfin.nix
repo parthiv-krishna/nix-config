@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "jellyfin";
   subdomain = "tv";
   port = 8096;
+  statusPath = "/health";
 
   backupServices = [ "jellyfin.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media";
     description = "Watch movies and TV";
     icon = "sh-jellyfin";
-    status = "/health";
   };
 
   oidcClient = {

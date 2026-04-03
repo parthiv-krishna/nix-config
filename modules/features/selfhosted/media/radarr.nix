@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "radarr";
   subdomain = "movies";
   port = 7878;
+  statusPath = "/ping";
 
   backupServices = [ "radarr.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media Management";
     description = "Manage movies";
     icon = "sh-radarr";
-    status = "/ping";
   };
 
   serviceConfig = _cfg: _: {

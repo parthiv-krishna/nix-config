@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "forgejo";
   subdomain = "git";
   port = 3001;
+  statusPath = "/api/healthz";
 
   backupServices = [ "forgejo.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Tools";
     description = "Code repositories";
     icon = "sh-forgejo";
-    status = "/api/healthz";
   };
 
   oidcClient = {

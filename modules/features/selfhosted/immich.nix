@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "immich";
   subdomain = "photos";
   port = 2283;
+  statusPath = "/api/server/ping";
 
   # Immich has built-in automatic database backups so we don't need it as a backupService
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Storage";
     description = "Photo storage";
     icon = "sh-immich";
-    status = "/api/server/ping";
   };
 
   oidcClient = {

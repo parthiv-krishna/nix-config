@@ -159,13 +159,14 @@ rec {
   # mkSelfHostedFeature: Create a selfhosted service feature
   #
   # This creates a feature at custom.features.selfhosted.<name> that:
-  # - Registers metadata (homepage, oidcClient) always (for cross-machine config)
+  # - Registers metadata (serviceMetadata, homepageMetadata, oidcClient) always (for cross-machine config)
   # - Only runs the actual service when enabled on the current host
   #
   # Arguments:
   #   name: service name (also used for option path)
   #   subdomain: subdomain for reverse proxy (defaults to name)
   #   port: service port
+  #   statusPath: health check path (e.g. '/health'). Null disables monitoring, empty string probes base URL.
   #   extraOptions: additional options beyond `enable`
   #   serviceConfig: function (cfg: moduleArgs: { ... }) returning NixOS service config
   #   homepage: optional { category, description, icon } for homepage dashboard
@@ -178,6 +179,7 @@ rec {
       name,
       subdomain ? name,
       port,
+      statusPath ? "",
       extraOptions ? { },
       serviceConfig ? _cfg: _moduleArgs: { },
       homepage ? null,
@@ -193,13 +195,18 @@ rec {
       ];
       inherit extraOptions;
 
-      # Unconditional config: homepage/oidc entries visible to all hosts
+      # Unconditional config: service metadata visible to all hosts
       systemConfigUnconditional = lib.mkMerge [
+        # Always register in serviceMetadata (for monitoring, etc.)
+        {
+          custom.features.selfhosted.serviceMetadata.${name} = {
+            inherit name subdomain statusPath;
+          };
+        }
+        # Only register in homepageMetadata if homepage is defined
         (lib.optionalAttrs (homepage != null) {
-          custom.features.selfhosted.homepageServices.${name} = {
+          custom.features.selfhosted.homepageMetadata.${name} = {
             inherit (homepage) category description icon;
-            inherit name subdomain;
-            status = homepage.status or "";
           };
         })
         (lib.optionalAttrs (oidcClient != null) {

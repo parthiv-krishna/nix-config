@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "prowlarr";
   subdomain = "indexers";
   port = 9696;
+  statusPath = "/ping";
 
   backupServices = [ "prowlarr.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media Management";
     description = "Manage indexers";
     icon = "sh-prowlarr";
-    status = "/ping";
   };
 
   serviceConfig = _cfg: _: {

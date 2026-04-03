@@ -3,6 +3,7 @@
 lib.custom.mkSelfHostedFeature {
   name = "prometheus-nut";
   port = 9102;
+  statusPath = null; # Disable uptime monitoring (infrastructure)
 
   serviceConfig =
     _cfg:

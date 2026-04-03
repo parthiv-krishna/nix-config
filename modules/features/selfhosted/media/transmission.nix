@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "transmission";
   subdomain = "download";
   port = 9090;
+  statusPath = "/transmission/web/";
 
   backupServices = [ "transmission.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media Management";
     description = "Manage downloads";
     icon = "sh-transmission";
-    status = "/transmission/web/";
   };
 
   serviceConfig =

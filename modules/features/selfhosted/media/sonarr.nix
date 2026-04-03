@@ -4,6 +4,7 @@ lib.custom.mkSelfHostedFeature {
   name = "sonarr";
   subdomain = "shows";
   port = 8989;
+  statusPath = "/ping";
 
   backupServices = [ "sonarr.service" ];
 
@@ -11,7 +12,6 @@ lib.custom.mkSelfHostedFeature {
     category = "Media Management";
     description = "Manage shows";
     icon = "sh-sonarr";
-    status = "/ping";
   };
 
   serviceConfig = _cfg: _: {

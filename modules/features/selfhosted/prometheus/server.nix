@@ -3,12 +3,12 @@
 lib.custom.mkSelfHostedFeature {
   name = "prometheus";
   port = 9092;
+  statusPath = "/-/healthy";
 
   homepage = {
     category = "Network";
     description = "Time-series database for monitoring";
     icon = "sh-prometheus";
-    status = "/-/healthy";
   };
 
   persistentDirectories = [
@@ -22,10 +22,17 @@ lib.custom.mkSelfHostedFeature {
   serviceConfig =
     _cfg:
     { config, lib, ... }:
+    let
+      inherit (config.custom.features.selfhosted) serviceMetadata;
+
+      # null means don't monitor uptime
+      monitoredServices = lib.filterAttrs (_: svc: svc.statusPath != null) serviceMetadata;
+    in
     {
       services.prometheus = {
         enable = true;
         port = 9092;
+        # extraFlags = [ "--web.enable-admin-api" ];
         globalConfig.scrape_interval = "15s";
         scrapeConfigs = [
           {
@@ -120,6 +127,37 @@ lib.custom.mkSelfHostedFeature {
             scheme = "https";
             scrape_interval = "30s";
             scrape_timeout = "10s";
+          }
+          {
+            job_name = "blackbox";
+            metrics_path = "/probe";
+            params = {
+              module = [ "http_2xx" ];
+            };
+            static_configs = lib.mapAttrsToList (_name: svc: {
+              targets = [ "${lib.custom.mkPublicHttpsUrl config.constants svc.subdomain}${svc.statusPath}" ];
+              labels = {
+                service_name = svc.name;
+                service_url = lib.custom.mkPublicFqdn config.constants svc.subdomain;
+              };
+            }) monitoredServices;
+            relabel_configs = [
+              {
+                source_labels = [ "__address__" ];
+                target_label = "__param_target";
+              }
+              {
+                source_labels = [ "__param_target" ];
+                target_label = "instance";
+              }
+              {
+                target_label = "__address__";
+                replacement = lib.custom.mkInternalFqdn config.constants "prometheus-blackbox" "nimbus";
+              }
+            ];
+            scheme = "https";
+            scrape_interval = "30s";
+            scrape_timeout = "15s";
           }
         ];
       };
