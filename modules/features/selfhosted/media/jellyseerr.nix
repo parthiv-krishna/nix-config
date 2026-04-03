@@ -55,7 +55,7 @@ lib.custom.mkSelfHostedFeature {
             rev = "39b6f47c104f9f0356bf51c6cb7e3996f154a8c2";
             hash = "sha256-iBnO0WjNqvXfuJMoS6z/NmYgtW5FQ9Ptp9uV5rODIf8=";
           };
-          outputHash = "sha256-iL7N+7EP+zBWf5pDygC/qu8BgA3uhZwgbatOiLgU/wU=";
+          outputHash = "sha256-lq/b2PqQHsZmnw91Ad4h1uxZXsPATSLqIdb/t2EsmMI=";
         });
       });
     in
