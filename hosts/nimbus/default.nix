@@ -32,6 +32,7 @@
       selfhosted = {
         enable = true;
 
+        gatus.enable = true;
         grafana.enable = true;
         homepage.enable = true;
         prometheus.enable = true;
