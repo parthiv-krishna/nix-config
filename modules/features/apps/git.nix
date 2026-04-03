@@ -11,6 +11,8 @@ lib.custom.mkFeature {
         enable = true;
         lfs.enable = true;
 
+        signing.format = null;
+
         settings = {
           alias = {
             a = "add";
