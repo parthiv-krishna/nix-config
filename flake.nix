@@ -38,6 +38,9 @@
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
+    nixpkgs-jellyseerr = {
+      url = "github:nixos/nixpkgs/e4bae1bd10c9c57b2cf517953ab70060a828ee6f";
+    };
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";

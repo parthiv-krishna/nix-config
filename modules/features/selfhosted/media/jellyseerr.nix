@@ -32,9 +32,15 @@ lib.custom.mkSelfHostedFeature {
 
   serviceConfig =
     _cfg:
-    { pkgs, ... }:
+    {
+      pkgs,
+      inputs,
+      ...
+    }:
     let
-      jellyseerrOIDC = pkgs.jellyseerr.overrideAttrs (oldAttrs: {
+      # Use jellyseerr from pinned nixpkgs (before it was renamed to seerr)
+      pkgsPinned = import inputs.nixpkgs-jellyseerr { inherit (pkgs.stdenv.hostPlatform) system; };
+      jellyseerrOIDC = pkgsPinned.jellyseerr.overrideAttrs (oldAttrs: {
         src = pkgs.fetchFromGitHub {
           owner = "fallenbagel";
           repo = "jellyseerr";
@@ -54,6 +60,9 @@ lib.custom.mkSelfHostedFeature {
       });
     in
     {
+      nixpkgs.config.allowUnfreePredicate =
+        pkg: builtins.elem (pkgsPinned.lib.getName pkg) [ "jellyseerr" ];
+
       nixarr.jellyseerr = {
         enable = true;
         port = 5055;
