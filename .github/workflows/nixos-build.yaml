@@ -5,16 +5,16 @@ on:
   workflow_dispatch:
 jobs:
   build:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - runner: ubuntu-latest
-            hosts: icicle midnight
-          - runner: ubuntu-24.04-arm64
-            hosts: nimbus
-    runs-on: ${{ matrix.runner }}
+        host: [icicle, midnight, nimbus]
     steps:
+      - name: Set up QEMU for aarch64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
       - name: Maximize disk space for Nix
         uses: wimpysworld/nothing-but-nix@main
       - name: Check out repository
@@ -24,6 +24,7 @@ jobs:
         with:
           extra-conf: |
             build-dir = /nix/build
+            extra-platforms = aarch64-linux
             extra-substituters = https://cache.nixos-cuda.org
             extra-trusted-public-keys = cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=
       - name: Load SSH private key for secrets repo
@@ -36,12 +37,9 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-      - name: Build configurations
+      - name: Build configuration
         run: |
-          for host in ${{ matrix.hosts }}; do
-            echo "Building $host..."
-            nix build --no-link .#nixosConfigurations.$host.config.system.build.toplevel
-          done
+          nix build --no-link .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
       - name: Add cache host key
         run: |
           mkdir -p ~/.ssh
@@ -49,7 +47,4 @@ jobs:
       - name: Push to cache
         continue-on-error: true
         run: |
-          for host in ${{ matrix.hosts }}; do
-            echo "Pushing $host to cache..."
-            nix copy --to ssh://nix-cache@cache.sub0.net $(nix path-info .#nixosConfigurations.$host.config.system.build.toplevel)
-          done
+          nix copy --to ssh://nix-cache@cache.sub0.net $(nix path-info .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
