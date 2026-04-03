@@ -47,4 +47,6 @@ jobs:
       - name: Push to cache
         continue-on-error: true
         run: |
-          nix copy --to ssh://nix-cache@cache.sub0.net $(nix path-info .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
+          path=$(nix path-info .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
+          nix copy --to ssh://nix-cache@cache.sub0.net $path
+          ssh nix-cache@cache.sub0.net "nix-store --add-root /nix/var/nix/gcroots/cache/${{ matrix.host }} -r $path"

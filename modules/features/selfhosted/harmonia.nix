@@ -39,8 +39,13 @@ lib.custom.mkSelfHostedFeature {
       };
       users.groups.nix-cache = { };
 
-      # allow nix-cache user to push to the nix store
+      # allow nix-cache user to push to the nix store and create GC roots
       nix.settings.trusted-users = [ "nix-cache" ];
+
+      # Pre-create GC roots directory owned by nix-cache so CI can create roots without sudo
+      systemd.tmpfiles.rules = [
+        "d /nix/var/nix/gcroots/cache 0755 nix-cache nix-cache -"
+      ];
 
       sops.secrets."${secretsRoot}/signing-key" = {
         owner = "harmonia";
