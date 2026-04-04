@@ -114,7 +114,8 @@ lib.custom.mkSelfHostedFeature {
         };
       };
 
-      # LibreChat uses mongodb
-      custom.features.meta.unfree.allowedPackages = [ "mongodb" ];
+      # LibreChat uses mongodb, using CE avoids rebuilding it constantly
+      services.mongodb.package = pkgs.mongodb-ce;
+      custom.features.meta.unfree.allowedPackages = [ "mongodb-ce" ];
     };
 }
