@@ -9,8 +9,8 @@ lib.custom.mkFeature {
     _cfg:
     { config, lib, ... }:
     let
-      cacheFqdn = lib.custom.mkPublicFqdn config.constants "cache";
       cacheUrl = lib.custom.mkPublicHttpsUrl config.constants "cache";
+      cacheFqdn = lib.custom.mkPublicFqdn config.constants "cache";
       # nix-store --generate-binary-cache-key <cacheFqdn>-1 signing-key.private signing-key.public
       cachePublicKey = "${cacheFqdn}-1:x8wTeYCstMWT0jwzccBr3IT8V2DXqRKu8k/KUv5nW4Q=";
     in
@@ -23,14 +23,12 @@ lib.custom.mkFeature {
         ];
 
         substituters = [
-          cacheUrl
-          "https://cache.nixos.org"
-          "https://cache.nixos-cuda.org"
+          "https://cache.flox.dev?priority=30"
+          "${cacheUrl}?priority=50"
         ];
         trusted-public-keys = [
+          "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
           cachePublicKey
-          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-          "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
         ];
 
         # fallback if our cache goes offline
