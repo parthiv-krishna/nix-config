@@ -21,13 +21,19 @@
   custom = {
     manifests = {
       required.enable = true;
-      desktop-environment.enable = true;
+      niri.enable = true;
       laptop.enable = true;
       sound-engineering.enable = true;
     };
 
     features = {
       apps.opencode.enable = true;
+
+      desktop.idleMinutes = {
+        lock = 5;
+        screenOff = 6;
+        suspend = 10;
+      };
 
       hardware = {
         audio = {
@@ -40,12 +46,6 @@
           enable = true;
           driver = "mt7921e";
         };
-      };
-
-      desktop.hyprland.idleMinutes = {
-        lock = 5;
-        screenOff = 6;
-        suspend = 10;
       };
 
       meta = {

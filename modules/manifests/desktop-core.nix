@@ -1,20 +1,9 @@
 { config, lib, ... }:
 {
-  options.custom.manifests.desktop-environment.enable =
-    lib.mkEnableOption "desktop environment features";
+  options.custom.manifests.desktop-core.enable = lib.mkEnableOption "core desktop apps and features";
 
-  config = lib.mkIf config.custom.manifests.desktop-environment.enable {
+  config = lib.mkIf config.custom.manifests.desktop-core.enable {
     custom.features = {
-      desktop.hyprland = {
-        enable = lib.mkDefault true;
-        dunst.enable = lib.mkDefault true;
-        gtk.enable = lib.mkDefault true;
-        hypridle.enable = lib.mkDefault true;
-        hyprpaper.enable = lib.mkDefault true;
-        waybar.enable = lib.mkDefault true;
-        wofi.enable = lib.mkDefault true;
-      };
-
       meta.theme.font.enable = lib.mkDefault true;
 
       apps = {
@@ -25,8 +14,8 @@
         element-desktop.enable = lib.mkDefault true;
         librewolf.enable = lib.mkDefault true;
         protonmail-desktop.enable = lib.mkDefault true;
-        protonvpn-gui.enable = lib.mkDefault true;
         proton-pass.enable = lib.mkDefault true;
+        proton-vpn.enable = lib.mkDefault true;
         signal-desktop.enable = lib.mkDefault true;
       };
 

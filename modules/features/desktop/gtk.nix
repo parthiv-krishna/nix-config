@@ -2,7 +2,6 @@
 lib.custom.mkFeature {
   path = [
     "desktop"
-    "hyprland"
     "gtk"
   ];
 
@@ -12,6 +11,7 @@ lib.custom.mkFeature {
     {
       gtk = {
         enable = true;
+        gtk4.theme = null;
         iconTheme = {
           name = "Papirus";
           package = pkgs.papirus-icon-theme;

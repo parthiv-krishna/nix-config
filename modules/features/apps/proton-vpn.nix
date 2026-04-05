@@ -2,14 +2,14 @@
 lib.custom.mkFeature {
   path = [
     "apps"
-    "protonvpn-gui"
+    "proton-vpn"
   ];
 
   homeConfig =
     _cfg:
     { pkgs, ... }:
     {
-      home.packages = [ pkgs.protonvpn-gui ];
+      home.packages = [ pkgs.proton-vpn ];
 
       custom.features.meta.impermanence.directories = [
         ".config/Proton"

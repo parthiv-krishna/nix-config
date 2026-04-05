@@ -2,7 +2,6 @@
 lib.custom.mkFeature {
   path = [
     "desktop"
-    "hyprland"
     "wofi"
   ];
 
@@ -17,7 +16,6 @@ lib.custom.mkFeature {
           width = 600;
           height = 400;
           location = "center";
-          prompt = "Search...";
           filter_rate = 100;
           allow_markup = true;
           no_actions = true;
