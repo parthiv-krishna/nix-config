@@ -5,30 +5,6 @@ lib.custom.mkFeature {
     "hyprland"
   ];
 
-  extraOptions = {
-    idleMinutes = {
-      lock = lib.mkOption {
-        type = lib.types.int;
-        default = 5;
-        description = "Number of idle minutes before the screen locks.";
-        example = 15;
-      };
-      screenOff = lib.mkOption {
-        type = lib.types.int;
-        default = 10;
-        description = "Number of idle minutes before the screen turns off.";
-        example = 30;
-      };
-      suspend = lib.mkOption {
-        type = lib.types.int;
-        default = 15;
-        description = "Number of idle minutes before the system suspends.";
-        example = 60;
-      };
-    };
-  };
-
-  # System-level configuration: hyprland, greetd login screen, system packages
   systemConfig =
     _cfg:
     { config, pkgs, ... }:
@@ -58,33 +34,27 @@ lib.custom.mkFeature {
 
       environment.systemPackages = with pkgs; [
         brightnessctl
-        dunst
         kdePackages.dolphin
         kitty
         playerctl
-        waybar
         wl-clipboard-rs
-        wofi
       ];
     };
 
-  # Home-level configuration: hyprland window manager settings, keybinds, colors
   homeConfig =
     _cfg:
     { config, pkgs, ... }:
     let
       mainMod = "SUPER";
       terminal = "kitty";
-      menu = "wofi --show drun";
-      renameWorkspace = "${pkgs.writeScriptBin "rename-workspace" ''
-        newname=$(wofi --show dmenu -p "Rename workspace:" < /dev/null)
+      renameWorkspace = pkgs.writeShellScript "rename-workspace" ''
+        newname=$(echo "" | wofi --dmenu --prompt "Rename workspace" --exec-search --lines 1)
         status=$?
         if [ $status -ne 0 ] || [ -z "$newname" ]; then
-          # Cancelled or empty input: do nothing
           exit 0
         fi
         hyprctl dispatch renameworkspace $(hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq .id) "$newname"
-      ''}/bin/rename-workspace";
+      '';
       # workspace keybindings (1..10)
       workspaceBinds = builtins.concatLists (
         builtins.genList (
@@ -206,28 +176,39 @@ lib.custom.mkFeature {
           ];
 
           bind = [
+            # general
+            "${mainMod}, Return, exec, ${terminal}"
+            "${mainMod}, Space, exec, wofi --show drun"
+            "${mainMod}, Comma, exec, ${renameWorkspace}"
             "${mainMod}, Q, killactive,"
             "${mainMod}, M, exec, systemctl suspend"
             "${mainMod}, F, togglefloating,"
-            "${mainMod}, Space, exec, ${menu}"
-            "${mainMod}, Return, exec, ${terminal}"
-            "${mainMod}, Comma, exec, ${renameWorkspace}"
+            "${mainMod} SHIFT, F, fullscreen,"
+
+            # move focus
             "${mainMod}, H, movefocus, l"
             "${mainMod}, J, movefocus, d"
             "${mainMod}, K, movefocus, u"
             "${mainMod}, L, movefocus, r"
+
+            # move windows
             "${mainMod} SHIFT, H, movewindow, l"
             "${mainMod} SHIFT, J, movewindow, d"
             "${mainMod} SHIFT, K, movewindow, u"
             "${mainMod} SHIFT, L, movewindow, r"
+
+            # special workspace
             "${mainMod}, S, togglespecialworkspace, magic"
             "${mainMod} SHIFT, S, movetoworkspace, special:magic"
+
+            # mouse
             "${mainMod}, mouse_down, workspace, e+1"
             "${mainMod}, mouse_up, workspace, e-1"
-            "${mainMod}, right, workspace, e+1"
-            "${mainMod}, left, workspace, e-1"
             "${mainMod}, mouse:272, movewindow"
             "${mainMod}, mouse:273, resizeactive"
+
+            # power menu / logout
+            "${mainMod} SHIFT, E, exit,"
           ]
           ++ workspaceBinds;
 

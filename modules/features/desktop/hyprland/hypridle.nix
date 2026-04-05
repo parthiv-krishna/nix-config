@@ -8,20 +8,9 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    {
-      osConfig ? null,
-      ...
-    }:
+    { osConfig, ... }:
     let
-      idleMinutes =
-        if osConfig != null && osConfig ? custom.features.desktop.hyprland.idleMinutes then
-          osConfig.custom.features.desktop.hyprland.idleMinutes
-        else
-          {
-            lock = 5;
-            screenOff = 10;
-            suspend = 15;
-          };
+      inherit (osConfig.custom.features.desktop) idleMinutes;
     in
     {
       # lock after inactivity

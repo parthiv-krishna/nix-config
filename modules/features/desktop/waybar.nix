@@ -2,15 +2,28 @@
 lib.custom.mkFeature {
   path = [
     "desktop"
-    "hyprland"
     "waybar"
   ];
 
+  extraOptions = {
+    compositor = lib.mkOption {
+      type = lib.types.enum [
+        "hyprland"
+        "niri"
+      ];
+      default = "hyprland";
+      description = "Which compositor to configure waybar for.";
+    };
+  };
+
   homeConfig =
-    _cfg:
+    cfg:
     { config, pkgs, ... }:
     let
       margin = "24px";
+      isNiri = cfg.compositor == "niri";
+      workspacesModule = if isNiri then "niri/workspaces" else "hyprland/workspaces";
+      windowModule = if isNiri then "niri/window" else null;
     in
     {
       programs.waybar = {
@@ -20,19 +33,34 @@ lib.custom.mkFeature {
           {
             layer = "top";
             position = "top";
-            modules-left = [ "hyprland/workspaces" ];
-            modules-center = [ ];
+            modules-left = [ workspacesModule ];
+            modules-center = lib.optionals (windowModule != null) [ windowModule ];
             modules-right = [
               "tray"
               "pulseaudio"
-              "audio"
               "network"
               "battery"
               "clock"
             ];
 
-            "hyprland/workspaces" = {
-              format = "{id} {name}";
+            "${workspacesModule}" =
+              if isNiri then
+                {
+                  format = "{value}";
+                  on-click = "activate";
+                }
+              else
+                {
+                  format = "{id} {name}";
+                };
+
+            "niri/window" = lib.mkIf isNiri {
+              format = "{title}";
+              max-length = 50;
+              rewrite = {
+                "(.*) - Mozilla Firefox" = " $1";
+                "(.*) - kitty" = " $1";
+              };
             };
 
             tray = {
@@ -134,6 +162,12 @@ lib.custom.mkFeature {
             color: #${base00};
           }
 
+          #window {
+            margin-left: ${margin};
+            margin-right: ${margin};
+            color: #${base05};
+          }
+
           #tray {
             margin-right: ${margin};
           }
@@ -181,21 +215,6 @@ lib.custom.mkFeature {
             color: #${base0D};
           }
         '';
-      };
-
-      wayland.windowManager.hyprland.settings = {
-        exec-once = [
-          "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
-          "${pkgs.pasystray}/bin/pasystray"
-          "${pkgs.blueman}/bin/blueman-applet"
-          "waybar"
-        ];
-
-        window = [
-          # open audio control centered/floating
-          "float, class:org.pulseaudio.pavucontrol"
-          "center, class:org.pulseaudio.pavucontrol"
-        ];
       };
     };
 }
