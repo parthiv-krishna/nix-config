@@ -34,9 +34,23 @@ lib.custom.mkSelfHostedFeature {
     };
   };
 
+  persistentDirectories = [
+    {
+      directory = "/var/lib/media/state/jellyfin";
+      user = "jellyfin";
+      group = "media";
+    }
+  ];
+
   serviceConfig = _cfg: _: {
-    nixarr.jellyfin = {
+    services.jellyfin = {
       enable = true;
+      group = "media";
+      # Match nixarr's directory structure
+      dataDir = "/var/lib/media/state/jellyfin/data";
+      configDir = "/var/lib/media/state/jellyfin/config";
+      logDir = "/var/lib/media/state/jellyfin/log";
+      cacheDir = "/var/lib/media/state/jellyfin/cache";
     };
   };
 }

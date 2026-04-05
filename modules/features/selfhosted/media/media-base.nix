@@ -1,4 +1,4 @@
-# Media base - shared nixarr config, VPN, recyclarr
+# Media base - shared media config, VPN namespace, recyclarr
 { lib }:
 let
   mediaDir = "/var/lib/media";
@@ -19,6 +19,7 @@ lib.custom.mkFeature {
       ...
     }:
     {
+      # Persistence for media directory
       environment.persistence."/persist/system".directories = [
         {
           directory = mediaDir;
@@ -28,75 +29,99 @@ lib.custom.mkFeature {
         }
       ];
 
-      nixarr = {
+      # Create media group for shared access
+      users.groups.media = { };
+
+      # Create media directory structure
+      systemd.tmpfiles.rules = [
+        "d '${mediaDir}'                  0775 root media - -"
+        "d '${mediaDir}/library'          0775 root media - -"
+        "d '${mediaDir}/library/movies'   0775 root media - -"
+        "d '${mediaDir}/library/shows'    0775 root media - -"
+        "d '${mediaDir}/torrents'         0775 root media - -"
+        "d '${stateDir}'                  0775 root media - -"
+      ];
+
+      # VPN namespace configuration (replaces nixarr.vpn)
+      vpnNamespaces.wg = {
         enable = true;
-        inherit mediaDir stateDir;
+        wireguardConfigFile = config.sops.secrets."media/wg_config".path;
+        accessibleFrom = [
+          "192.168.1.0/24"
+          "192.168.0.0/24"
+          "127.0.0.1"
+        ];
+        # Transmission peer port for seeding
+        openVPNPorts = [
+          {
+            port = 50000;
+            protocol = "both";
+          }
+        ];
+        # Port mappings are added by individual services via mkSelfHostedFeature vpn option
+      };
 
-        vpn = {
-          enable = true;
-          wgConf = config.sops.secrets."media/wg_config".path;
-        };
-
-        recyclarr = {
-          enable = true;
-          configuration = {
-            sonarr = {
-              sonarr_main = {
-                base_url = "${lib.custom.mkInternalHttpsUrl config.constants "sonarr" config.networking.hostName}";
-                api_key = "!env_var SONARR_API_KEY";
-                quality_definition = {
-                  type = "series";
-                };
-                custom_formats = [
-                  {
-                    trash_ids = [
-                      "85c61753df5da1fb2aab6f2a47426b09"
-                      "9c11cd3f07101cdba90a2d81cf0e56b4"
-                      "e2315f990da2e2cbfc9fa5b7a6fcfe48"
-                      "47435ece6b99a0b477caf360e79ba0bb"
-                      "fbcb31d8dabd2a319072b84fc0b7249c"
-                    ];
-                    assign_scores_to = [
-                      {
-                        name = "WEB-1080p";
-                      }
-                    ];
-                  }
-                ];
+      # Recyclarr for quality profile sync
+      services.recyclarr = {
+        enable = true;
+        configuration = {
+          sonarr = {
+            sonarr_main = {
+              base_url = "${lib.custom.mkInternalHttpsUrl config.constants "sonarr" config.networking.hostName}";
+              api_key = "!env_var SONARR_API_KEY";
+              quality_definition = {
+                type = "series";
               };
+              custom_formats = [
+                {
+                  trash_ids = [
+                    "85c61753df5da1fb2aab6f2a47426b09"
+                    "9c11cd3f07101cdba90a2d81cf0e56b4"
+                    "e2315f990da2e2cbfc9fa5b7a6fcfe48"
+                    "47435ece6b99a0b477caf360e79ba0bb"
+                    "fbcb31d8dabd2a319072b84fc0b7249c"
+                  ];
+                  assign_scores_to = [
+                    {
+                      name = "WEB-1080p";
+                    }
+                  ];
+                }
+              ];
             };
-            radarr = {
-              radarr_main = {
-                base_url = "${lib.custom.mkInternalHttpsUrl config.constants "radarr" config.networking.hostName}";
-                api_key = "!env_var RADARR_API_KEY";
-                quality_definition = {
-                  type = "movie";
-                  preferred_ratio = 0.5;
-                };
-                custom_formats = [
-                  {
-                    trash_ids = [
-                      "ed27ebfef2f323e964fb1f61391bcb35"
-                      "c20c8647f2746a1f4c4262b0fbbeeeae"
-                      "5608c71bcebba0a5e666223bae8c9227"
-                      "c20f169ef63c5f40c2def54abaf4438e"
-                      "403816d65392c79236dcb6dd591aeda4"
-                      "af94e0fe497124d1f9ce732069ec8c3b"
-                    ];
-                    assign_scores_to = [
-                      {
-                        name = "HD";
-                      }
-                    ];
-                  }
-                ];
+          };
+          radarr = {
+            radarr_main = {
+              base_url = "${lib.custom.mkInternalHttpsUrl config.constants "radarr" config.networking.hostName}";
+              api_key = "!env_var RADARR_API_KEY";
+              quality_definition = {
+                type = "movie";
+                preferred_ratio = 0.5;
               };
+              custom_formats = [
+                {
+                  trash_ids = [
+                    "ed27ebfef2f323e964fb1f61391bcb35"
+                    "c20c8647f2746a1f4c4262b0fbbeeeae"
+                    "5608c71bcebba0a5e666223bae8c9227"
+                    "c20f169ef63c5f40c2def54abaf4438e"
+                    "403816d65392c79236dcb6dd591aeda4"
+                    "af94e0fe497124d1f9ce732069ec8c3b"
+                  ];
+                  assign_scores_to = [
+                    {
+                      name = "HD";
+                    }
+                  ];
+                }
+              ];
             };
           };
         };
       };
 
       systemd = {
+        # Fix MTU for wireguard interface after namespace is created
         services.wg.serviceConfig.ExecStartPost =
           let
             ip = "${pkgs.iproute2}/bin/ip";
@@ -143,7 +168,7 @@ lib.custom.mkFeature {
             description = "Refresh Wireguard";
             serviceConfig = {
               Type = "oneshot";
-              ExecStart = "systemctl restart wg.service prowlarr.service radarr.service sonarr.service transmission.service";
+              ExecStart = "systemctl restart wg.service prowlarr.service radarr.service sonarr.service transmission.service bazarr.service";
               ExecStartPost = "systemctl start vpn-test.service";
             };
           };

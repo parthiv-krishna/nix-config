@@ -1,9 +1,13 @@
-# Jellyseerr - media requests
-{ lib }:
+# Jellyseerr - media requests with OIDC support
+{ lib, inputs }:
+let
+  stateDir = "/var/lib/media/state/jellyseerr";
+  port = 5055;
+in
 lib.custom.mkSelfHostedFeature {
   name = "jellyseerr";
   subdomain = "request";
-  port = 5055;
+  inherit port;
   statusPath = "/api/v1/status";
 
   backupServices = [ "jellyseerr.service" ];
@@ -30,15 +34,18 @@ lib.custom.mkSelfHostedFeature {
     };
   };
 
+  persistentDirectories = [
+    {
+      directory = stateDir;
+      user = "jellyseerr";
+      group = "jellyseerr";
+    }
+  ];
+
   serviceConfig =
     _cfg:
-    {
-      pkgs,
-      inputs,
-      ...
-    }:
+    { pkgs, ... }:
     let
-      # Use jellyseerr from pinned nixpkgs (before it was renamed to seerr)
       pkgsPinned = import inputs.nixpkgs-jellyseerr { inherit (pkgs.stdenv.hostPlatform) system; };
       jellyseerrOIDC = pkgsPinned.jellyseerr.overrideAttrs (oldAttrs: {
         src = pkgs.fetchFromGitHub {
@@ -63,10 +70,31 @@ lib.custom.mkSelfHostedFeature {
       nixpkgs.config.allowUnfreePredicate =
         pkg: builtins.elem (pkgsPinned.lib.getName pkg) [ "jellyseerr" ];
 
-      nixarr.jellyseerr = {
-        enable = true;
-        port = 5055;
-        package = jellyseerrOIDC;
+      users.users.jellyseerr = {
+        isSystemUser = true;
+        group = "jellyseerr";
+      };
+      users.groups.jellyseerr = { };
+
+      systemd.services.jellyseerr = {
+        description = "Jellyseerr, a requests manager for Jellyfin (with OIDC)";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+        environment = {
+          PORT = toString port;
+          CONFIG_DIRECTORY = stateDir;
+        };
+        serviceConfig = {
+          Type = "exec";
+          User = "jellyseerr";
+          Group = "jellyseerr";
+          ExecStart = lib.getExe jellyseerrOIDC;
+          Restart = "on-failure";
+          ProtectHome = true;
+          PrivateTmp = true;
+          ProtectSystem = "strict";
+          ReadWritePaths = [ stateDir ];
+        };
       };
     };
 }

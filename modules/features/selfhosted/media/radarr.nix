@@ -14,11 +14,24 @@ lib.custom.mkSelfHostedFeature {
     icon = "sh-radarr";
   };
 
+  vpn = {
+    enable = true;
+    namespace = "wg";
+  };
+
+  persistentDirectories = [
+    {
+      directory = "/var/lib/media/state/radarr";
+      user = "radarr";
+      group = "media";
+    }
+  ];
+
   serviceConfig = _cfg: _: {
-    nixarr.radarr = {
+    services.radarr = {
       enable = true;
-      port = 7878;
-      vpn.enable = true;
+      group = "media";
+      dataDir = "/var/lib/media/state/radarr";
     };
   };
 }

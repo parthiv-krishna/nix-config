@@ -14,16 +14,41 @@ lib.custom.mkSelfHostedFeature {
     icon = "sh-transmission";
   };
 
+  vpn = {
+    enable = true;
+    namespace = "wg";
+  };
+
+  persistentDirectories = [
+    {
+      directory = "/var/lib/media/state/transmission";
+      user = "transmission";
+      group = "media";
+    }
+  ];
+
   serviceConfig =
     _cfg:
-    { config, ... }:
+    { config, pkgs, ... }:
     {
-      nixarr.transmission = {
+      services.transmission = {
         enable = true;
-        uiPort = 9090;
-        vpn.enable = true;
+        package = pkgs.transmission_4;
+        group = "media";
+        home = "/var/lib/media/state/transmission";
+        downloadDirPermissions = "775";
         credentialsFile = config.sops.templates.transmission-credentials.path;
-        messageLevel = "debug";
+        settings = {
+          rpc-port = 9090;
+          rpc-bind-address = "0.0.0.0";
+          rpc-whitelist-enabled = false;
+          rpc-host-whitelist-enabled = false;
+          download-dir = "/var/lib/media/torrents";
+          incomplete-dir = "/var/lib/media/torrents/.incomplete";
+          incomplete-dir-enabled = true;
+          peer-port = 50000;
+          message-level = 2; # debug
+        };
       };
 
       sops = {

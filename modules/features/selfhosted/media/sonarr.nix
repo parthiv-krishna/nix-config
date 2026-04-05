@@ -14,10 +14,24 @@ lib.custom.mkSelfHostedFeature {
     icon = "sh-sonarr";
   };
 
+  vpn = {
+    enable = true;
+    namespace = "wg";
+  };
+
+  persistentDirectories = [
+    {
+      directory = "/var/lib/media/state/sonarr";
+      user = "sonarr";
+      group = "media";
+    }
+  ];
+
   serviceConfig = _cfg: _: {
-    nixarr.sonarr = {
+    services.sonarr = {
       enable = true;
-      vpn.enable = true;
+      group = "media";
+      dataDir = "/var/lib/media/state/sonarr";
     };
   };
 }

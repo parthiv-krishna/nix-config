@@ -21,9 +21,8 @@
     impermanence = {
       url = "github:nix-community/impermanence";
     };
-    nixarr = {
-      url = "github:rasmus-kirk/nixarr";
-      inputs.nixpkgs.follows = "nixpkgs";
+    vpn-confinement = {
+      url = "github:Maroka-chan/VPN-Confinement";
     };
     nix-config-secrets = {
       url = "git+ssh://git@github.com/parthiv-krishna/nix-config-secrets.git?ref=main&shallow=1";
@@ -86,7 +85,7 @@
             inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
             inputs.home-manager.nixosModules.home-manager
-            inputs.nixarr.nixosModules.default
+            inputs.vpn-confinement.nixosModules.default
             "${inputs.copyparty}/contrib/nixos/modules/copyparty.nix"
             (customLib.custom.loadFeatures {
               path = ./modules/features;

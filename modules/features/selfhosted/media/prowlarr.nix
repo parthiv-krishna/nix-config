@@ -1,5 +1,8 @@
 # Prowlarr - indexer management
 { lib }:
+let
+  stateDir = "/var/lib/media/state/prowlarr";
+in
 lib.custom.mkSelfHostedFeature {
   name = "prowlarr";
   subdomain = "indexers";
@@ -14,11 +17,35 @@ lib.custom.mkSelfHostedFeature {
     icon = "sh-prowlarr";
   };
 
+  vpn = {
+    enable = true;
+    namespace = "wg";
+  };
+
+  persistentDirectories = [
+    {
+      directory = stateDir;
+      user = "prowlarr";
+      group = "prowlarr";
+    }
+  ];
+
   serviceConfig = _cfg: _: {
-    nixarr.prowlarr = {
+    services.prowlarr = {
       enable = true;
-      port = 9696;
-      vpn.enable = true;
+      dataDir = stateDir;
     };
+
+    systemd.services.prowlarr.serviceConfig = {
+      DynamicUser = lib.mkForce false;
+      User = "prowlarr";
+      Group = "prowlarr";
+    };
+
+    users.users.prowlarr = {
+      isSystemUser = true;
+      group = "prowlarr";
+    };
+    users.groups.prowlarr = { };
   };
 }

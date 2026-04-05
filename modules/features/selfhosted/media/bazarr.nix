@@ -14,11 +14,25 @@ lib.custom.mkSelfHostedFeature {
     icon = "sh-bazarr";
   };
 
+  vpn = {
+    enable = true;
+    namespace = "wg";
+  };
+
+  persistentDirectories = [
+    {
+      directory = "/var/lib/media/state/bazarr";
+      user = "bazarr";
+      group = "media";
+    }
+  ];
+
   serviceConfig = _cfg: _: {
-    nixarr.bazarr = {
+    services.bazarr = {
       enable = true;
-      port = 6767;
-      vpn.enable = true;
+      group = "media";
     };
+    # Bazarr doesn't have dataDir option, override working directory
+    systemd.services.bazarr.serviceConfig.WorkingDirectory = lib.mkForce "/var/lib/media/state/bazarr";
   };
 }

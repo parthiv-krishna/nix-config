@@ -174,6 +174,10 @@ rec {
   #   backupServices: list of systemd services to stop during backups
   #   persistentDirectories: directories to persist (for impermanence)
   #   extraConfig: additional NixOS config to merge (always applied when enabled)
+  #   vpn: optional VPN confinement config { enable, namespace, serviceName }
+  #        - enable: whether to run in VPN namespace
+  #        - namespace: VPN namespace name (default: "wg")
+  #        - serviceName: systemd service name to confine (default: name)
   mkSelfHostedFeature =
     {
       name,
@@ -187,7 +191,23 @@ rec {
       backupServices ? [ ],
       persistentDirectories ? [ ],
       extraConfig ? { },
+      vpn ? null,
     }:
+    let
+      # VPN confinement defaults
+      vpnConfig =
+        if vpn == null then
+          null
+        else
+          {
+            enable = vpn.enable or false;
+            namespace = vpn.namespace or "wg";
+            serviceName = vpn.serviceName or name;
+          };
+      vpnEnabled = vpnConfig != null && vpnConfig.enable;
+      # VPN namespace internal IP (where services listen inside the namespace)
+      vpnNamespaceAddress = "192.168.15.1";
+    in
     mkFeature {
       path = [
         "selfhosted"
@@ -227,6 +247,11 @@ rec {
             public = lib.custom.mkPublicFqdn config.constants subdomain;
           };
 
+          # For VPN services, Caddy needs to proxy to nginx which then proxies to the VPN namespace
+          # For non-VPN services, Caddy proxies directly to localhost
+          reverseProxyTarget =
+            if vpnEnabled then "localhost:${toString port}" else "localhost:${toString port}";
+
           virtualHostConfig = logName: {
             logFormat = ''
               output file ${config.services.caddy.logDir}/access-${logName}.log {
@@ -241,13 +266,53 @@ rec {
               tls {
                 dns cloudflare {env.CF_API_TOKEN}
               }
-              reverse_proxy localhost:${toString port}
+              reverse_proxy ${reverseProxyTarget}
             '';
           };
 
           persistentDirConfigs = map (
             dir: customLib.custom.mkPersistentSystemDir (if lib.isString dir then { directory = dir; } else dir)
           ) persistentDirectories;
+
+          # VPN confinement configuration
+          vpnConfinementConfig = lib.optionalAttrs vpnEnabled {
+            # Configure the systemd service to run in VPN namespace
+            systemd.services.${vpnConfig.serviceName}.vpnConfinement = {
+              enable = true;
+              vpnNamespace = vpnConfig.namespace;
+            };
+
+            # Add port mapping to the VPN namespace
+            vpnNamespaces.${vpnConfig.namespace}.portMappings = [
+              {
+                from = port;
+                to = port;
+              }
+            ];
+
+            # nginx reverse proxy from host to VPN namespace
+            # This allows Caddy (and other host services) to reach the VPN-confined service
+            services.nginx = {
+              enable = true;
+              recommendedTlsSettings = true;
+              recommendedOptimisation = true;
+              recommendedGzipSettings = true;
+
+              virtualHosts."127.0.0.1:${toString port}" = {
+                listen = [
+                  {
+                    addr = "0.0.0.0";
+                    inherit port;
+                  }
+                ];
+                locations."/" = {
+                  recommendedProxySettings = true;
+                  proxyWebsockets = true;
+                  proxyPass = "http://${vpnNamespaceAddress}:${toString port}";
+                };
+              };
+            };
+          };
         in
         lib.mkMerge (
           [
@@ -260,6 +325,7 @@ rec {
               };
             }
             extraConfig
+            vpnConfinementConfig
           ]
           ++ persistentDirConfigs
           ++ (lib.optional (backupServices != [ ]) {
