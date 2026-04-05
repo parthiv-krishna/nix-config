@@ -2,7 +2,6 @@
 lib.custom.mkFeature {
   path = [
     "desktop"
-    "hyprland"
     "dunst"
   ];
 
