@@ -14,6 +14,7 @@ lib.custom.mkFeature {
       ...
     }:
     let
+      # Read idleMinutes from NixOS config
       inherit (osConfig.custom.features.desktop) idleMinutes;
       lockCmd = "${pkgs.swaylock}/bin/swaylock -f";
     in
