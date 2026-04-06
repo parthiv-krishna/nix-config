@@ -8,6 +8,7 @@
       manifests.desktop-core.enable = lib.mkDefault true;
 
       features.desktop = {
+        enable = lib.mkDefault true;
         hyprland = {
           enable = lib.mkDefault true;
           hypridle.enable = lib.mkDefault true;

@@ -8,6 +8,7 @@
       manifests.desktop-core.enable = lib.mkDefault true;
 
       features.desktop = {
+        enable = lib.mkDefault true;
         niri = {
           enable = lib.mkDefault true;
           swayidle.enable = lib.mkDefault true;
