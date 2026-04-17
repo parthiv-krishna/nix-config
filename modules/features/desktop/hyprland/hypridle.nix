@@ -8,9 +8,9 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { osConfig, ... }:
+    { config, ... }:
     let
-      inherit (osConfig.custom.features.desktop) idleMinutes;
+      inherit (config.custom.features.desktop) idleMinutes;
     in
     {
       # lock after inactivity
