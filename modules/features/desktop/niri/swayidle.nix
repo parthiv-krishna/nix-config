@@ -9,13 +9,12 @@ lib.custom.mkFeature {
   homeConfig =
     _cfg:
     {
-      osConfig,
+      config,
       pkgs,
       ...
     }:
     let
-      # Read idleMinutes from NixOS config
-      inherit (osConfig.custom.features.desktop) idleMinutes;
+      inherit (config.custom.features.desktop) idleMinutes;
       lockCmd = "${pkgs.swaylock}/bin/swaylock -f";
     in
     {
