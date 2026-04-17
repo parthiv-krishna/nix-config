@@ -22,5 +22,8 @@ lib.custom.mkFeature {
     };
   };
 
-  # No system or home config - just defines the options
+  # Sync NixOS values to home-manager config
+  homeConfig = cfg: _: {
+    custom.features.desktop.idleMinutes = cfg.idleMinutes;
+  };
 }
