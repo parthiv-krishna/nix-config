@@ -49,7 +49,10 @@
       };
 
       meta = {
-        impermanence.rootPartitionPath = "/dev/root_vg/root";
+        impermanence = {
+          rootPartitionPath = "/dev/root_vg/root";
+          encryptedDevice = true;
+        };
         sops.sopsFile = "icicle.yaml";
       };
 

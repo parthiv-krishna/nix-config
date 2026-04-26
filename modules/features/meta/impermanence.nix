@@ -12,6 +12,12 @@ lib.custom.mkFeature {
       description = "Path to root partition (will be wiped on boot)";
     };
 
+    encryptedDevice = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Whether the root partition is on an encrypted device. If true, wipe-root will wait for cryptsetup.target.";
+    };
+
     # Home persistence options
     directories = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -30,34 +36,44 @@ lib.custom.mkFeature {
     cfg:
     { lib, ... }:
     {
-      # startup script from https://github.com/nix-community/impermanence
+      # systemd service for impermanence root wipe from https://github.com/nix-community/impermanence
+      # runs in initrd to:
       # 1. backup current state of root
       # 2. clear out backups older than 30d
-      # 3. make a new empty root
-      boot.initrd.postDeviceCommands = lib.mkAfter ''
-        mkdir /btrfs_tmp
-        mount ${cfg.rootPartitionPath} /btrfs_tmp
-        if [[ -e /btrfs_tmp/root ]]; then
-            mkdir -p /btrfs_tmp/old_roots
-            timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%-d_%H:%M:%S")
-            mv /btrfs_tmp/root "/btrfs_tmp/old_roots/$timestamp"
-        fi
+      # 3. make a new empty root subvolume
+      boot.initrd.systemd.services.wipe-root = {
+        description = "Wipe BTRFS root subvolume for impermanence";
+        wantedBy = [ "initrd.target" ];
+        after = lib.optionals cfg.encryptedDevice [ "cryptsetup.target" ];
+        before = [ "sysroot.mount" ];
+        unitConfig.DefaultDependencies = "no";
+        serviceConfig.Type = "oneshot";
+        script = ''
+          mkdir -p /btrfs_tmp
+          mount ${cfg.rootPartitionPath} /btrfs_tmp
 
-        delete_subvolume_recursively() {
-            IFS=$'\n'
-            for i in $(btrfs subvolume list -o "$1" | cut -f 9- -d ' '); do
-                delete_subvolume_recursively "/btrfs_tmp/$i"
-            done
-            btrfs subvolume delete "$1"
-        }
+          if [[ -e /btrfs_tmp/root ]]; then
+              mkdir -p /btrfs_tmp/old_roots
+              timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%-d_%H:%M:%S")
+              mv /btrfs_tmp/root "/btrfs_tmp/old_roots/$timestamp"
+          fi
 
-        for i in $(find /btrfs_tmp/old_roots/ -maxdepth 1 -mtime +30); do
-            delete_subvolume_recursively "$i"
-        done
+          delete_subvolume_recursively() {
+              IFS=$'\n'
+              for i in $(btrfs subvolume list -o "$1" | cut -f 9- -d ' '); do
+                  delete_subvolume_recursively "/btrfs_tmp/$i"
+              done
+              btrfs subvolume delete "$1"
+          }
 
-        btrfs subvolume create /btrfs_tmp/root
-        umount /btrfs_tmp
-      '';
+          for i in $(find /btrfs_tmp/old_roots/ -maxdepth 1 -mtime +30); do
+              delete_subvolume_recursively "$i"
+          done
+
+          btrfs subvolume create /btrfs_tmp/root
+          umount /btrfs_tmp
+        '';
+      };
 
       # make sure /persist is available during boot
       fileSystems."/persist".neededForBoot = lib.mkForce true;
