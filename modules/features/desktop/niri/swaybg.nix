@@ -18,8 +18,8 @@ lib.custom.mkFeature {
       nixColorsLib = inputs.nix-colors.lib.contrib { inherit pkgs; };
       wallpaper = nixColorsLib.nixWallpaperFromScheme {
         scheme = config.colorScheme;
-        width = 1920;
-        height = 1080;
+        width = 3840;
+        height = 2160;
         logoScale = 5.0;
       };
     in
