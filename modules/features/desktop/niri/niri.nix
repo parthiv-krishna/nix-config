@@ -44,7 +44,6 @@ lib.custom.mkFeature {
         kitty
         niri
         niriswitcher
-        nirius
         playerctl
         wl-clipboard-rs
       ];
@@ -87,14 +86,8 @@ lib.custom.mkFeature {
             }
         }
 
-        output "eDP-1" {
-            scale 1.0
-        }
-
         layout {
             gaps 16
-
-            center-focused-column "never"
 
             preset-column-widths {
                 proportion 0.5
@@ -107,17 +100,6 @@ lib.custom.mkFeature {
                 width 2
                 active-color "#${base0D}"
                 inactive-color "#${base03}"
-            }
-
-            border {
-                off
-            }
-
-            struts {
-                left 0
-                right 0
-                top 0
-                bottom 0
             }
         }
 
@@ -144,8 +126,6 @@ lib.custom.mkFeature {
         screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
         animations {
-            slowdown 1.0
-
             workspace-switch {
                 spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
             }
