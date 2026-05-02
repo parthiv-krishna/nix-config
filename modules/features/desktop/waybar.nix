@@ -57,10 +57,6 @@ lib.custom.mkFeature {
             "niri/window" = lib.mkIf isNiri {
               format = "{title}";
               max-length = 50;
-              rewrite = {
-                "(.*) - Mozilla Firefox" = " $1";
-                "(.*) - kitty" = " $1";
-              };
             };
 
             tray = {
