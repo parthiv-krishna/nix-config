@@ -205,31 +205,19 @@ lib.custom.mkFeature {
             ${mainMod}+Shift+K { move-window-up-or-to-workspace-up; }
             ${mainMod}+Shift+L { move-column-right; }
 
-            // switch to specific workspace
-            ${mainMod}+1 { focus-workspace 1; }
-            ${mainMod}+2 { focus-workspace 2; }
-            ${mainMod}+3 { focus-workspace 3; }
-            ${mainMod}+4 { focus-workspace 4; }
-            ${mainMod}+5 { focus-workspace 5; }
-            ${mainMod}+6 { focus-workspace 6; }
-            ${mainMod}+7 { focus-workspace 7; }
-            ${mainMod}+8 { focus-workspace 8; }
-            ${mainMod}+9 { focus-workspace 9; }
-            ${mainMod}+0 { focus-workspace 10; }
+            // workspace keybindings (1-10)
+            ${builtins.concatStringsSep "\n" (
+              map (
+                ws:
+                let
+                  key = toString (lib.mod ws 10);
+                in
+                "            \${mainMod}+${key} { focus-workspace ${toString ws}; }\n            \${mainMod}+Shift+${key} { move-window-to-workspace ${toString ws}; }"
+              ) (lib.range 1 10)
+            )}
 
-            // move window to specific workspace
-            ${mainMod}+Shift+1 { move-window-to-workspace 1; }
-            ${mainMod}+Shift+2 { move-window-to-workspace 2; }
-            ${mainMod}+Shift+3 { move-window-to-workspace 3; }
-            ${mainMod}+Shift+4 { move-window-to-workspace 4; }
-            ${mainMod}+Shift+5 { move-window-to-workspace 5; }
-            ${mainMod}+Shift+6 { move-window-to-workspace 6; }
-            ${mainMod}+Shift+7 { move-window-to-workspace 7; }
-            ${mainMod}+Shift+8 { move-window-to-workspace 8; }
-            ${mainMod}+Shift+9 { move-window-to-workspace 9; }
-            ${mainMod}+Shift+0 { move-window-to-workspace 10; }
-
-            // window width adjustment ${mainMod}+Minus { set-column-width "-10%"; }
+            // window width adjustment
+            ${mainMod}+Minus { set-column-width "-10%"; }
             ${mainMod}+Equal { set-column-width "+10%"; }
 
             // consume/expel windows from column
