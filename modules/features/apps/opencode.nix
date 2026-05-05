@@ -5,6 +5,7 @@ let
     medium.reasoning_effort = "medium";
     high.reasoning_effort = "high";
     off.reasoning_effort = "none";
+    xhigh.reasoning_effort = "xhigh";
   };
 in
 lib.custom.mkFeature {
@@ -26,23 +27,30 @@ lib.custom.mkFeature {
               baseURL = "https://inference-api.nvidia.com/v1";
             };
             models = {
-              "claude-opus-4.5" = {
-                id = "aws/anthropic/claude-opus-4-5";
-                name = "Claude 4.5 Opus";
-                reasoning = true;
-                variants = reasoningVariants;
-              };
-
-              "claude-sonnet-4.5" = {
-                id = "aws/anthropic/bedrock-claude-sonnet-4-5-v1";
-                name = "Claude 4.5 Sonnet";
-                reasoning = true;
-                variants = reasoningVariants;
-              };
-
               "claude-haiku-4.5" = {
                 id = "aws/anthropic/claude-haiku-4-5-v1";
                 name = "Claude Haiku 4.5";
+              };
+
+              "claude-opus-4.6" = {
+                id = "aws/anthropic/bedrock-claude-opus-4-6";
+                name = "Claude 4.7 Opus";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
+
+              "claude-opus-4.7" = {
+                id = "aws/anthropic/claude-opus-4-7";
+                name = "Claude 4.7 Opus";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
+
+              "claude-sonnet-4.6" = {
+                id = "aws/anthropic/bedrock-claude-sonnet-4-6";
+                name = "Claude 4.6 Sonnet";
+                reasoning = true;
+                variants = reasoningVariants;
               };
 
               "gemini-3-pro" = {
@@ -56,6 +64,13 @@ lib.custom.mkFeature {
                 id = "gcp/google/gemini-3-flash-preview";
                 name = "Gemini 3 Flash (preview)";
               };
+
+              "gpt-5.5" = {
+                id = "openai/openai/gpt-5.5";
+                name = "GPT 5.5";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
             };
           };
         };
@@ -68,7 +83,7 @@ lib.custom.mkFeature {
           "nvidia-internal" # inference.nvidia.com
         ];
 
-        model = "nvidia-internal/claude-opus-4.5";
+        model = "nvidia-internal/gpt-5.5";
         small_model = "nvidia-internal/claude-haiku-4.5";
 
         autoupdate = false;
