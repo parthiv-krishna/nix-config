@@ -116,7 +116,7 @@ lib.custom.mkFeature {
             enable = true;
             package = pkgs.caddy.withPlugins {
               plugins = [ "github.com/caddy-dns/cloudflare@v0.2.2" ];
-              hash = "sha256-VBmICI1wklu02jmgDRmmlfNc9ftK7a74uF280xzx8uc=";
+              hash = "sha256-dNmccsad8nFm2X9w/6mdgAdhPSquNm6oVhf3sNc46SQ=";
             };
             email = "letsencrypt.snowy015@passmail.net";
             acmeCA = "https://acme-v02.api.letsencrypt.org/directory";
