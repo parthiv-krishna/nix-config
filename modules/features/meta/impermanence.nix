@@ -35,6 +35,12 @@ lib.custom.mkFeature {
   systemConfig =
     cfg:
     { lib, ... }:
+    let
+      # systemd converts - to \x2d and / to - in unit names
+      rootDeviceUnit = "${
+        lib.replaceStrings [ "-" "/" ] [ "\\x2d" "-" ] (lib.removePrefix "/" cfg.rootPartitionPath)
+      }.device";
+    in
     {
       # systemd service for impermanence root wipe from https://github.com/nix-community/impermanence
       # runs in initrd to:
@@ -44,7 +50,8 @@ lib.custom.mkFeature {
       boot.initrd.systemd.services.wipe-root = {
         description = "Wipe BTRFS root subvolume for impermanence";
         wantedBy = [ "initrd.target" ];
-        after = lib.optionals cfg.encryptedDevice [ "cryptsetup.target" ];
+        after = [ rootDeviceUnit ];
+        requires = [ rootDeviceUnit ];
         before = [ "sysroot.mount" ];
         unitConfig.DefaultDependencies = "no";
         serviceConfig.Type = "oneshot";
