@@ -19,6 +19,7 @@ lib.custom.mkFeature {
 
         keyMode = "vi";
         shortcut = lib.mkDefault "a";
+        terminal = "tmux-256color";
 
         plugins = with pkgs.tmuxPlugins; [
           fuzzback
@@ -49,7 +50,14 @@ lib.custom.mkFeature {
 
           # clipboard passthrough
           set -g set-clipboard on
-          set -g allow-passthrough all
+          set -g allow-passthrough on
+
+          # Avoid leaking Kitty-specific terminal queries into tmux panes.
+          set-environment -gu KITTY_INSTALLATION_DIR
+          set-environment -gu KITTY_PID
+          set-environment -gu KITTY_PUBLIC_KEY
+          set-environment -gu KITTY_WINDOW_ID
+          set-environment -gu TERMINFO
 
           # nix-colors theme configuration
           # status bar colors
