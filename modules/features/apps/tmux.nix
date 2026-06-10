@@ -39,7 +39,12 @@ lib.custom.mkFeature {
           unbind-key %
           unbind-key \"
 
-          bind @ choose-window 'join-pane -h -s "%%"'
+          bind ! set -gq @move_pane_source "#{pane_id}" \; display-menu -T "Move pane" "New window" n "break-pane -s \"#{@move_pane_source}\"" "Existing window" e "choose-tree -w 'join-pane -s \"#{@move_pane_source}\" -t \"%%\"'"
+          bind @ set -gq @move_window_source "#{window_id}" \; display-menu -T "Move window" "New session" n "command-prompt -p 'new session name' 'new-session -d -s \"%%\" \; move-window -k -s \"#{@move_window_source}\" -t \"%%:0\" \; switch-client -t \"%%\"'" "Existing session" e "choose-tree -s 'move-window -s \"#{@move_window_source}\" -t \"%%:\" \; switch-client -t \"%%\"'"
+          bind D attach-session -c "#{pane_current_path}"
+          bind / run-shell -b ${pkgs.tmuxPlugins.fuzzback}/share/tmux-plugins/fuzzback/scripts/fuzzback.sh
+          bind ? list-keys -N
+          bind f resize-pane -Z
 
           # mouse
           set-option -g mouse on
@@ -80,6 +85,9 @@ lib.custom.mkFeature {
 
           # copy mode colors
           set-window-option -g mode-style "fg=#${base00},bg=#${base0A}"
+
+          # more stable terminal
+          set -g default-terminal "screen-256color"
         '';
       };
     };
