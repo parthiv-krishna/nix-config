@@ -27,20 +27,8 @@ lib.custom.mkFeature {
               baseURL = "https://inference-api.nvidia.com/v1";
             };
             models = {
-              "claude-haiku-4.5" = {
-                id = "aws/anthropic/claude-haiku-4-5-v1";
-                name = "Claude Haiku 4.5";
-              };
-
-              "claude-opus-4.6" = {
-                id = "aws/anthropic/bedrock-claude-opus-4-6";
-                name = "Claude 4.7 Opus";
-                reasoning = true;
-                variants = reasoningVariants;
-              };
-
-              "claude-opus-4.7" = {
-                id = "aws/anthropic/claude-opus-4-7";
+              "claude-opus-4.8" = {
+                id = "aws/anthropic/bedrock-claude-opus-4-8";
                 name = "Claude 4.7 Opus";
                 reasoning = true;
                 variants = reasoningVariants;
@@ -53,16 +41,9 @@ lib.custom.mkFeature {
                 variants = reasoningVariants;
               };
 
-              "gemini-3-pro" = {
-                id = "gcp/google/gemini-3-pro";
-                name = "Gemini 3 Pro";
-                reasoning = true;
-                variants = reasoningVariants;
-              };
-
-              "gemini-3-flash" = {
-                id = "gcp/google/gemini-3-flash-preview";
-                name = "Gemini 3 Flash (preview)";
+              "claude-haiku-4.5" = {
+                id = "aws/anthropic/claude-haiku-4-5-v1";
+                name = "Claude Haiku 4.5";
               };
 
               "gpt-5.5" = {
