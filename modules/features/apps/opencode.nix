@@ -57,15 +57,15 @@ lib.custom.mkFeature {
         };
 
         enabled_providers = [
-          "anthropic"
-          "github-copilot"
           "openai"
           "nvidia" # build.nvidia.com
           "nvidia-internal" # inference.nvidia.com
         ];
 
-        model = "nvidia-internal/gpt-5.5";
+        model = "openai/gpt-5.5";
         small_model = "nvidia-internal/claude-haiku-4.5";
+
+        skills.paths = [ ".agents/skills" ];
 
         autoupdate = false;
         share = "disabled";
