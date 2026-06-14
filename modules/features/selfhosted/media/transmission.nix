@@ -21,6 +21,7 @@ lib.custom.mkSelfHostedFeature {
       nixarr.transmission = {
         enable = true;
         uiPort = 9090;
+        peerPort = 51413;
         vpn.enable = true;
         credentialsFile = config.sops.templates.transmission-credentials.path;
         messageLevel = "debug";
