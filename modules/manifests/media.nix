@@ -7,9 +7,9 @@
       media-base.enable = lib.mkDefault true;
       bazarr.enable = lib.mkDefault true;
       jellyfin.enable = lib.mkDefault true;
-      jellyseerr.enable = lib.mkDefault true;
       prowlarr.enable = lib.mkDefault true;
       radarr.enable = lib.mkDefault true;
+      seerr.enable = lib.mkDefault true;
       sonarr.enable = lib.mkDefault true;
       transmission.enable = lib.mkDefault true;
       unmanic.enable = lib.mkDefault true;

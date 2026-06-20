@@ -19,10 +19,14 @@ in
   # required for ZFS
   networking.hostId = "746e646d"; # mdnt
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
+  boot = {
+    # Use the systemd-boot EFI boot loader.
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+
+    zfs.forceImportRoot = false;
   };
 
   custom = {
