@@ -22,6 +22,7 @@ lib.custom.mkFeature {
         hashedPasswordFile = config.sops.secrets."${passwordSecretName}".path;
         extraGroups = [
           "systemd-journal"
+          "video"
           "wheel"
         ];
         openssh.authorizedKeys.keys = [
