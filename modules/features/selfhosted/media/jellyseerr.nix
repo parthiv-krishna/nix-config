@@ -37,6 +37,8 @@ lib.custom.mkSelfHostedFeature {
       ...
     }:
     let
+      # OIDC branch still requires pnpm 9, while upstream seerr uses pnpm 10.
+      pnpm = pkgs.pnpm_9.override { nodejs-slim = pkgs.nodejs-slim_22; };
       seerrOIDC =
         let
           src = pkgs.fetchFromGitHub {
@@ -49,10 +51,22 @@ lib.custom.mkSelfHostedFeature {
         pkgs.seerr.overrideAttrs (oldAttrs: {
           inherit src;
           version = "1.9.2-oidc";
-          pnpmDeps = oldAttrs.pnpmDeps.overrideAttrs (_oldDepAttrs: {
-            inherit src;
-            outputHash = "sha256-lq/b2PqQHsZmnw91Ad4h1uxZXsPATSLqIdb/t2EsmMI=";
-          });
+          pnpmDeps = pkgs.fetchPnpmDeps {
+            inherit (oldAttrs) pname;
+            inherit src pnpm;
+            version = "1.9.2-oidc";
+            fetcherVersion = 3;
+            hash = "sha256-iL7N+7EP+zBWf5pDygC/qu8BgA3uhZwgbatOiLgU/wU=";
+          };
+          installPhase = ''
+            runHook preInstall
+            mkdir -p $out/share
+            cp -r -t $out/share .next node_modules dist public package.json jellyseerr-api.yml
+            runHook postInstall
+          '';
+          nativeBuildInputs =
+            lib.filter (input: (input.pname or null) != "pnpm") oldAttrs.nativeBuildInputs
+            ++ [ pnpm ];
         });
     in
     {
