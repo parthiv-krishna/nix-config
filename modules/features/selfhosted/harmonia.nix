@@ -52,8 +52,7 @@ lib.custom.mkSelfHostedFeature {
 
       sops.secrets."${secretsRoot}/signing-key" = {
         owner = "root";
-        group = "harmonia";
-        mode = "0440";
+        mode = "0400";
       };
     };
 }
