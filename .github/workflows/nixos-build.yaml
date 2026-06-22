@@ -25,8 +25,10 @@ jobs:
           extra-conf: |
             build-dir = /nix/build
             extra-platforms = aarch64-linux
-            extra-substituters = https://cache.flox.dev?priority=30 ssh-ng://nix-cache@cache.sub0.net?priority=50
-            extra-trusted-public-keys = flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs= cache.sub0.net-1:x8wTeYCstMWT0jwzccBr3IT8V2DXqRKu8k/KUv5nW4Q=
+            extra-substituters = https://cache.flox.dev?priority=30
+            extra-trusted-public-keys = flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=
+            fallback = true
+            connect-timeout = 5
       - name: Load SSH private key for secrets repo
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -46,10 +48,10 @@ jobs:
           hostname: ci-${{ matrix.host }}-${{ github.run_id }}
       - name: Build configuration
         run: |
-          nix build --no-link .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
+          nix build --fallback --no-link .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
       - name: Push to cache
         continue-on-error: true
         run: |
           path=$(nix path-info .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
-          nix copy --to ssh-ng://nix-cache@cache.sub0.net $path
+          nix copy --to ssh-ng://nix-cache@cache.sub0.net "$path"
           ssh nix-cache@cache.sub0.net "nix-store --add-root /nix/var/nix/gcroots/cache/${{ matrix.host }} -r $path"
