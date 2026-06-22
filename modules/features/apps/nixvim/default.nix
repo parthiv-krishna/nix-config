@@ -5,10 +5,18 @@ lib.custom.mkFeature {
     "nixvim"
   ];
 
+  extraOptions = {
+    newSplitCommand = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = "Command to run after creating a new Neovim split.";
+    };
+  };
+
   homeImports = lib.custom.scanPaths ./.;
 
   homeConfig =
-    _cfg:
+    cfg:
     { config, pkgs, ... }:
     {
       programs.nixvim = {
@@ -103,15 +111,27 @@ lib.custom.mkFeature {
               action = "<cmd>noh<CR>";
               mode = "n";
             }
-            # vertical split, matching tmux prefix |
+            # vertical splits with Telescope file selection
+            {
+              key = "<Leader>\\";
+              action = "<cmd>rightbelow vsplit<CR>${cfg.newSplitCommand}";
+              options.desc = "Split right";
+            }
             {
               key = "<Leader>|";
-              action = ":vs<CR>";
+              action = "<cmd>leftabove vsplit<CR>${cfg.newSplitCommand}";
+              options.desc = "Split left";
             }
-            # horizontal split, matching tmux prefix -
+            # horizontal splits with Telescope file selection
             {
               key = "<Leader>-";
-              action = ":sv<CR>";
+              action = "<cmd>belowright split<CR>${cfg.newSplitCommand}";
+              options.desc = "Split below";
+            }
+            {
+              key = "<Leader>_";
+              action = "<cmd>aboveleft split<CR>${cfg.newSplitCommand}";
+              options.desc = "Split above";
             }
           ];
         };
