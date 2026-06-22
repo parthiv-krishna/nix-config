@@ -24,6 +24,12 @@ lib.custom.mkFeature {
         plugins = with pkgs.tmuxPlugins; [
           fuzzback
           resurrect
+          {
+            plugin = continuum;
+            extraConfig = ''
+              set -g @continuum-save-interval '15'
+            '';
+          }
           sensible
           sessionist
           sidebar
@@ -39,8 +45,8 @@ lib.custom.mkFeature {
           unbind-key %
           unbind-key \"
 
-          bind ! set -gq @move_pane_source "#{pane_id}" \; display-menu -T "Move pane" "New window" n "break-pane -s \"#{@move_pane_source}\"" "Existing window" e "choose-tree -w 'join-pane -s \"#{@move_pane_source}\" -t \"%%\"'"
-          bind @ set -gq @move_window_source "#{window_id}" \; display-menu -T "Move window" "New session" n "command-prompt -p 'new session name' 'new-session -d -s \"%%\" \; move-window -k -s \"#{@move_window_source}\" -t \"%%:0\" \; switch-client -t \"%%\"'" "Existing session" e "choose-tree -s 'move-window -s \"#{@move_window_source}\" -t \"%%:\" \; switch-client -t \"%%\"'"
+          bind ! break-pane
+          bind @ set -gqF @move_pane_source "#{pane_id}" \; display-menu -T "Move pane" "Existing window" w "choose-tree -w 'join-pane -s \"#{@move_pane_source}\" -t \"%%\"'" "New session" s "command-prompt -p 'new session name' 'new-session -d -s \"%1\" \; join-pane -s \"#{@move_pane_source}\" -t \"%1:\" \; kill-pane -a -t \"#{@move_pane_source}\" \; switch-client -t \"%1\"'"
           bind D attach-session -c "#{pane_current_path}"
           bind / run-shell -b ${pkgs.tmuxPlugins.fuzzback}/share/tmux-plugins/fuzzback/scripts/fuzzback.sh
           bind ? list-keys -N
@@ -69,6 +75,7 @@ lib.custom.mkFeature {
           set-option -g status-style "fg=#${base05},bg=#${base00}"
           set-option -g status-left-style "fg=#${base0B},bg=#${base01}"
           set-option -g status-right-style "fg=#${base05},bg=#${base01}"
+          set-option -g status-right "#{continuum_status} %H:%M %d-%b-%y"
 
           # window status colors
           set-window-option -g window-status-style "fg=#${base05},bg=#${base00}"

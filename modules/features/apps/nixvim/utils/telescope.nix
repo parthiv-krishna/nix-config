@@ -1,4 +1,6 @@
 _: {
+  custom.features.apps.nixvim.newSplitCommand = "<cmd>Telescope find_files<CR>";
+
   programs.nixvim.config = {
     plugins.telescope = {
       enable = true;
