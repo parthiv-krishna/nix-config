@@ -13,6 +13,7 @@ lib.custom.mkFeature {
       cacheFqdn = lib.custom.mkPublicFqdn config.constants "cache";
       # nix-store --generate-binary-cache-key <cacheFqdn>-1 signing-key.private signing-key.public
       cachePublicKey = "${cacheFqdn}-1:x8wTeYCstMWT0jwzccBr3IT8V2DXqRKu8k/KUv5nW4Q=";
+      ciPublicKey = "github-ci-1:0fNXOmbysSbsQNRgkqPDwxyDIFZwquLmnk/7gNrx/Us=";
     in
     {
       nix.settings = {
@@ -29,6 +30,7 @@ lib.custom.mkFeature {
         trusted-public-keys = [
           "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
           cachePublicKey
+          ciPublicKey
         ];
 
         # fallback if our cache goes offline
