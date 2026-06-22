@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins = {
+  programs.nixvim.config.plugins = {
     cmp = {
       enable = true;
       autoEnableSources = true;

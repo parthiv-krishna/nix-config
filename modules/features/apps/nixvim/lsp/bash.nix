@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins.lsp.servers.bashls = {
+  programs.nixvim.config.plugins.lsp.servers.bashls = {
     enable = true;
   };
 }

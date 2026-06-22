@@ -2,7 +2,7 @@
 {
   imports = lib.custom.scanPaths ./.;
 
-  programs.nixvim.plugins.lsp = {
+  programs.nixvim.config.plugins.lsp = {
     enable = true;
 
     capabilities = ''
@@ -68,7 +68,7 @@
       diagnostic = {
         "<leader>k" = "goto_prev";
         "<leader>j" = "goto_next";
-        "<leader>e" = "open_float";
+        "<leader>de" = "open_float";
         "<leader>q" = "setloclist";
       };
       lspBuf = {
@@ -80,7 +80,7 @@
         "K" = "hover";
         "<leader>rn" = "rename";
         "<leader>ca" = "code_action";
-        "<leader>f" = "format";
+        "<leader>lf" = "format";
       };
     };
 

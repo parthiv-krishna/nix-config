@@ -99,17 +99,18 @@ lib.custom.mkFeature {
             }
             # remove search highlight
             {
-              key = "<Leader>n";
-              action = ":noh<CR>";
+              key = "<Esc>";
+              action = "<cmd>noh<CR>";
+              mode = "n";
             }
-            # vertical split
+            # vertical split, matching tmux prefix |
             {
-              key = "<Leader>v";
+              key = "<Leader>|";
               action = ":vs<CR>";
             }
-            # horizontal split
+            # horizontal split, matching tmux prefix -
             {
-              key = "<Leader>h";
+              key = "<Leader>-";
               action = ":sv<CR>";
             }
           ];
