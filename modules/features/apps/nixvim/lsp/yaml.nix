@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins.lsp.servers.yamlls = {
+  programs.nixvim.config.plugins.lsp.servers.yamlls = {
     enable = true;
   };
 }

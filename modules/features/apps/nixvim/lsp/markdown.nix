@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins.lsp.servers.marksman = {
+  programs.nixvim.config.plugins.lsp.servers.marksman = {
     enable = true;
   };
 }

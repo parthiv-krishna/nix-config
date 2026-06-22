@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins.bufferline = {
+  programs.nixvim.config.plugins.bufferline = {
     enable = true;
   };
 }

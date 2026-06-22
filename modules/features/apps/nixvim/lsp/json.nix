@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins.lsp.servers.jsonls = {
+  programs.nixvim.config.plugins.lsp.servers.jsonls = {
     enable = true;
   };
 }

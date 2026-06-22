@@ -1,5 +1,5 @@
 _: {
-  programs.nixvim.plugins.lsp.servers.pyright = {
+  programs.nixvim.config.plugins.lsp.servers.pyright = {
     enable = true;
     settings = {
       python = {

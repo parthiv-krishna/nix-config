@@ -4,11 +4,11 @@
 }:
 {
   programs.nixvim = {
-    plugins.nix = {
+    config.plugins.nix = {
       enable = true;
     };
 
-    plugins.lsp.servers.nixd = {
+    config.plugins.lsp.servers.nixd = {
       enable = true;
       settings = {
         nixpkgs = {
