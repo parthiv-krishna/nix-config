@@ -26,7 +26,7 @@ jobs:
             build-dir = /nix/build
             extra-platforms = aarch64-linux
             extra-substituters = https://cache.flox.dev?priority=30
-            extra-trusted-public-keys = flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=
+            extra-trusted-public-keys = flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs= github-ci-1:0fNXOmbysSbsQNRgkqPDwxyDIFZwquLmnk/7gNrx/Us=
             fallback = true
             connect-timeout = 5
       - name: Load SSH private key for secrets repo
@@ -51,7 +51,12 @@ jobs:
           nix build --fallback --no-link .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel
       - name: Push to cache
         continue-on-error: true
+        env:
+          CACHE_SIGNING_KEY: ${{ secrets.CACHE_SIGNING_KEY }}
         run: |
           path=$(nix path-info .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel)
+          printf '%s' "$CACHE_SIGNING_KEY" > /tmp/signing-key.pem
+          nix store sign --key-file /tmp/signing-key.pem --recursive "$path"
+          rm /tmp/signing-key.pem
           nix copy --to ssh-ng://nix-cache@cache.sub0.net "$path"
           ssh nix-cache@cache.sub0.net "nix-store --add-root /nix/var/nix/gcroots/cache/${{ matrix.host }} -r $path"

@@ -2,6 +2,7 @@
 { lib }:
 let
   port = 5000;
+  ciPublicKey = "github-ci-1:0fNXOmbysSbsQNRgkqPDwxyDIFZwquLmnk/7gNrx/Us=";
 in
 lib.custom.mkSelfHostedFeature {
   name = "harmonia";
@@ -39,11 +40,16 @@ lib.custom.mkSelfHostedFeature {
       };
       users.groups.nix-cache = { };
 
-      # allow nix-cache user to push to the nix store and create GC roots
-      nix.settings.trusted-users = [ "nix-cache" ];
+      nix.settings = {
+        # allow nix-cache user to push to the nix store and create GC roots
+        trusted-users = [ "nix-cache" ];
 
-      # sign store paths when they're pushed via `nix copy`
-      nix.settings.secret-key-files = [ config.sops.secrets."${secretsRoot}/signing-key".path ];
+        # trust CI-signed paths so GitHub Actions can push locally-built paths
+        trusted-public-keys = [ ciPublicKey ];
+
+        # sign store paths when they're pushed via `nix copy`
+        secret-key-files = [ config.sops.secrets."${secretsRoot}/signing-key".path ];
+      };
 
       # Pre-create GC roots directory owned by nix-cache so CI can create roots without sudo
       systemd.tmpfiles.rules = [
