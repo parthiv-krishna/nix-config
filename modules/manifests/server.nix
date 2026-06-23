@@ -9,7 +9,10 @@
         smartmontools.enable = lib.mkDefault true;
         usbutils.enable = lib.mkDefault true;
       };
-      networking.sshd.enable = lib.mkDefault true;
+      networking = {
+        sshd.enable = lib.mkDefault true;
+        tailscale.isServer = lib.mkDefault true;
+      };
     };
   };
 }
