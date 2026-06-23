@@ -5,8 +5,17 @@ lib.custom.mkFeature {
     "tailscale"
   ];
 
+  extraOptions = {
+    isServer = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "If this machine is a server, enable ssh and exit node";
+      example = true;
+    };
+  };
+
   systemConfig =
-    _cfg:
+    cfg:
     { config, ... }:
     let
       secretName = "tailscale/key";
@@ -15,7 +24,11 @@ lib.custom.mkFeature {
       services.tailscale = {
         enable = true;
         authKeyFile = config.sops.secrets.${secretName}.path;
-        extraUpFlags = [ "--ssh" ];
+        useRoutingFeatures = lib.mkIf cfg.isServer "server";
+        extraUpFlags = lib.mkIf cfg.isServer [
+          "--advertise-exit-node"
+          "--ssh"
+        ];
       };
 
       sops.secrets.${secretName} = { };
