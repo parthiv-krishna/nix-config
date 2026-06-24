@@ -29,7 +29,7 @@ lib.custom.mkFeature {
             models = {
               "claude-opus-4.8" = {
                 id = "aws/anthropic/bedrock-claude-opus-4-8";
-                name = "Claude 4.7 Opus";
+                name = "Claude 4.8 Opus";
                 reasoning = true;
                 variants = reasoningVariants;
               };
@@ -62,7 +62,7 @@ lib.custom.mkFeature {
           "nvidia-internal" # inference.nvidia.com
         ];
 
-        model = "openai/gpt-5.5";
+        model = "nvidia-internal/gpt-5.5";
         small_model = "nvidia-internal/claude-haiku-4.5";
 
         skills.paths = [ ".agents/skills" ];
