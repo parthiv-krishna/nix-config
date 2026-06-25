@@ -101,7 +101,20 @@ lib.custom.mkFeature {
           let
             ip = "${pkgs.iproute2}/bin/ip";
           in
-          "${ip} netns exec wg ${ip} link set wg0 mtu 1280";
+          pkgs.writeShellScript "wg-post-start" ''
+            ${ip} netns exec wg ${ip} link set wg0 mtu 1280
+
+            # read VPN resolv.conf, force-route DNS
+            # queries inside namespace via wg0 interface
+            while IFS= read -r ns; do
+              ns="''${ns#nameserver }"
+              if [[ $ns == *.* ]]; then
+                ${ip} -n wg route replace "$ns/32" dev wg0
+              else
+                ${ip} -n wg -6 route replace "$ns/128" dev wg0
+              fi
+            done < /etc/netns/wg/resolv.conf
+          '';
 
         services = {
           vpn-test =
