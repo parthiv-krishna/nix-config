@@ -65,6 +65,11 @@ lib.custom.mkFeature {
           openFirewall = true;
         };
 
+        systemd.services.upsd = {
+          after = [ "sops-install-secrets.service" ];
+          requires = [ "sops-install-secrets.service" ];
+        };
+
         sops.secrets.${cfg.passwordKey} = { };
       }
     ];
