@@ -7,8 +7,8 @@ rec {
   #   extraOptions: additional options beyond the auto-generated `enable`
   #   systemConfig: function (cfg: moduleArgs: { ... }) returning NixOS config
   #   homeConfig: function (cfg: moduleArgs: { ... }) returning home-manager config
-  #   homeImports: list of paths to import in the home module (for complex features like nixvim)
-  #   systemConfigUnconditional: unconditional NixOS config (not wrapped in mkIf cfg.enable)
+  #   homeImports: list of paths to import in the home module
+  #   systemConfigUnconditional: function (cfg: moduleArgs: { ... }) returning unconditional NixOS config (not wrapped in mkIf cfg.enable)
   mkFeature =
     {
       path,
@@ -17,7 +17,7 @@ rec {
       systemConfig ? null,
       homeConfig ? null,
       homeImports ? [ ],
-      systemConfigUnconditional ? { },
+      systemConfigUnconditional ? null,
     }:
     let
       optionPath = [
@@ -50,7 +50,7 @@ rec {
           options = lib.setAttrByPath optionPath optionsDef;
 
           config = lib.mkMerge [
-            systemConfigUnconditional
+            (if systemConfigUnconditional != null then systemConfigUnconditional cfg moduleArgs else { })
             (
               if homeConfig != null || homeImports != [ ] then
                 {
@@ -174,6 +174,8 @@ rec {
   #   backupServices: list of systemd services to stop during backups
   #   persistentDirectories: directories to persist (for impermanence)
   #   extraConfig: additional NixOS config to merge (always applied when enabled)
+  #   vpn: when true, confine the service to the VPN namespace and target it
+  #     via the namespace address (default false)
   mkSelfHostedFeature =
     {
       name,
@@ -187,6 +189,9 @@ rec {
       backupServices ? [ ],
       persistentDirectories ? [ ],
       extraConfig ? { },
+      # vpn: when true, confine the service (systemd unit `name`) to the VPN
+      # namespace and target it via the namespace address instead of localhost.
+      vpn ? false,
     }:
     mkFeature {
       path = [
@@ -196,31 +201,42 @@ rec {
       inherit extraOptions;
 
       # Unconditional config: service metadata visible to all hosts
-      systemConfigUnconditional = lib.mkMerge [
-        # Always register in serviceMetadata (for monitoring, etc.)
-        {
-          custom.features.selfhosted.serviceMetadata.${name} = {
-            inherit name subdomain statusPath;
-          };
-        }
-        # Only register in homepageMetadata if homepage is defined
-        (lib.optionalAttrs (homepage != null) {
-          custom.features.selfhosted.homepageMetadata.${name} = {
-            inherit (homepage) category description icon;
-          };
-        })
-        (lib.optionalAttrs (oidcClient != null) {
-          custom.features.selfhosted.oidcClients.${name} = oidcClient // {
-            inherit subdomain;
-          };
-        })
-      ];
+      systemConfigUnconditional =
+        _cfg: _moduleArgs:
+        lib.mkMerge [
+          # Always register in serviceMetadata (for monitoring, etc.)
+          {
+            custom.features.selfhosted.serviceMetadata.${name} = {
+              inherit name subdomain statusPath;
+            };
+          }
+          # Only register in homepageMetadata if homepage is defined
+          (lib.optionalAttrs (homepage != null) {
+            custom.features.selfhosted.homepageMetadata.${name} = {
+              inherit (homepage) category description icon;
+            };
+          })
+          (lib.optionalAttrs (oidcClient != null) {
+            custom.features.selfhosted.oidcClients.${name} = oidcClient // {
+              inherit subdomain;
+            };
+          })
+        ];
 
       systemConfig =
         cfg:
         { config, lib, ... }@moduleArgs:
         let
           currentHost = config.networking.hostName;
+
+          vpnNamespace = config.custom.features.networking.vpn.namespace;
+          # When confined, reach the service via the vpn namespace veth address
+          # (as exposed by the vpnConfinement module) rather than localhost.
+          reverseProxyTarget =
+            if vpn then
+              "${config.vpnNamespaces.${vpnNamespace}.namespaceAddress}:${toString port}"
+            else
+              "localhost:${toString port}";
 
           fqdn = {
             internal = lib.custom.mkInternalFqdn config.constants subdomain currentHost;
@@ -241,7 +257,7 @@ rec {
               tls {
                 dns cloudflare {env.CF_API_TOKEN}
               }
-              reverse_proxy localhost:${toString port}
+              reverse_proxy ${reverseProxyTarget}
             '';
           };
 
@@ -261,6 +277,9 @@ rec {
             }
             extraConfig
           ]
+          ++ (lib.optional vpn {
+            custom.features.networking.vpn.confinedServices.${name} = { };
+          })
           ++ persistentDirConfigs
           ++ (lib.optional (backupServices != [ ]) {
             custom.features.selfhosted.backupServices = backupServices;

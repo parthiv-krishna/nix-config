@@ -1,10 +1,15 @@
 # Bazarr - subtitle management
 { lib }:
+let
+  port = 6767;
+  stateDir = "/var/lib/media/state/bazarr";
+in
 lib.custom.mkSelfHostedFeature {
   name = "bazarr";
   subdomain = "subtitles";
-  port = 6767;
+  inherit port;
   statusPath = "/ping";
+  vpn = true;
 
   backupServices = [ "bazarr.service" ];
 
@@ -15,10 +20,20 @@ lib.custom.mkSelfHostedFeature {
   };
 
   serviceConfig = _cfg: _: {
-    nixarr.bazarr = {
+    services.bazarr = {
       enable = true;
-      port = 6767;
-      vpn.enable = true;
+      user = "bazarr";
+      group = "media";
+      dataDir = stateDir;
+      listenPort = port;
+    };
+
+    systemd.services.bazarr.serviceConfig.UMask = lib.mkForce "0002";
+
+    users.users.bazarr = {
+      isSystemUser = true;
+      group = "media";
+      uid = 232;
     };
   };
 }

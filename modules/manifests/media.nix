@@ -3,6 +3,8 @@
   options.custom.manifests.media.enable = lib.mkEnableOption "media server features";
 
   config = lib.mkIf config.custom.manifests.media.enable {
+    custom.features.networking.vpn.enable = lib.mkDefault true;
+
     custom.features.selfhosted = {
       media-base.enable = lib.mkDefault true;
       bazarr.enable = lib.mkDefault true;

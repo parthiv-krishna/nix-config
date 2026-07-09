@@ -1,10 +1,15 @@
 # Radarr - movie management
 { lib }:
+let
+  port = 7878;
+  stateDir = "/var/lib/media/state/radarr";
+in
 lib.custom.mkSelfHostedFeature {
   name = "radarr";
   subdomain = "movies";
-  port = 7878;
+  inherit port;
   statusPath = "/ping";
+  vpn = true;
 
   backupServices = [ "radarr.service" ];
 
@@ -15,10 +20,33 @@ lib.custom.mkSelfHostedFeature {
   };
 
   serviceConfig = _cfg: _: {
-    nixarr.radarr = {
+    services.radarr = {
       enable = true;
-      port = 7878;
-      vpn.enable = true;
+      user = "radarr";
+      group = "media";
+      dataDir = stateDir;
+      settings = {
+        log.analyticsEnabled = false;
+        server.port = port;
+        update = {
+          automatically = false;
+          mechanism = "external";
+        };
+      };
+    };
+
+    systemd = {
+      tmpfiles.rules = [
+        "d /var/lib/media/library 2775 root media - -"
+        "d /var/lib/media/library/movies 2775 root media - -"
+      ];
+      services.radarr.serviceConfig.UMask = lib.mkForce "0002";
+    };
+
+    users.users.radarr = {
+      isSystemUser = true;
+      group = "media";
+      uid = 275;
     };
   };
 }
