@@ -43,7 +43,6 @@ lib.custom.mkFeature {
         kdePackages.dolphin
         kitty
         niri
-        niriswitcher
         playerctl
         wl-clipboard-rs
       ];
@@ -55,13 +54,50 @@ lib.custom.mkFeature {
     let
       mainMod = "Super";
       terminal = "kitty";
+      clipboardHistory = pkgs.writeShellScript "clipboard-history" ''
+        selected=$(${pkgs.cliphist}/bin/cliphist list | ${pkgs.wofi}/bin/wofi --dmenu --prompt "Clipboard" --lines 15)
+        status=$?
+        if [ $status -ne 0 ] || [ -z "$selected" ]; then
+          exit 0
+        fi
+
+        printf '%s' "$selected" | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
+      '';
+      powerMenu = pkgs.writeShellScript "niri-power-menu" ''
+        choice=$(printf 'Lock\nLog out\nSuspend\nHibernate\nReboot\nShutdown\n' | ${pkgs.wofi}/bin/wofi --dmenu --prompt "Power" --lines 6)
+        status=$?
+        if [ $status -ne 0 ] || [ -z "$choice" ]; then
+          exit 0
+        fi
+
+        case "$choice" in
+          Lock)
+            ${pkgs.swaylock}/bin/swaylock -f
+            ;;
+          "Log out")
+            ${pkgs.niri}/bin/niri msg action quit
+            ;;
+          Suspend)
+            ${pkgs.systemd}/bin/systemctl suspend
+            ;;
+          Hibernate)
+            ${pkgs.systemd}/bin/systemctl hibernate
+            ;;
+          Reboot)
+            ${pkgs.systemd}/bin/systemctl reboot
+            ;;
+          Shutdown)
+            ${pkgs.systemd}/bin/systemctl poweroff
+            ;;
+        esac
+      '';
       renameWorkspace = pkgs.writeShellScript "rename-workspace" ''
-        newname=$(echo "" | wofi --dmenu --prompt "Rename workspace" --exec-search --lines 1)
+        newname=$(printf '%s' "" | ${pkgs.wofi}/bin/wofi --dmenu --prompt "Rename workspace" --exec-search --lines 1)
         status=$?
         if [ $status -ne 0 ] || [ -z "$newname" ]; then
           exit 0
         fi
-        niri msg action set-workspace-name "$newname"
+        ${pkgs.niri}/bin/niri msg action set-workspace-name "$newname"
       '';
     in
     {
@@ -123,7 +159,7 @@ lib.custom.mkFeature {
         // prefer server-side decorations
         prefer-no-csd
 
-        screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+        screenshot-path null
 
         animations {
             workspace-switch {
@@ -167,9 +203,10 @@ lib.custom.mkFeature {
             ${mainMod}+Return { spawn "${terminal}"; }
             ${mainMod}+Space { spawn "wofi" "--show" "drun"; }
             ${mainMod}+Comma { spawn "${renameWorkspace}"; }
+            ${mainMod}+V { spawn "${clipboardHistory}"; }
             ${mainMod}+Shift+Slash { show-hotkey-overlay; }
             ${mainMod}+Q { close-window; }
-            ${mainMod}+M { spawn "systemctl" "suspend"; }
+            ${mainMod}+Escape { spawn "${powerMenu}"; }
             ${mainMod}+F { toggle-window-floating; }
             ${mainMod}+Shift+F { fullscreen-window; }
 
@@ -227,11 +264,14 @@ lib.custom.mkFeature {
             XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
             XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
             XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
-
-            // power menu / logout
-            ${mainMod}+Shift+E { quit; }
         }
       '';
+
+      services.cliphist = {
+        enable = true;
+        package = pkgs.cliphist;
+        clipboardPackage = pkgs.wl-clipboard;
+      };
 
       fonts.fontconfig.enable = true;
     };
