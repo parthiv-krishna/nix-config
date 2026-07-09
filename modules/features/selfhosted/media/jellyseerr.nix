@@ -1,9 +1,13 @@
 # seerr - media requests
 { lib }:
+let
+  port = 5055;
+  stateDir = "/var/lib/media/state/seerr";
+in
 lib.custom.mkSelfHostedFeature {
   name = "seerr";
   subdomain = "request";
-  port = 5055;
+  inherit port;
   statusPath = "/api/v1/status";
 
   backupServices = [ "seerr.service" ];
@@ -72,10 +76,34 @@ lib.custom.mkSelfHostedFeature {
     {
       nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "seerr" ];
 
-      nixarr.seerr = {
+      # The OIDC branch pins pnpm 9, which nixpkgs marks insecure. It's a
+      # build-time-only dependency (not part of the runtime closure), so allow it.
+      nixpkgs.config.permittedInsecurePackages = [ "pnpm-9.15.9" ];
+
+      services.seerr = {
         enable = true;
-        port = 5055;
+        inherit port;
+        configDir = stateDir;
         package = seerrOIDC;
+      };
+
+      systemd = {
+        tmpfiles.rules = [ "d ${stateDir} 0700 seerr root - -" ];
+        services.seerr.serviceConfig = {
+          DynamicUser = pkgs.lib.mkForce false;
+          User = "seerr";
+          Group = "seerr";
+          ReadWritePaths = [ stateDir ];
+        };
+      };
+
+      users = {
+        groups.seerr.gid = 250;
+        users.seerr = {
+          isSystemUser = true;
+          group = "seerr";
+          uid = 262;
+        };
       };
     };
 }

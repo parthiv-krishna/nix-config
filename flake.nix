@@ -21,16 +21,12 @@
     impermanence = {
       url = "github:nix-community/impermanence";
     };
-    nixarr = {
-      url = "github:rasmus-kirk/nixarr";
-      inputs.nixpkgs.follows = "nixpkgs";
+    nix-colors = {
+      url = "github:misterio77/nix-colors";
     };
     nix-config-secrets = {
       url = "git+ssh://git@github.com/parthiv-krishna/nix-config-secrets.git?ref=main&shallow=1";
       flake = false;
-    };
-    nix-colors = {
-      url = "github:misterio77/nix-colors";
     };
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware";
@@ -46,13 +42,16 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    sops-nix = {
-      url = "github:mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+    vpnconfinement = {
+      url = "github:Maroka-chan/VPN-Confinement";
     };
   };
 
@@ -83,7 +82,7 @@
             inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
             inputs.home-manager.nixosModules.home-manager
-            inputs.nixarr.nixosModules.default
+            inputs.vpnconfinement.nixosModules.default
             "${inputs.copyparty}/contrib/nixos/modules/copyparty.nix"
             (customLib.custom.loadFeatures {
               path = ./modules/features;
