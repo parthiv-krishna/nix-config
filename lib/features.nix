@@ -279,6 +279,12 @@ rec {
           ]
           ++ (lib.optional vpn {
             custom.features.networking.vpn.confinedServices.${name} = { };
+            vpnNamespaces.${vpnNamespace}.portMappings = [
+              {
+                from = port;
+                to = port;
+              }
+            ];
           })
           ++ persistentDirConfigs
           ++ (lib.optional (backupServices != [ ]) {
