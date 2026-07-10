@@ -29,14 +29,14 @@ lib.custom.mkFeature {
             models = {
               "claude-opus-4.8" = {
                 id = "aws/anthropic/bedrock-claude-opus-4-8";
-                name = "Claude 4.8 Opus";
+                name = "Claude Opus 4.8";
                 reasoning = true;
                 variants = reasoningVariants;
               };
 
-              "claude-sonnet-4.6" = {
-                id = "aws/anthropic/bedrock-claude-sonnet-4-6";
-                name = "Claude 4.6 Sonnet";
+              "claude-sonnet-5" = {
+                id = "aws/anthropic/bedrock-claude-sonnet-5";
+                name = "Claude Sonnet 5";
                 reasoning = true;
                 variants = reasoningVariants;
               };
@@ -46,9 +46,23 @@ lib.custom.mkFeature {
                 name = "Claude Haiku 4.5";
               };
 
-              "gpt-5.5" = {
-                id = "openai/openai/gpt-5.5";
-                name = "GPT 5.5";
+              "gpt-5.6-sol" = {
+                id = "openai/openai/gpt-5.6-sol";
+                name = "GPT 5.6 Sol";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
+
+              "gpt-5.6-terra" = {
+                id = "openai/openai/gpt-5.6-terra";
+                name = "GPT 5.6 Terra";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
+
+              "gpt-5.6-luna" = {
+                id = "openai/openai/gpt-5.6-luna";
+                name = "GPT 5.6 Luna";
                 reasoning = true;
                 variants = reasoningVariants;
               };
@@ -62,8 +76,8 @@ lib.custom.mkFeature {
           "nvidia-internal" # inference.nvidia.com
         ];
 
-        model = "nvidia-internal/gpt-5.5";
-        small_model = "nvidia-internal/claude-haiku-4.5";
+        model = "nvidia-internal/gpt-5.6-sol";
+        small_model = "nvidia-internal/gpt-5.6-luna";
 
         skills.paths = [ ".agents/skills" ];
 
