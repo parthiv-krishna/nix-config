@@ -280,7 +280,7 @@ lib.custom.mkFeature {
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";
       };
 
-      custom.features.meta.discord-notifiers.notifiers.restic-backups-main.enable = true;
+      custom.features.meta.zulip-notifiers.notifiers.restic-backups-main.enable = true;
 
       sops.secrets = {
         "${secretPassword}" = { };

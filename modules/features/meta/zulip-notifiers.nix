@@ -5,20 +5,13 @@ let
     { name, ... }:
     {
       options = {
-        enable = lib.mkEnableOption "this Discord notifier";
+        enable = lib.mkEnableOption "this Zulip notifier";
 
         watchedService = lib.mkOption {
           type = lib.types.str;
           default = name;
           description = "Name of the systemd service to watch (without .service suffix). Defaults to the notifier name.";
           example = "auto-upgrade";
-        };
-
-        webhookSecretPath = lib.mkOption {
-          type = lib.types.str;
-          default = "";
-          description = "Path to file containing Discord webhook URL";
-          example = "/run/secrets/discord-webhook";
         };
       };
     }
@@ -27,14 +20,27 @@ in
 lib.custom.mkFeature {
   path = [
     "meta"
-    "discord-notifiers"
+    "zulip-notifiers"
   ];
 
   extraOptions = {
     notifiers = lib.mkOption {
       type = lib.types.attrsOf notifierSubmodule;
       default = { };
-      description = "Discord notifiers that attach to systemd services";
+      description = "Zulip notifiers that attach to systemd services";
+    };
+
+    realmUrl = lib.mkOption {
+      type = lib.types.str;
+      default = "https://sub0.zulipchat.com";
+      description = "Base URL of the Zulip realm to send notifications to";
+      example = "https://sample.zulipchat.com";
+    };
+
+    channel = lib.mkOption {
+      type = lib.types.str;
+      default = "alerts";
+      description = "Zulip channel (stream) to post notifications to";
     };
   };
 
@@ -49,58 +55,59 @@ lib.custom.mkFeature {
     let
       notifiersCfg = cfg.notifiers;
 
-      # Create the Discord webhook script package
-      pythonWithDiscord = pkgs.python3.withPackages (
+      # Create the Zulip notify script package
+      pythonWithRequests = pkgs.python3.withPackages (
         ps: with ps; [
-          discordpy
           requests
         ]
       );
-      discordWebhookScript = pkgs.writeShellApplication {
-        name = "discord-webhook";
-        runtimeInputs = [ pythonWithDiscord ];
+      zulipNotifyScript = pkgs.writeShellApplication {
+        name = "zulip-notify";
+        runtimeInputs = [ pythonWithRequests ];
         text = ''
-          exec ${pythonWithDiscord}/bin/python3 ${lib.custom.relativeToRoot "scripts/discord-webhook.py"} "$@"
+          exec ${pythonWithRequests}/bin/python3 ${lib.custom.relativeToRoot "scripts/zulip-notify.py"} "$@"
         '';
       };
+
+      botEmailPath = config.sops.secrets."zulip/bot_email".path;
+      apiKeyPath = config.sops.secrets."zulip/api_key".path;
 
       # helper function to create a notifier service
       mkNotifierService =
         name: notifierCfg:
         let
-          webhookPath =
-            if notifierCfg.webhookSecretPath != "" then
-              notifierCfg.webhookSecretPath
-            else
-              config.sops.secrets."discord/webhook".path;
-          mkWebhookScript =
+          mkNotifyScript =
             successFlag:
-            pkgs.writeShellScript "discord-notifier-${name}-${if successFlag then "success" else "failure"}" ''
+            pkgs.writeShellScript "zulip-notifier-${name}-${if successFlag then "success" else "failure"}" ''
               set -o pipefail
 
-              # Read webhook URL from secret file
-              WEBHOOK_URL="$(cat "${webhookPath}")"
+              # Read Zulip credentials from secret files
+              BOT_EMAIL="$(cat "${botEmailPath}")"
+              API_KEY="$(cat "${apiKeyPath}")"
 
-              ${discordWebhookScript}/bin/discord-webhook \
-                "$WEBHOOK_URL" \
+              ${zulipNotifyScript}/bin/zulip-notify \
+                --realm-url "${cfg.realmUrl}" \
+                --bot-email "$BOT_EMAIL" \
+                --api-key "$API_KEY" \
+                --channel "${cfg.channel}" \
                 --service "${notifierCfg.watchedService}" \
                 --hostname "${config.networking.hostName}" \
                 ${if successFlag then "" else "--failure"}
             '';
-          successScript = mkWebhookScript true;
-          failureScript = mkWebhookScript false;
+          successScript = mkNotifyScript true;
+          failureScript = mkNotifyScript false;
         in
         {
-          "discord-notifier-${name}-success" = {
-            description = "Discord notifier for ${notifierCfg.watchedService} success";
+          "zulip-notifier-${name}-success" = {
+            description = "Zulip notifier for ${notifierCfg.watchedService} success";
             serviceConfig = {
               Type = "oneshot";
               ExecStart = "${successScript}";
               User = "root"; # needed to read secret files
             };
           };
-          "discord-notifier-${name}-failure" = {
-            description = "Discord notifier for ${notifierCfg.watchedService} failure";
+          "zulip-notifier-${name}-failure" = {
+            description = "Zulip notifier for ${notifierCfg.watchedService} failure";
             serviceConfig = {
               Type = "oneshot";
               ExecStart = "${failureScript}";
@@ -118,8 +125,8 @@ lib.custom.mkFeature {
             (mkNotifierService name notifierCfg)
             {
               "${notifierCfg.watchedService}" = {
-                onSuccess = [ "discord-notifier-${name}-success.service" ];
-                onFailure = [ "discord-notifier-${name}-failure.service" ];
+                onSuccess = [ "zulip-notifier-${name}-success.service" ];
+                onFailure = [ "zulip-notifier-${name}-failure.service" ];
               };
             }
           ]
@@ -128,6 +135,7 @@ lib.custom.mkFeature {
     in
     lib.mkIf (enabledNotifiers != { }) {
       systemd.services = notifierServices;
-      sops.secrets."discord/webhook" = { };
+      sops.secrets."zulip/bot_email" = { };
+      sops.secrets."zulip/api_key" = { };
     };
 }
