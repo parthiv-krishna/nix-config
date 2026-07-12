@@ -254,7 +254,7 @@ lib.custom.mkFeature {
         accessibleFrom = [ "127.0.0.1" ];
       };
 
-      custom.features.meta.discord-notifiers.notifiers = {
+      custom.features.meta.zulip-notifiers.notifiers = {
         vpn-config.enable = true;
         vpn-test.enable = true;
         vpn-refresh.enable = true;
