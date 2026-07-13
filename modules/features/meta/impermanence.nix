@@ -91,7 +91,6 @@ lib.custom.mkFeature {
         directories = [
           "/var/lib/nixos"
           "/var/lib/systemd/coredump"
-          "/var/lib"
           "/var/log"
         ];
         files = [
