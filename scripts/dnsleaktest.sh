@@ -121,4 +121,29 @@ echo ""
 echo_bold "Conclusion:"
 print_servers "conclusion"
 
-exit 0
+# extract the raw conclusion verdict text so we can set the exit code
+if ((jq_exists)); then
+	conclusion=$(echo "${result_json}" |
+		jq --monochrome-output --raw-output \
+			'.[] | select(.type == "conclusion") | .ip')
+else
+	conclusion=$(while IFS= read -r line; do
+		if [[ $line == *conclusion ]]; then
+			echo "$line" | cut -d'|' -f 1
+		fi
+	done <<<"$result_txt")
+fi
+
+# fail (non-zero exit) if the DNS may be leaking, so callers like the
+# vpn-test service treat a leak as a failure rather than a silent success
+if [[ $conclusion == *"not leaking"* ]]; then
+	exit 0
+elif [[ $conclusion == *"leaking"* ]]; then
+	echo_error "DNS leak detected: ${conclusion}"
+	exit 1
+else
+	# unknown/empty conclusion (e.g. API hiccup): treat as failure so it is
+	# surfaced rather than masked
+	echo_error "Could not determine DNS leak status: ${conclusion:-<empty>}"
+	exit 1
+fi
