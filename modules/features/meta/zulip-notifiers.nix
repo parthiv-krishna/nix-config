@@ -100,22 +100,26 @@ lib.custom.mkFeature {
               # Read Zulip incoming webhook URL from secret file
               WEBHOOK_URL="$(cat "${webhookUrlPath}")"
 
+              args=(
+                --webhook-url "$WEBHOOK_URL"
+                --channel "${cfg.channel}"
+                --service "${notifierCfg.watchedService}"
+                --hostname "${config.networking.hostName}"
+              )
+              ${lib.optionalString (!successFlag) ''
+                args+=(--failure)
+              ''}
               ${lib.optionalString (cfg.summarizeFailures && !successFlag) ''
                 # summarizer API key passed via env (not argv) to keep it out of ps
                 SUMMARIZER_API_KEY="$(cat "${summarizerKeyPath}")"
                 export SUMMARIZER_API_KEY
+                args+=(
+                  --summarizer-api-url "${cfg.summarizerApiUrl}"
+                  --summarizer-model "${cfg.summarizerModel}"
+                )
               ''}
 
-              ${zulipNotifyScript}/bin/zulip-notify \
-                --webhook-url "$WEBHOOK_URL" \
-                --channel "${cfg.channel}" \
-                --service "${notifierCfg.watchedService}" \
-                --hostname "${config.networking.hostName}" \
-                ${lib.optionalString (cfg.summarizeFailures && !successFlag) ''
-                  --summarizer-api-url "${cfg.summarizerApiUrl}" \
-                  --summarizer-model "${cfg.summarizerModel}" \
-                ''}
-                ${if successFlag then "" else "--failure"}
+              ${zulipNotifyScript}/bin/zulip-notify "''${args[@]}"
             '';
           successScript = mkNotifyScript true;
           failureScript = mkNotifyScript false;
