@@ -99,12 +99,12 @@ lib.custom.mkSelfHostedFeature {
           content = ''
             {
               "rpc-username": "admin",
-              "rpc-password": "${config.sops.placeholder."media/transmission-password"}",
+              "rpc-password": "${config.sops.placeholder."transmission/password"}",
               "rpc-authentication-required": true
             }
           '';
         };
-        secrets."media/transmission-password" = {
+        secrets."transmission/password" = {
           owner = "transmission";
           group = "media";
           mode = "0600";
