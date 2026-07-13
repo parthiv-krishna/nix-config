@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+import os
 import subprocess
 import sys
-import tempfile
 from datetime import datetime
+from urllib.parse import urlencode
 
 import requests
 
@@ -85,85 +86,81 @@ def get_service_logs(service_name: str) -> str:
         return f"Error fetching logs: {e}"
 
 
-def upload_log_file(
-    session: requests.Session,
-    realm_url: str,
-    filename: str,
-    content: str,
+def summarize_logs(
+    api_url: str,
+    api_key: str,
+    model: str,
+    service_name: str,
+    hostname: str,
+    logs: str,
 ) -> str:
-    """Upload a log file to Zulip and return its URL, or None on failure."""
-    try:
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=True) as f:
-            f.write(content)
-            f.flush()
-            f.seek(0)
-            with open(f.name, "rb") as fp:
-                response = session.post(
-                    f"{realm_url}/api/v1/user_uploads",
-                    files={"filename": (filename, fp)},
-                    timeout=30,
-                )
-        response.raise_for_status()
-        data = response.json()
-        if data.get("result") != "success":
-            print(
-                f"Error uploading log file: {data.get('msg', 'unknown error')}",
-                file=sys.stderr,
-            )
-            return None
-        # prefer "url" (newer servers), fall back to deprecated "uri"
-        return data.get("url") or data.get("uri")
-    except Exception as e:
-        print(f"Error uploading log file: {e}", file=sys.stderr)
+    """Summarize service logs via a direct OpenAI-compatible chat completion.
+
+    Returns a short summary string, or None if summarization fails or is
+    disabled (no api_url/api_key/model).
+    """
+    if not (api_url and api_key and model):
         return None
 
+    prompt = (
+        f"The systemd service '{service_name}' on host '{hostname}' failed. "
+        "Below are its logs. In 1-3 sentences, briefly summarize the most "
+        "likely cause of the failure. Be concise and specific; do not include "
+        "any preamble, markdown headers, or suggestions unless critical.\n\n"
+        "=== LOGS ===\n"
+        f"{logs}"
+    )
 
-def send_message(
-    session: requests.Session,
-    realm_url: str,
-    channel: str,
-    topic: str,
-    content: str,
-) -> bool:
-    """Send a channel message to Zulip."""
     try:
-        response = session.post(
-            f"{realm_url}/api/v1/messages",
-            data={
-                "type": "stream",
-                "to": channel,
-                "topic": topic,
-                "content": content,
+        response = requests.post(
+            f"{api_url.rstrip('/')}/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}"},
+            json={
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 2048,
+                "temperature": 1,
+                "top_p": 0.95,
             },
-            timeout=30,
+            timeout=120,
         )
-        response.raise_for_status()
-        data = response.json()
-        if data.get("result") != "success":
-            print(
-                f"Error sending message: {data.get('msg', 'unknown error')}",
-                file=sys.stderr,
-            )
-            return False
-        return True
     except Exception as e:
-        print(f"Error sending message: {e}", file=sys.stderr)
-        return False
+        print(f"Summarizer request error: {e}", file=sys.stderr)
+        return None
+
+    if response.status_code != 200:
+        print(
+            f"Summarizer HTTP {response.status_code}: {response.text[:300]}",
+            file=sys.stderr,
+        )
+        return None
+
+    try:
+        message = response.json()["choices"][0]["message"]
+    except (ValueError, KeyError, IndexError) as e:
+        print(f"Summarizer parse error: {e}", file=sys.stderr)
+        return None
+
+    # reasoning models may split output; prefer the final answer content and
+    # fall back to reasoning_content if content is empty
+    summary = (message.get("content") or message.get("reasoning_content") or "").strip()
+    return summary or None
 
 
 def send_service_notification(
-    realm_url: str,
-    bot_email: str,
-    api_key: str,
+    webhook_url: str,
     channel: str,
     service_name: str,
     hostname: str,
     success: bool,
+    summarizer_api_url: str = "",
+    summarizer_api_key: str = "",
+    summarizer_model: str = "",
 ) -> bool:
-    """Send a service notification to Zulip with logs attached as an upload."""
+    """Send a status service notification to a Zulip incoming webhook.
 
-    session = requests.Session()
-    session.auth = (bot_email, api_key)
+    On failure, optionally include an AI-generated summary of the service logs.
+    """
 
     # topic is always "hostname/service" so messages thread per host and service
     topic = f"{hostname}/{service_name}"
@@ -175,21 +172,6 @@ def send_service_notification(
         timestamp = datetime.now()
 
     timestamp_message = timestamp.strftime("%b %d %Y %H:%M:%S")
-    timestamp_filename = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
-
-    # get logs
-    logs = get_service_logs(service_name)
-
-    # build the log file contents
-    log_filename = f"{service_name}-{hostname}-{timestamp_filename}.log"
-    log_body = (
-        f"Logs for {service_name} on {hostname}\n"
-        f"Timestamp: {timestamp_message}\n"
-        f"Status: {'Succeeded' if success else 'Failed'}\n" + "=" * 50 + "\n\n" + logs
-    )
-
-    # upload the log file
-    log_url = upload_log_file(session, realm_url, log_filename, log_body)
 
     # build the message
     if success:
@@ -199,57 +181,108 @@ def send_service_notification(
         status_emoji = ":cross_mark:"
         status_word = "failed"
 
-    content = (
+    text = (
         f"{status_emoji} **{service_name}** {status_word} on "
         f"**{hostname}** at {timestamp_message}"
     )
-    if log_url:
-        content += f"\n\n[{log_filename}]({log_url})"
-    else:
-        content += "\n\n(log upload failed; check journalctl on the host)"
 
-    return send_message(session, realm_url, channel, topic, content)
+    # on failure, try to attach a brief AI summary of the logs
+    if not success and summarizer_api_key:
+        logs = get_service_logs(service_name)
+        if logs.strip():
+            summary = summarize_logs(
+                summarizer_api_url,
+                summarizer_api_key,
+                summarizer_model,
+                service_name,
+                hostname,
+                logs,
+            )
+            if summary:
+                text += f"\n\n**Summary:** {summary}"
+
+    # route to the desired channel/topic via URL params on the incoming webhook
+    params = {"stream": channel, "topic": topic}
+    sep = "&" if "?" in webhook_url else "?"
+    url = f"{webhook_url}{sep}{urlencode(params)}"
+
+    try:
+        response = requests.post(url, json={"text": text}, timeout=30)
+    except Exception as e:
+        print(f"Error sending notification: {e}", file=sys.stderr)
+        return False
+
+    try:
+        data = response.json()
+    except ValueError:
+        print(
+            f"Error sending notification: HTTP {response.status_code}, "
+            f"non-JSON response: {response.text[:500]}",
+            file=sys.stderr,
+        )
+        return False
+
+    if data.get("result") != "success":
+        code = data.get("code", "")
+        msg = data.get("msg", "unknown error")
+        suffix = f" (code: {code})" if code else ""
+        print(
+            f"Error sending notification: HTTP {response.status_code}: {msg}{suffix}",
+            file=sys.stderr,
+        )
+        return False
+
+    return True
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Send service notifications to Zulip via the bot API",
+        description="Send service status notifications to a Zulip incoming webhook",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        "--realm-url",
+        "--webhook-url",
         required=True,
-        help="Zulip realm URL (e.g. https://org.zulipchat.com)",
+        help="Zulip incoming webhook URL (including api_key)",
     )
-    parser.add_argument("--bot-email", required=True, help="Zulip bot email address")
-    parser.add_argument("--api-key", required=True, help="Zulip bot API key")
     parser.add_argument(
         "--channel", required=True, help="Zulip channel (stream) to post to"
     )
-    parser.add_argument(
-        "--service", required=True, help="Service name for notification with logs"
-    )
+    parser.add_argument("--service", required=True, help="Service name for the status")
     parser.add_argument(
         "--hostname", required=True, help="Hostname for service notifications"
     )
     parser.add_argument(
         "--failure", action="store_true", help="Service failed (default: success)"
     )
+    parser.add_argument(
+        "--summarizer-api-url",
+        default="",
+        help="OpenAI-compatible base URL for log summarization (e.g. "
+        "https://inference-api.nvidia.com/v1).",
+    )
+    parser.add_argument(
+        "--summarizer-model",
+        default="",
+        help="Model id to use for summarization (e.g. openai/openai/gpt-5.6-luna).",
+    )
 
     args = parser.parse_args()
 
-    # normalize realm URL (strip trailing slash)
-    realm_url = args.realm_url.rstrip("/")
+    # API key comes from the environment (not a CLI arg) to avoid exposing it
+    # in the process list. Empty disables summarization.
+    summarizer_api_key = os.environ.get("SUMMARIZER_API_KEY", "")
 
     result = send_service_notification(
-        realm_url,
-        args.bot_email,
-        args.api_key,
+        args.webhook_url,
         args.channel,
         args.service,
         args.hostname,
         not args.failure,
+        args.summarizer_api_url,
+        summarizer_api_key,
+        args.summarizer_model,
     )
 
     sys.exit(0 if result else 1)

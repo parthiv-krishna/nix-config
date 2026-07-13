@@ -30,17 +30,33 @@ lib.custom.mkFeature {
       description = "Zulip notifiers that attach to systemd services";
     };
 
-    realmUrl = lib.mkOption {
-      type = lib.types.str;
-      default = "https://sub0.zulipchat.com";
-      description = "Base URL of the Zulip realm to send notifications to";
-      example = "https://sample.zulipchat.com";
-    };
-
     channel = lib.mkOption {
       type = lib.types.str;
       default = "alerts";
       description = "Zulip channel (stream) to post notifications to";
+    };
+
+    summarizeFailures = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        On failure notifications, summarize the service logs via a direct
+        OpenAI-compatible chat completion (see summarizerApiUrl/summarizerModel)
+        and include a brief likely-cause summary in the Zulip message. Requires
+        the `zulip/build_nvidia_api_key` secret.
+      '';
+    };
+
+    summarizerApiUrl = lib.mkOption {
+      type = lib.types.str;
+      default = "https://integrate.api.nvidia.com/v1";
+      description = "OpenAI-compatible base URL used to summarize failure logs";
+    };
+
+    summarizerModel = lib.mkOption {
+      type = lib.types.str;
+      default = "nvidia/nemotron-3-super-120b-a12b";
+      description = "Model id used to summarize failure logs";
     };
   };
 
@@ -69,8 +85,8 @@ lib.custom.mkFeature {
         '';
       };
 
-      botEmailPath = config.sops.secrets."zulip/bot_email".path;
-      apiKeyPath = config.sops.secrets."zulip/api_key".path;
+      webhookUrlPath = config.sops.secrets."zulip/webhook".path;
+      summarizerKeyPath = config.sops.secrets."zulip/build_nvidia_api_key".path;
 
       # helper function to create a notifier service
       mkNotifierService =
@@ -81,17 +97,24 @@ lib.custom.mkFeature {
             pkgs.writeShellScript "zulip-notifier-${name}-${if successFlag then "success" else "failure"}" ''
               set -o pipefail
 
-              # Read Zulip credentials from secret files
-              BOT_EMAIL="$(cat "${botEmailPath}")"
-              API_KEY="$(cat "${apiKeyPath}")"
+              # Read Zulip incoming webhook URL from secret file
+              WEBHOOK_URL="$(cat "${webhookUrlPath}")"
+
+              ${lib.optionalString (cfg.summarizeFailures && !successFlag) ''
+                # summarizer API key passed via env (not argv) to keep it out of ps
+                SUMMARIZER_API_KEY="$(cat "${summarizerKeyPath}")"
+                export SUMMARIZER_API_KEY
+              ''}
 
               ${zulipNotifyScript}/bin/zulip-notify \
-                --realm-url "${cfg.realmUrl}" \
-                --bot-email "$BOT_EMAIL" \
-                --api-key "$API_KEY" \
+                --webhook-url "$WEBHOOK_URL" \
                 --channel "${cfg.channel}" \
                 --service "${notifierCfg.watchedService}" \
                 --hostname "${config.networking.hostName}" \
+                ${lib.optionalString (cfg.summarizeFailures && !successFlag) ''
+                  --summarizer-api-url "${cfg.summarizerApiUrl}" \
+                  --summarizer-model "${cfg.summarizerModel}" \
+                ''}
                 ${if successFlag then "" else "--failure"}
             '';
           successScript = mkNotifyScript true;
@@ -135,7 +158,12 @@ lib.custom.mkFeature {
     in
     lib.mkIf (enabledNotifiers != { }) {
       systemd.services = notifierServices;
-      sops.secrets."zulip/bot_email" = { };
-      sops.secrets."zulip/api_key" = { };
+
+      sops.secrets = {
+        "zulip/webhook" = { };
+      }
+      // lib.optionalAttrs cfg.summarizeFailures {
+        "zulip/build_nvidia_api_key" = { };
+      };
     };
 }

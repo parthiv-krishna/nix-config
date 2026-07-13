@@ -248,10 +248,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1783820985,
-        "narHash": "sha256-BmVXYAQMu//WbsrvUFQ8yMEz0wfRVNocfe3ZhPJV1/s=",
+        "lastModified": 1783903372,
+        "narHash": "sha256-GvBT3ioQ5I8S95kpFUrP+0U41mrNep8+gg3sBuzy+fA=",
         "ref": "main",
-        "rev": "282c5c9e590dbde5f681b98c14115853a85443fc",
+        "rev": "74a833d9ebdebfaf3aaf9c2d06686077294cb531",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
