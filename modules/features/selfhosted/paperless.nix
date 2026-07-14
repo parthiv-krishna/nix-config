@@ -33,7 +33,15 @@ lib.custom.mkSelfHostedFeature {
     };
   };
 
-  persistentDirectories = [ "/var/lib/paperless" ];
+  persistentDirectories = [
+    "/var/lib/paperless"
+    {
+      directory = "/var/lib/redis-paperless";
+      user = "redis-paperless";
+      group = "redis-paperless";
+      mode = "0700";
+    }
+  ];
 
   serviceConfig =
     _cfg:
