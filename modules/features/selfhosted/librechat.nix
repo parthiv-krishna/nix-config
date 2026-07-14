@@ -30,7 +30,15 @@ lib.custom.mkSelfHostedFeature {
     };
   };
 
-  persistentDirectories = [ "/var/lib/librechat" ];
+  persistentDirectories = [
+    "/var/lib/librechat"
+    {
+      directory = "/var/db/mongodb";
+      user = "mongodb";
+      group = "mongodb";
+      mode = "0750";
+    }
+  ];
 
   serviceConfig =
     _cfg:

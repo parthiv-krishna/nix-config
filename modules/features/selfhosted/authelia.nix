@@ -19,6 +19,12 @@ lib.custom.mkSelfHostedFeature {
       group = "authelia-sub0.net";
       mode = "0750";
     }
+    {
+      directory = "/var/lib/redis-authelia-sub0.net";
+      user = "redis-authelia-sub0.net";
+      group = "redis-authelia-sub0.net";
+      mode = "0700";
+    }
   ];
 
   serviceConfig =
