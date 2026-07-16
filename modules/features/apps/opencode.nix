@@ -76,7 +76,7 @@ lib.custom.mkFeature {
           "nvidia-internal" # inference.nvidia.com
         ];
 
-        model = "nvidia-internal/gpt-5.6-sol";
+        model = "nvidia-internal/gpt-5.6-terra";
         small_model = "nvidia-internal/gpt-5.6-luna";
 
         skills.paths = [ ".agents/skills" ];
