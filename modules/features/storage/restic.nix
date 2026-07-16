@@ -268,8 +268,14 @@ lib.custom.mkFeature {
         # PrivateTmp creates a mount namespace, which prevents mounts created
         # in ExecStartPre from being visible in ExecStart. Disable both to
         # ensure the snapshot mount persists across service phases.
-        serviceConfig.PrivateMounts = lib.mkForce false;
-        serviceConfig.PrivateTmp = lib.mkForce false;
+        serviceConfig = {
+          PrivateMounts = lib.mkForce false;
+          PrivateTmp = lib.mkForce false;
+          Restart = "on-failure";
+          RestartSec = "5min";
+        };
+        startLimitBurst = 3;
+        startLimitIntervalSec = 30 * 60;
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
       };
