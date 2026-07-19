@@ -14,6 +14,7 @@
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
   };
+  boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
 
   custom = {
     manifests = {
@@ -35,6 +36,7 @@
         gatus.enable = true;
         grafana.enable = true;
         homepage.enable = true;
+        buildbot-nix.enable = true;
         prometheus.enable = true;
         prometheus-blackbox.enable = true;
         prometheus-caddy.enable = true;

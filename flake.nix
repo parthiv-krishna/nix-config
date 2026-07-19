@@ -2,6 +2,10 @@
   description = "My nix flake for system configuration, intended to be usable on NixOS and non-NixOS machines";
 
   inputs = {
+    buildbot-nix = {
+      url = "github:nix-community/buildbot-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     compose2nix = {
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -89,6 +93,8 @@
             inputs.sops-nix.nixosModules.sops
             inputs.home-manager.nixosModules.home-manager
             inputs.vpnconfinement.nixosModules.default
+            inputs.buildbot-nix.nixosModules.buildbot-master
+            inputs.buildbot-nix.nixosModules.buildbot-worker
             "${inputs.copyparty}/contrib/nixos/modules/copyparty.nix"
             (customLib.custom.loadFeatures {
               path = ./modules/features;
@@ -187,8 +193,13 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          hostChecks = lib.mapAttrs' (
+            hostName: _hostConfig:
+            lib.nameValuePair "nixos-${hostName}"
+              self.nixosConfigurations.${hostName}.config.system.build.toplevel
+          ) (lib.filterAttrs (_: hostConfig: hostConfig.system == system) hosts);
         in
-        import ./tools/checks.nix { inherit inputs pkgs system; }
+        (import ./tools/checks.nix { inherit inputs pkgs system; }) // hostChecks
       );
 
       # `nix develop`
