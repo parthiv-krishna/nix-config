@@ -23,7 +23,12 @@ lib.custom.mkFeature {
 
   systemConfig =
     _cfg:
-    { config, inputs, ... }:
+    {
+      config,
+      inputs,
+      pkgs,
+      ...
+    }:
     let
       passwordSecretName = "loginPasswords/parthiv";
     in
@@ -35,6 +40,7 @@ lib.custom.mkFeature {
 
       users.users.parthiv = {
         isNormalUser = true;
+        shell = pkgs.bashInteractive;
         hashedPasswordFile = config.sops.secrets."${passwordSecretName}".path;
         extraGroups = [
           "systemd-journal"
@@ -52,10 +58,13 @@ lib.custom.mkFeature {
 
   darwinConfig =
     _cfg:
-    { inputs, ... }:
+    { inputs, pkgs, ... }:
     {
       system.primaryUser = "parthiv";
-      users.users.parthiv.home = "/Users/parthiv";
+      users.users.parthiv = {
+        home = "/Users/parthiv";
+        shell = pkgs.bashInteractive;
+      };
 
       home-manager = homeManagerConfig inputs "24.11";
     };

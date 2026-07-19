@@ -7,20 +7,24 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.signal-desktop ];
+    { lib, pkgs, ... }:
+    lib.mkMerge [
+      {
+        home.packages = [ pkgs.signal-desktop ];
 
-      custom.features.meta.impermanence.directories = [
-        ".config/Signal"
-      ];
+        custom.features.meta.impermanence.directories = [
+          ".config/Signal"
+        ];
+      }
 
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          "x-scheme-handler/sgnl" = "signal.desktop";
-          "x-scheme-handler/signalcaptcha" = "signal.desktop";
+      (lib.mkIf pkgs.stdenv.isLinux {
+        xdg.mimeApps = {
+          enable = true;
+          defaultApplications = {
+            "x-scheme-handler/sgnl" = "signal.desktop";
+            "x-scheme-handler/signalcaptcha" = "signal.desktop";
+          };
         };
-      };
-    };
+      })
+    ];
 }

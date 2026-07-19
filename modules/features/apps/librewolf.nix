@@ -7,24 +7,28 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { pkgs, ... }:
-    {
-      home.packages = [ pkgs.librewolf ];
+    { lib, pkgs, ... }:
+    lib.mkMerge [
+      {
+        home.packages = [ pkgs.librewolf ];
 
-      custom.features.meta.impermanence.directories = [
-        ".librewolf"
-      ];
+        custom.features.meta.impermanence.directories = [
+          ".librewolf"
+        ];
+      }
 
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          "application/pdf" = "librewolf.desktop";
-          "text/html" = "librewolf.desktop";
-          "x-scheme-handler/about" = "librewolf.desktop";
-          "x-scheme-handler/http" = "librewolf.desktop";
-          "x-scheme-handler/https" = "librewolf.desktop";
-          "x-scheme-handler/unknown" = "librewolf.desktop";
+      (lib.mkIf pkgs.stdenv.isLinux {
+        xdg.mimeApps = {
+          enable = true;
+          defaultApplications = {
+            "application/pdf" = "librewolf.desktop";
+            "text/html" = "librewolf.desktop";
+            "x-scheme-handler/about" = "librewolf.desktop";
+            "x-scheme-handler/http" = "librewolf.desktop";
+            "x-scheme-handler/https" = "librewolf.desktop";
+            "x-scheme-handler/unknown" = "librewolf.desktop";
+          };
         };
-      };
-    };
+      })
+    ];
 }

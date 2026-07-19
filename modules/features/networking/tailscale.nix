@@ -50,4 +50,8 @@ lib.custom.mkFeature {
         ];
       };
     };
+
+  darwinConfig = _cfg: _: {
+    services.tailscale.enable = true;
+  };
 }
