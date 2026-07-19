@@ -62,8 +62,16 @@ lib.custom.mkSelfHostedFeature {
             webhookSecretFile = secretPath "github-webhook-secret";
             oauthId = "Iv23lino1OHuGpchbnrb";
             oauthSecretFile = secretPath "github-oauth-secret";
-            repoAllowlist = [ "parthiv-krishna/nix-config" ];
+            repoAllowlist = [ ];
             topic = null;
+          };
+
+          pullBased = {
+            pollInterval = 60;
+            repositories."parthiv-krishna/nix-config" = {
+              defaultBranch = "main";
+              url = "https://github.com/parthiv-krishna/nix-config.git";
+            };
           };
         };
 
