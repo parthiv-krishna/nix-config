@@ -242,6 +242,26 @@
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
       }
     },
+    "nix-darwin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784362797,
+        "narHash": "sha256-EP9b9b+OXDxHBPefFwMYCIaLq0fn3UkmrbfzbLUT7kQ=",
+        "owner": "nix-darwin",
+        "repo": "nix-darwin",
+        "rev": "b4cccbd4bc299c1f71ae185b79c3cf99aa82805c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-darwin",
+        "repo": "nix-darwin",
+        "type": "github"
+      }
+    },
     "nix-pre-commit": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -416,6 +436,7 @@
         "impermanence": "impermanence",
         "nix-colors": "nix-colors",
         "nix-config-secrets": "nix-config-secrets",
+        "nix-darwin": "nix-darwin",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nixvim": "nixvim",

@@ -27,5 +27,6 @@ let
 in
 {
   nixos = constantsModule;
+  darwin = constantsModule;
   home = constantsModule;
 }

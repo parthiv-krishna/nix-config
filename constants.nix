@@ -25,6 +25,7 @@ let
   systems = {
     x86 = "x86_64-linux";
     arm = "aarch64-linux";
+    mac = "aarch64-darwin";
   };
 
   tags = {
@@ -36,6 +37,11 @@ in
   inherit systems tags domains;
 
   hosts = {
+    honeycrisp = mkHost {
+      name = "honeycrisp";
+      system = systems.mac;
+      tags = [ tags.client ];
+    };
     icicle = mkHost {
       name = "icicle";
       system = systems.x86;

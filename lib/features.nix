@@ -1,23 +1,27 @@
 { lib, customLib, ... }:
 rec {
-  # mkFeature: Create a feature module that works in both NixOS and standalone home-manager
+  # mkFeature: Create a feature module that works in NixOS, nix-darwin, and standalone home-manager
   #
   # Arguments:
   #   path: list of strings defining the option path, e.g., ["hardware" "bluetooth"]
   #   extraOptions: additional options beyond the auto-generated `enable`
   #   systemConfig: function (cfg: moduleArgs: { ... }) returning NixOS config
+  #   darwinConfig: function (cfg: moduleArgs: { ... }) returning nix-darwin config
   #   homeConfig: function (cfg: moduleArgs: { ... }) returning home-manager config
   #   homeImports: list of paths to import in the home module
   #   systemConfigUnconditional: function (cfg: moduleArgs: { ... }) returning unconditional NixOS config (not wrapped in mkIf cfg.enable)
+  #   darwinConfigUnconditional: function (cfg: moduleArgs: { ... }) returning unconditional nix-darwin config
   mkFeature =
     {
       path,
       # extraOptions can be an attrset or a function (pkgs: { ... })
       extraOptions ? { },
       systemConfig ? null,
+      darwinConfig ? null,
       homeConfig ? null,
       homeImports ? [ ],
       systemConfigUnconditional ? null,
+      darwinConfigUnconditional ? null,
     }:
     let
       optionPath = [
@@ -79,6 +83,51 @@ rec {
                 { }
             )
             (lib.mkIf cfg.enable (if systemConfig != null then systemConfig cfg moduleArgs else { }))
+          ];
+        };
+
+      darwin =
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }@moduleArgs:
+        let
+          cfg = lib.getAttrFromPath optionPath config;
+          optionsDef = mkOptionsDef pkgs;
+        in
+        {
+          options = lib.setAttrByPath optionPath optionsDef;
+
+          config = lib.mkMerge [
+            (if darwinConfigUnconditional != null then darwinConfigUnconditional cfg moduleArgs else { })
+            (
+              if homeConfig != null || homeImports != [ ] then
+                {
+                  home-manager.sharedModules = [
+                    (
+                      {
+                        lib,
+                        pkgs,
+                        osConfig,
+                        ...
+                      }@hmArgs:
+                      let
+                        hmCfg = lib.getAttrFromPath optionPath osConfig;
+                      in
+                      {
+                        imports = homeImports;
+                        options = lib.setAttrByPath optionPath (mkOptionsDef pkgs);
+                        config = lib.mkIf hmCfg.enable (if homeConfig != null then homeConfig hmCfg hmArgs else { });
+                      }
+                    )
+                  ];
+                }
+              else
+                { }
+            )
+            (lib.mkIf cfg.enable (if darwinConfig != null then darwinConfig cfg moduleArgs else { }))
           ];
         };
 

@@ -1,5 +1,5 @@
 # nix-config
-My nix flake for system configuration, intended to be usable on both NixOS and non-NixOS machines
+My nix flake for system configuration, intended to be usable on NixOS, macOS, and other non-NixOS machines
 
 ## Philosophy
 
@@ -45,6 +45,11 @@ sudo nixos-rebuild switch --flake .
 ### Home-manager standalone
 ```bash
 home-manager switch --flake .
+```
+
+### macOS
+```bash
+darwin-rebuild switch --flake .#honeycrisp
 ```
 
 ## First-time setup

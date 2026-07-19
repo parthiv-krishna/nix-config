@@ -18,6 +18,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     impermanence = {
       url = "github:nix-community/impermanence";
     };
@@ -62,6 +66,8 @@
       constants = import ./constants.nix;
       inherit (constants) hosts systems;
       forEachSystem = lib.genAttrs (lib.attrValues systems);
+      nixosHosts = lib.filterAttrs (_: host: lib.hasSuffix "-linux" host.system) hosts;
+      darwinHosts = lib.filterAttrs (_: host: lib.hasSuffix "-darwin" host.system) hosts;
 
       # custom lib extensions (system-independent)
       customLib = lib.extend (
@@ -98,7 +104,29 @@
           };
           inherit (hostConfig) system;
         }
-      ) hosts;
+      ) nixosHosts;
+
+      # nix-darwin configurations with Home Manager integrated
+      darwinConfigurations = lib.mapAttrs (
+        hostName: hostConfig:
+        inputs.nix-darwin.lib.darwinSystem {
+          modules = [
+            inputs.home-manager.darwinModules.home-manager
+            (customLib.custom.loadFeatures {
+              path = ./modules/features;
+              mode = "darwin";
+              inherit customLib;
+            })
+            ./modules/manifests
+            ./hosts/${hostName}
+          ];
+          specialArgs = {
+            inherit inputs;
+            lib = customLib;
+          };
+          inherit (hostConfig) system;
+        }
+      ) darwinHosts;
 
       # standalone home-manager configurations for non-NixOS systems
       # generate for each of the configured usernames
