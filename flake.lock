@@ -16,6 +16,27 @@
         "type": "github"
       }
     },
+    "buildbot-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1783833875,
+        "narHash": "sha256-G+hRtNJ/Nnr6VFMQp2UZdx/ckJDR/RJoK0Fy/yx1/YY=",
+        "owner": "nix-community",
+        "repo": "buildbot-nix",
+        "rev": "147af587241e2af85399402da60a4f44fdb1e5d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "buildbot-nix",
+        "type": "github"
+      }
+    },
     "compose2nix": {
       "inputs": {
         "nixpkgs": [
@@ -227,10 +248,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1783908469,
-        "narHash": "sha256-gXGOXMe4r/TkOZqE4aQyddXtLWyN+MNhQEgBBF1V1/4=",
+        "lastModified": 1784588500,
+        "narHash": "sha256-/6qs5HdGCnpVEcMYJM8q9sru1pJtqHx9rOmjYTz3ktY=",
         "ref": "main",
-        "rev": "dfac0dba72ad1c834e291d2cc584311b93597127",
+        "rev": "50c12e416a9f42f06eb90efbbd6a33094bb46013",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -429,6 +450,7 @@
     },
     "root": {
       "inputs": {
+        "buildbot-nix": "buildbot-nix",
         "compose2nix": "compose2nix",
         "copyparty": "copyparty",
         "disko": "disko",
@@ -442,7 +464,7 @@
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",
         "sops-nix": "sops-nix",
-        "treefmt-nix": "treefmt-nix",
+        "treefmt-nix": "treefmt-nix_2",
         "vpnconfinement": "vpnconfinement"
       }
     },
@@ -483,6 +505,27 @@
       }
     },
     "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "buildbot-nix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780220602,
+        "narHash": "sha256-eynAfOmbmxJnkp7YewvCEbShNnnYJ9gLLqkzsYtBPeM=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "db947814a175b7ca6ded66e21383d938df01c227",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
