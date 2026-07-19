@@ -1,21 +1,41 @@
 # Configuration for honeycrisp (Apple Silicon Mac)
 {
   networking.hostName = "honeycrisp";
+  time.timeZone = "America/Los_Angeles";
 
   custom = {
-    manifests.required.enable = true;
+    manifests = {
+      desktop-core.enable = true;
+      laptop.enable = true;
+      required.enable = true;
+      sound-engineering.enable = true;
+    };
 
     features = {
-      apps.opencode.enable = true;
+      apps = {
+        # not available on darwin
+        dolphin.enable = false;
+        opencode.enable = true;
+        powertop.enable = false;
+      };
 
-      # These required-manifest defaults assume a persistent NixOS root.
+      # macOS manages these
+      hardware = {
+        audio.enable = false;
+        bluetooth.enable = false;
+      };
+
+      # TODO fix auto upgrade?
       meta = {
+        auto-upgrade.enable = false;
         impermanence.enable = false;
         sops.enable = false;
+        zulip-notifiers.enable = false;
       };
+
+      storage.restic.enable = false;
     };
   };
 
-  # This controls nix-darwin compatibility and should only change deliberately.
   system.stateVersion = 6;
 }

@@ -7,7 +7,7 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     {
       programs.bash = {
         enable = true;
@@ -29,7 +29,7 @@ lib.custom.mkFeature {
           ${pkgs.fastfetch}/bin/fastfetch
         '';
 
-        shellAliases = {
+        shellAliases = lib.optionalAttrs pkgs.stdenv.isLinux {
           open = "xdg-open";
         };
 
