@@ -27,7 +27,8 @@ lib.custom.mkFeature {
             bsg = "bisect good";
 
             c = "commit";
-            ca = "commit --amend --no-edit";
+            ca = "commit --amend";
+            can = "commit --amend --no-edit";
             cam = "commit --amend -m";
             cm = "commit -m";
 
@@ -43,10 +44,19 @@ lib.custom.mkFeature {
             dsw = "diff --staged --word-diff";
             dw = "diff --word-diff";
 
+            l = "log";
+            lo = "log --oneline";
+
             r = "reset";
 
             s = "status";
             su = "status -uno";
+
+            wt = "worktree";
+            wta = "worktree add";
+            wtd = "worktree remove"; # "delete"
+            wtl = "worktree list";
+            wtr = "worktree remove";
           };
 
           apply = {
