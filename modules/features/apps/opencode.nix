@@ -66,6 +66,20 @@ lib.custom.mkFeature {
                 reasoning = true;
                 variants = reasoningVariants;
               };
+
+              "nemotron-3-ultra" = {
+                id = "nvidia/nvidia/nemotron-3-ultra";
+                name = "Nemotron 3 Ultra";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
+
+              "nemotron-3-super" = {
+                id = "nvidia/nvidia/nemotron-3-super-v3";
+                name = "Nemotron 3 Super";
+                reasoning = true;
+                variants = reasoningVariants;
+              };
             };
           };
         };
@@ -76,7 +90,7 @@ lib.custom.mkFeature {
           "nvidia-internal" # inference.nvidia.com
         ];
 
-        model = "nvidia-internal/gpt-5.6-terra";
+        model = "nvidia-internal/gpt-5.6-sol";
         small_model = "nvidia-internal/gpt-5.6-luna";
 
         skills.paths = [ ".agents/skills" ];
