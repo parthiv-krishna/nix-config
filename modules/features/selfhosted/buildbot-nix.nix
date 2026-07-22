@@ -62,7 +62,7 @@ lib.custom.mkSelfHostedFeature {
             webhookSecretFile = secretPath "github-webhook-secret";
             oauthId = "Iv23lino1OHuGpchbnrb";
             oauthSecretFile = secretPath "github-oauth-secret";
-            repoAllowlist = [ ];
+            repoAllowlist = [ "parthiv-krishna/nix-config" ];
             topic = null;
           };
 
