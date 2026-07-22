@@ -12,6 +12,7 @@ lib.custom.mkFeature {
       settings = {
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
+        PermitRootLogin = "prohibit-password";
       };
       openFirewall = true;
     };
