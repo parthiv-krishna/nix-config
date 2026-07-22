@@ -8,17 +8,17 @@ lib.custom.mkFeature {
   extraOptions = {
     sopsFile = lib.mkOption {
       type = lib.types.str;
-      description = "The YAML file name for sops secrets (e.g., 'icicle.yaml')";
+      description = "The YAML file containing secrets";
       example = "icicle.yaml";
     };
   };
 
   systemConfig =
-    _cfg:
-    { config, inputs, ... }:
+    cfg:
+    { inputs, ... }:
     {
       sops = {
-        defaultSopsFile = "${inputs.nix-config-secrets}/${config.networking.hostName}.yaml";
+        defaultSopsFile = "${inputs.nix-config-secrets}/${cfg.sopsFile}";
         validateSopsFiles = false;
         useSystemdActivation = true;
 
