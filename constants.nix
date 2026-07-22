@@ -42,6 +42,11 @@ in
       system = systems.mac;
       tags = [ tags.client ];
     };
+    stratus = mkHost {
+      name = "stratus";
+      system = systems.x86;
+      tags = [ tags.server ];
+    };
     icicle = mkHost {
       name = "icicle";
       system = systems.x86;

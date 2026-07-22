@@ -36,7 +36,6 @@
         gatus.enable = true;
         grafana.enable = true;
         homepage.enable = true;
-        buildbot-nix.enable = true;
         prometheus.enable = true;
         prometheus-blackbox.enable = true;
         prometheus-caddy.enable = true;
