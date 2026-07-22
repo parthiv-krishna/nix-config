@@ -16,40 +16,42 @@ lib.custom.mkFeature {
 
   systemConfig =
     cfg:
-    { config, ... }:
+    { config, lib, ... }:
     let
       secretName = "tailscale/key";
     in
-    {
-      services.tailscale = {
-        enable = true;
-        authKeyFile = config.sops.secrets.${secretName}.path;
-        useRoutingFeatures = lib.mkIf cfg.isServer "server";
-        extraUpFlags = lib.mkIf cfg.isServer [
-          "--advertise-exit-node"
-          "--ssh"
-        ];
-      };
+    lib.mkMerge [
+      {
+        networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
-      sops.secrets.${secretName} = { };
+        services.tailscale = {
+          enable = true;
+          authKeyFile = config.sops.secrets.${secretName}.path;
+          useRoutingFeatures = lib.mkIf cfg.isServer "server";
+          extraUpFlags = lib.mkIf cfg.isServer [
+            "--advertise-exit-node"
+            "--ssh"
+          ];
+        };
 
-      # tailscale integrates with systemd-resolved
-      services.resolved = {
-        enable = true;
-        settings.Resolve.FallbackDNS = [
-          # quad9
-          "9.9.9.9"
-          "149.112.112.112"
-        ];
-      };
+        sops.secrets.${secretName} = { };
 
-      # persist tailscale state
-      environment.persistence."/persist/system" = {
-        directories = [
-          "/var/lib/tailscale"
-        ];
-      };
-    };
+        # tailscale integrates with systemd-resolved
+        services.resolved = {
+          enable = true;
+          settings.Resolve.FallbackDNS = [
+            # quad9
+            "9.9.9.9"
+            "149.112.112.112"
+          ];
+        };
+      }
+      (lib.custom.mkPersistentSystemDir {
+        directory = "/var/lib/tailscale";
+        user = "root";
+        group = "root";
+      })
+    ];
 
   darwinConfig = _cfg: _: {
     services.tailscale.enable = true;
