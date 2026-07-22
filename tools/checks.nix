@@ -3,10 +3,23 @@
 
 {
   inputs,
+  lib,
   pkgs,
   system,
   ...
 }:
+let
+  inherit (import ../constants.nix) hosts;
+  systemBuilds = lib.mapAttrs' (
+    hostName: _hostConfig:
+    lib.nameValuePair "build-${hostName}" (
+      if lib.hasSuffix "-darwin" system then
+        inputs.self.darwinConfigurations.${hostName}.system
+      else
+        inputs.self.nixosConfigurations.${hostName}.config.system.build.toplevel
+    )
+  ) (lib.filterAttrs (_: hostConfig: hostConfig.system == system) hosts);
+in
 {
 
   pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
@@ -43,3 +56,4 @@
     };
   };
 }
+// systemBuilds
