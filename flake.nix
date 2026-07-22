@@ -195,8 +195,12 @@
           pkgs = nixpkgs.legacyPackages.${system};
           hostChecks = lib.mapAttrs' (
             hostName: _hostConfig:
-            lib.nameValuePair "nixos-${hostName}"
-              self.nixosConfigurations.${hostName}.config.system.build.toplevel
+            lib.nameValuePair "build-${hostName}" (
+              if lib.hasSuffix "-darwin" system then
+                self.darwinConfigurations.${hostName}.system
+              else
+                self.nixosConfigurations.${hostName}.config.system.build.toplevel
+            )
           ) (lib.filterAttrs (_: hostConfig: hostConfig.system == system) hosts);
         in
         (import ./tools/checks.nix { inherit inputs pkgs system; }) // hostChecks
