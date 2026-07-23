@@ -27,7 +27,10 @@
     };
 
     features = {
-      apps.opencode.enable = true;
+      apps = {
+        opencode.enable = true;
+        pi.enable = true;
+      };
 
       desktop.idleMinutes = {
         lock = 5;
