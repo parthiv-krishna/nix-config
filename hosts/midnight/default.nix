@@ -37,7 +37,10 @@ in
     };
 
     features = {
-      apps.opencode.enable = true;
+      apps = {
+        opencode.enable = true;
+        pi.enable = true;
+      };
 
       hardware = {
         gpu = {

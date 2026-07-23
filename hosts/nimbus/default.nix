@@ -23,7 +23,10 @@
     };
 
     features = {
-      apps.opencode.enable = true;
+      apps = {
+        opencode.enable = true;
+        pi.enable = true;
+      };
 
       meta = {
         impermanence.rootPartitionPath = "/dev/root_vg/root";

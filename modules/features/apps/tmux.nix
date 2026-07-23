@@ -64,6 +64,10 @@ lib.custom.mkFeature {
           set -g set-clipboard on
           set -g allow-passthrough on
 
+          # Preserve modified keys used by terminal coding agents.
+          set -g extended-keys on
+          set -g extended-keys-format csi-u
+
           # Avoid leaking Kitty-specific terminal queries into tmux panes.
           set-environment -gu KITTY_INSTALLATION_DIR
           set-environment -gu KITTY_PID
@@ -92,9 +96,6 @@ lib.custom.mkFeature {
 
           # copy mode colors
           set-window-option -g mode-style "fg=#${base00},bg=#${base0A}"
-
-          # more stable terminal
-          set -g default-terminal "screen-256color"
         '';
       };
 

@@ -16,6 +16,7 @@
         # not available on darwin
         dolphin.enable = false;
         opencode.enable = true;
+        pi.enable = true;
         powertop.enable = false;
       };
 
