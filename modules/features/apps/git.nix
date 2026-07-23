@@ -92,6 +92,7 @@ lib.custom.mkFeature {
           # vim stuff
           "*~"
           "*.swp"
+          "Session.vim"
         ];
       };
 

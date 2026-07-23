@@ -23,7 +23,12 @@ lib.custom.mkFeature {
 
         plugins = with pkgs.tmuxPlugins; [
           fuzzback
-          resurrect
+          {
+            plugin = resurrect;
+            extraConfig = ''
+              set -g @resurrect-strategy-nvim 'session'
+            '';
+          }
           sensible
           sessionist
           sidebar
@@ -32,7 +37,8 @@ lib.custom.mkFeature {
           {
             plugin = continuum;
             extraConfig = ''
-              set -g @continuum-save-interval '15'
+              set -g @continuum-save-interval '1'
+              set -g @continuum-restore 'on'
               set -g status-right 'continuum: #{continuum_status} | %H:%M %d-%b-%y'
             '';
           }
