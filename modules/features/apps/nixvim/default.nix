@@ -25,6 +25,29 @@ lib.custom.mkFeature {
 
           enable = true;
 
+          extraPlugins = [
+            pkgs.vimPlugins.vim-obsession
+          ];
+
+          autoCmd = [
+            {
+              event = "VimEnter";
+              callback = {
+                __raw = ''
+                  function()
+                    if vim.v.this_session == "" and vim.fn.argc() == 0 then
+                      if vim.fn.filereadable("Session.vim") == 1 then
+                        vim.cmd("source Session.vim")
+                      else
+                        vim.cmd("Obsess")
+                      end
+                    end
+                  end
+                '';
+              };
+            }
+          ];
+
           viAlias = true;
           vimAlias = true;
           defaultEditor = true;
