@@ -17,6 +17,7 @@ _: {
 
               local api = require("nvim-tree.api")
               api.config.mappings.default_on_attach(bufnr)
+              vim.keymap.set("n", "<C-[>", api.tree.change_root_to_parent, opts("Up"))
               vim.keymap.set("n", "<C-K>", ":TmuxNavigateUp<CR>", opts("Refresh"))
             end
           '';
