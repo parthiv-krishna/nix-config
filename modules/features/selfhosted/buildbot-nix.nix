@@ -54,8 +54,12 @@ lib.custom.mkSelfHostedFeature {
             "aarch64-linux"
             "x86_64-linux"
           ];
+          # cross-compilation and large test suites can be slow
+          buildMaxSilentTime = 60 * 60 * 12;
+          buildTimeout = 60 * 60 * 24;
           workersFile = config.sops.templates."${secretsRoot}/workers.json".path;
           admins = [ "parthiv-krishna" ];
+          effects.extraSandboxPaths = [ (secretPath "github-nix-config-push-ssh-key") ];
           github = {
             appId = 4350657;
             appSecretKeyFile = secretPath "github-app-private-key";
@@ -65,7 +69,6 @@ lib.custom.mkSelfHostedFeature {
             repoAllowlist = [ "parthiv-krishna/nix-config" ];
             topic = null;
           };
-
           pullBased = {
             pollInterval = 60;
             repositories."parthiv-krishna/nix-config" = {
@@ -82,11 +85,15 @@ lib.custom.mkSelfHostedFeature {
       };
 
       systemd.services.buildbot-worker.environment.GIT_SSH_COMMAND =
-        "${pkgs.openssh}/bin/ssh -i ${secretPath "github-ssh-key"} -o IdentitiesOnly=yes -o UserKnownHostsFile=${pkgs.writeText "github-known-hosts" "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl"}";
+        "${pkgs.openssh}/bin/ssh -i ${secretPath "github-nix-config-secrets-read-ssh-key"} -o IdentitiesOnly=yes -o UserKnownHostsFile=${pkgs.writeText "github-known-hosts" "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl"}";
 
       sops.secrets = {
         "${secretsRoot}/worker-password" = { };
-        "${secretsRoot}/github-ssh-key" = {
+        "${secretsRoot}/github-nix-config-secrets-read-ssh-key" = {
+          owner = "buildbot-worker";
+          mode = "0400";
+        };
+        "${secretsRoot}/github-nix-config-push-ssh-key" = {
           owner = "buildbot-worker";
           mode = "0400";
         };

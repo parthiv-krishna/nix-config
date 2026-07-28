@@ -11,9 +11,17 @@ lib.custom.mkFeature {
     {
       system.autoUpgrade = {
         enable = true;
-        flake = "github:parthiv-krishna/nix-config#${config.networking.hostName}";
+        flake = "github:parthiv-krishna/nix-config/built#${config.networking.hostName}";
+        # force copying build from cache.sub0.net
         flags = [
           "-L"
+          "--builders"
+          "''"
+          "--max-jobs"
+          "0"
+          "--option"
+          "fallback"
+          "false"
         ];
         dates = "Tue 02:00";
         randomizedDelaySec = "45min";
