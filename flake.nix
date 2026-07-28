@@ -206,6 +206,8 @@
                 pkgs.openssh
               ];
               effectScript = ''
+                export USER=buildbot
+                export LOGNAME=buildbot
                 install -d -m 0700 "$HOME/.ssh"
                 install -m 0600 /run/secrets/buildbot-nix/github-nix-config-push-ssh-key "$HOME/.ssh/id_ed25519"
                 export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=${knownHosts}"
