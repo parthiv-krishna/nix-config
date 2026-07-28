@@ -8,8 +8,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "mealie.service" ];
 
-  homepage = {
-    category = "Tools";
+  homepage = categories: {
+    category = categories.tools;
     description = "Recipes";
     icon = "sh-mealie";
   };

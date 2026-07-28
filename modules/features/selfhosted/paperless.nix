@@ -6,8 +6,8 @@ lib.custom.mkSelfHostedFeature {
 
   # Exporter automatically stops all services during export, so we don't need backupServices
 
-  homepage = {
-    category = "Storage";
+  homepage = categories: {
+    category = categories.storage;
     description = "Document management";
     icon = "sh-paperless-ngx";
   };

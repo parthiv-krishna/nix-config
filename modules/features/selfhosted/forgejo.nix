@@ -8,8 +8,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "forgejo.service" ];
 
-  homepage = {
-    category = "Tools";
+  homepage = categories: {
+    category = categories.tools;
     description = "Code repositories";
     icon = "sh-forgejo";
   };

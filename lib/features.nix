@@ -218,7 +218,7 @@ rec {
   #   statusPath: health check path (e.g. '/health'). Null disables monitoring, empty string probes base URL.
   #   extraOptions: additional options beyond `enable`
   #   serviceConfig: function (cfg: moduleArgs: { ... }) returning NixOS service config
-  #   homepage: optional { category, description, icon } for homepage dashboard
+  #   homepage: optional categories: { category, description, icon } for homepage dashboard
   #   oidcClient: optional OIDC client config for Authelia
   #   backupServices: list of systemd services to stop during backups
   #   persistentDirectories: directories to persist (for impermanence)
@@ -251,7 +251,11 @@ rec {
 
       # Unconditional config: service metadata visible to all hosts
       systemConfigUnconditional =
-        _cfg: _moduleArgs:
+        _cfg: moduleArgs:
+        let
+          homepageMetadata =
+            if homepage != null then homepage moduleArgs.config.constants.homepage.categories else null;
+        in
         lib.mkMerge [
           # Always register in serviceMetadata (for monitoring, etc.)
           {
@@ -260,9 +264,9 @@ rec {
             };
           }
           # Only register in homepageMetadata if homepage is defined
-          (lib.optionalAttrs (homepage != null) {
+          (lib.optionalAttrs (homepageMetadata != null) {
             custom.features.selfhosted.homepageMetadata.${name} = {
-              inherit (homepage) category description icon;
+              inherit (homepageMetadata) category description icon;
             };
           })
           (lib.optionalAttrs (oidcClient != null) {

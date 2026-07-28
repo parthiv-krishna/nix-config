@@ -5,8 +5,8 @@ lib.custom.mkSelfHostedFeature {
   port = 9092;
   statusPath = "/-/healthy";
 
-  homepage = {
-    category = "Network";
+  homepage = categories: {
+    category = categories.network;
     description = "Time-series database for monitoring";
     icon = "sh-prometheus";
   };

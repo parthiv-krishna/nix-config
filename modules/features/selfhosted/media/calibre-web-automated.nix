@@ -14,8 +14,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "docker-calibre-web-automated.service" ];
 
-  homepage = {
-    category = "Media";
+  homepage = categories: {
+    category = categories.media;
     description = "Read eBooks";
     icon = "sh-calibre-web";
   };

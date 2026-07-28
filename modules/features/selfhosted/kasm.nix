@@ -6,8 +6,8 @@ lib.custom.mkSelfHostedFeature {
   port = 4443;
   statusPath = "/api/__healthcheck";
 
-  homepage = {
-    category = "Tools";
+  homepage = categories: {
+    category = categories.tools;
     description = "Virtual machines";
     icon = "sh-kasm-workspaces";
   };

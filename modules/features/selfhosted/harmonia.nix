@@ -10,8 +10,8 @@ lib.custom.mkSelfHostedFeature {
   inherit port;
   statusPath = "/health";
 
-  homepage = {
-    category = "Network";
+  homepage = categories: {
+    category = categories.network;
     description = "Nix binary cache";
     icon = "sh-nix";
   };

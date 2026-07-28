@@ -13,8 +13,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "bazarr.service" ];
 
-  homepage = {
-    category = "Media Management";
+  homepage = categories: {
+    category = categories.media-management;
     description = "Manage subtitles";
     icon = "sh-bazarr";
   };

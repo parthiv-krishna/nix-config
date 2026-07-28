@@ -9,8 +9,8 @@ lib.custom.mkSelfHostedFeature {
   inherit port;
   statusPath = "/health";
 
-  homepage = {
-    category = "Network";
+  homepage = categories: {
+    category = categories.network;
     description = "Uptime monitoring";
     icon = "sh-gatus";
   };

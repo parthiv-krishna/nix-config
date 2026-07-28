@@ -7,8 +7,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "copyparty.service" ];
 
-  homepage = {
-    category = "Storage";
+  homepage = categories: {
+    category = categories.storage;
     description = "(BETA) new option for file storage";
     icon = "sh-copyparty";
   };

@@ -16,8 +16,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "shelfmark.service" ];
 
-  homepage = {
-    category = "Media";
+  homepage = categories: {
+    category = categories.media;
     description = "Request a book";
     icon = "sh-shelfmark";
   };

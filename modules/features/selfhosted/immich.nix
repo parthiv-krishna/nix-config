@@ -8,8 +8,8 @@ lib.custom.mkSelfHostedFeature {
 
   # Immich has built-in automatic database backups so we don't need it as a backupService
 
-  homepage = {
-    category = "Storage";
+  homepage = categories: {
+    category = categories.storage;
     description = "Photo storage";
     icon = "sh-immich";
   };

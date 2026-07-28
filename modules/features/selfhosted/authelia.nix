@@ -6,8 +6,8 @@ lib.custom.mkSelfHostedFeature {
   port = 9091;
   statusPath = "/api/health";
 
-  homepage = {
-    category = "Network";
+  homepage = categories: {
+    category = categories.network;
     description = "Authentication portal";
     icon = "sh-authelia";
   };

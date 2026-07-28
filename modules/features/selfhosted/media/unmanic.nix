@@ -9,8 +9,8 @@ lib.custom.mkSelfHostedFeature {
   subdomain = "transcode";
   port = 8889;
 
-  homepage = {
-    category = "Media Management";
+  homepage = categories: {
+    category = categories.media-management;
     description = "Manage transcodes";
     icon = "sh-unmanic";
   };

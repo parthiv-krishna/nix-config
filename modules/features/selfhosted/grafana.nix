@@ -8,8 +8,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "grafana.service" ];
 
-  homepage = {
-    category = "Network";
+  homepage = categories: {
+    category = categories.network;
     description = "Charts and metrics";
     icon = "sh-grafana";
   };

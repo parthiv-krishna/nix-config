@@ -8,8 +8,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "librechat.service" ];
 
-  homepage = {
-    category = "Tools";
+  homepage = categories: {
+    category = categories.tools;
     description = "AI Chat Interface";
     icon = "sh-librechat";
   };

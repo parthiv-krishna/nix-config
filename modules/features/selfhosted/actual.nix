@@ -6,8 +6,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "actual.service" ];
 
-  homepage = {
-    category = "Tools";
+  homepage = categories: {
+    category = categories.tools;
     description = "Budgeting";
     icon = "sh-actual-budget";
   };

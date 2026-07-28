@@ -13,8 +13,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "sonarr.service" ];
 
-  homepage = {
-    category = "Media Management";
+  homepage = categories: {
+    category = categories.media-management;
     description = "Manage shows";
     icon = "sh-sonarr";
   };

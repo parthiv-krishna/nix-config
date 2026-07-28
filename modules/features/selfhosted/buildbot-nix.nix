@@ -9,8 +9,8 @@ lib.custom.mkSelfHostedFeature {
   port = 8010;
   statusPath = "/";
 
-  homepage = {
-    category = "Admin:";
+  homepage = categories: {
+    category = categories.network;
     description = "Nix continuous integration";
     icon = "sh-buildbot";
   };

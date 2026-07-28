@@ -12,8 +12,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "seerr.service" ];
 
-  homepage = {
-    category = "Media";
+  homepage = categories: {
+    category = categories.media;
     description = "Request media";
     icon = "sh-seerr";
   };
