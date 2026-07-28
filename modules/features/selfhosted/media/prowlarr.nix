@@ -13,8 +13,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "prowlarr.service" ];
 
-  homepage = {
-    category = "Media Management";
+  homepage = categories: {
+    category = categories.media-management;
     description = "Manage indexers";
     icon = "sh-prowlarr";
   };

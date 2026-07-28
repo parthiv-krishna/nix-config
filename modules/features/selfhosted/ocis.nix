@@ -8,8 +8,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "ocis.service" ];
 
-  homepage = {
-    category = "Storage";
+  homepage = categories: {
+    category = categories.storage;
     description = "General storage";
     icon = "sh-owncloud";
   };

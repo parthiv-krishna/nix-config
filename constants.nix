@@ -64,8 +64,6 @@ in
     };
   };
 
-  publicServerHost = "nimbus";
-
   homepage = {
     categories = {
       media = "Media";

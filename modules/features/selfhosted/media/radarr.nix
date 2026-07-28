@@ -13,8 +13,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "radarr.service" ];
 
-  homepage = {
-    category = "Media Management";
+  homepage = categories: {
+    category = categories.media-management;
     description = "Manage movies";
     icon = "sh-radarr";
   };

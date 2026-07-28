@@ -12,8 +12,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "jellyfin.service" ];
 
-  homepage = {
-    category = "Media";
+  homepage = categories: {
+    category = categories.media;
     description = "Watch movies and TV";
     icon = "sh-jellyfin";
   };

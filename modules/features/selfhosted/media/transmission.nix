@@ -15,8 +15,8 @@ lib.custom.mkSelfHostedFeature {
 
   backupServices = [ "transmission.service" ];
 
-  homepage = {
-    category = "Media Management";
+  homepage = categories: {
+    category = categories.media-management;
     description = "Manage downloads";
     icon = "sh-transmission";
   };
