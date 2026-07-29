@@ -203,11 +203,17 @@
               name = "update-built-tag";
               inputs = [
                 pkgs.git
+                pkgs.nss_wrapper
                 pkgs.openssh
               ];
               effectScript = ''
                 export USER=buildbot
                 export LOGNAME=buildbot
+                export NSS_WRAPPER_PASSWD="$HOME/passwd"
+                export NSS_WRAPPER_GROUP="$HOME/group"
+                export LD_PRELOAD="${pkgs.nss_wrapper}/lib/libnss_wrapper.so"
+                printf 'buildbot:x:0:0:Buildbot:%s:/bin/sh\n' "$HOME" > "$NSS_WRAPPER_PASSWD"
+                printf 'buildbot:x:0:\n' > "$NSS_WRAPPER_GROUP"
                 install -d -m 0700 "$HOME/.ssh"
                 install -m 0600 /run/secrets/buildbot-nix/github-nix-config-push-ssh-key "$HOME/.ssh/id_ed25519"
                 export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ed25519 -o IdentitiesOnly=yes -o UserKnownHostsFile=${knownHosts}"
