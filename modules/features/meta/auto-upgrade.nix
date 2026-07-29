@@ -49,11 +49,6 @@ lib.custom.mkFeature {
         nix-gc-after-upgrade.enable = true;
       };
 
-      # make ssh key accessible to auto upgrade service
-      systemd.tmpfiles.rules = [
-        "L /root/.ssh/id_ed25519 - - - - ${config.users.users.parthiv.home}/.ssh/id_ed25519"
-      ];
-
       programs.ssh.knownHosts = {
         "github.com" = {
           hostNames = [ "github.com" ];
