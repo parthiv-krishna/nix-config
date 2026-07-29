@@ -31,6 +31,12 @@ lib.custom.mkFeature {
 
         # disable GPG
         gnupg.sshKeyPaths = [ ];
+
+        # provide ssh key to root
+        secrets."sshKeys/parthiv" = {
+          mode = "0400";
+          path = "/root/.ssh/id_ed25519";
+        };
       };
     };
 
