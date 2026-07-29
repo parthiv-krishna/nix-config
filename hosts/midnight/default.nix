@@ -62,6 +62,7 @@ in
       };
 
       meta = {
+        auto-upgrade.dates = "13:00";
         # tell impermanence to wipe our ssd-root partition on boot
         impermanence.rootPartitionPath = "/dev/disk/by-partlabel/ssd-root";
         sops.sopsFile = "midnight.yaml";

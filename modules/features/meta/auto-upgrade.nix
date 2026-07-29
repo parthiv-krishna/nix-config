@@ -5,8 +5,14 @@ lib.custom.mkFeature {
     "auto-upgrade"
   ];
 
+  extraOptions.dates = lib.mkOption {
+    type = lib.types.str;
+    default = "05:00";
+    description = "systemd calendar expression for automatic upgrades";
+  };
+
   systemConfig =
-    _cfg:
+    cfg:
     { config, pkgs, ... }:
     {
       system.autoUpgrade = {
@@ -23,7 +29,7 @@ lib.custom.mkFeature {
           "fallback"
           "false"
         ];
-        dates = "Tue 02:00";
+        inherit (cfg) dates;
         randomizedDelaySec = "45min";
         persistent = true;
       };
