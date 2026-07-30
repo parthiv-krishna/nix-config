@@ -20,6 +20,7 @@ lib.custom.mkFeature {
     {
       programs.pi-coding-agent = {
         enable = true;
+        extraPackages = [ pkgs.nodejs ];
 
         settings = {
           defaultProvider = "litellm";
