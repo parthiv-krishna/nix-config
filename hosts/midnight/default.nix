@@ -77,10 +77,10 @@ in
         copyparty.enable = true;
         forgejo.enable = true;
         immich.enable = true;
-        kasm.enable = true;
-        librechat.enable = true;
-        llama-swap.enable = true;
-        # mealie.enable = true;
+        # kasm.enable = true;
+        # librechat.enable = true;
+        # llama-swap.enable = true;
+        mealie.enable = true;
         ocis.enable = true;
         paperless.enable = true;
         prometheus-caddy.enable = true;
