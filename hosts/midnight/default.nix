@@ -89,6 +89,7 @@ in
         prometheus-smartmon.enable = true;
         prometheus-systemd.enable = true;
         prometheus-zfs.enable = true;
+        searxng.enable = true;
         shelfmark.enable = true;
       };
 
