@@ -7,6 +7,7 @@
       apps = {
         bash.enable = lib.mkDefault true;
         btop.enable = lib.mkDefault true;
+        comma.enable = lib.mkDefault true;
         curl.enable = lib.mkDefault true;
         dig.enable = lib.mkDefault true;
         fastfetch.enable = lib.mkDefault true;
