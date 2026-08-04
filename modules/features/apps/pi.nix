@@ -29,6 +29,8 @@ lib.custom.mkFeature {
 
           enableInstallTelemetry = false;
 
+          context = "If <command> is missing, try `, <command>`";
+
           packages = [
             "npm:@gotgenes/pi-permission-system@21.0.0"
             "npm:@juicesharp/rpiv-ask-user-question@2.1.0"
