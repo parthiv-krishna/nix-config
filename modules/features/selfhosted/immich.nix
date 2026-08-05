@@ -56,18 +56,39 @@ lib.custom.mkSelfHostedFeature {
 
   serviceConfig =
     _cfg:
-    { pkgs, ... }:
+    {
+      config,
+      inputs,
+      pkgs,
+      ...
+    }:
+    let
+      # pin to flox-built versions of cuda stuff
+      pkgs-flox = import inputs.nixpkgs-flox {
+        inherit (pkgs) system;
+        config = {
+          allowUnfree = true;
+          cudaSupport = true;
+          inherit (config.custom.features.hardware.gpu.nvidia) cudaCapability;
+        };
+      };
+      immich-machine-learning-flox = pkgs-flox.immich-machine-learning.override {
+        inherit (pkgs) immich;
+      };
+    in
     {
       services = {
         immich = {
           enable = true;
           host = "0.0.0.0";
           mediaLocation = "/var/lib/immich";
-          # Point immich-machine-learning to the cuda-enabled runtime
+          package = pkgs.immich.override {
+            "immich-machine-learning" = immich-machine-learning-flox;
+          };
           machine-learning = {
             enable = true;
             environment = {
-              LD_LIBRARY_PATH = "${pkgs.python312Packages.onnxruntime}/lib/python3.12/site-packages/onnxruntime/capi";
+              LD_LIBRARY_PATH = "${pkgs-flox.python3Packages.onnxruntime}/${pkgs-flox.python3.sitePackages}/onnxruntime/capi";
               MPLCONFIGDIR = "/var/lib/immich/matplotlib";
               HF_HOME = "/var/lib/immich/hf-cache";
               TRANSFORMERS_CACHE = "/var/lib/immich/hf-cache";

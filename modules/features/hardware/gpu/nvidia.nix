@@ -61,10 +61,7 @@ lib.custom.mkFeature {
           nvtopPackages.nvidia
         ];
 
-        nixpkgs.config = {
-          cudaSupport = true;
-          inherit (cfg) cudaCapability;
-        };
+        nixpkgs.config.cudaCapability = cfg.cudaCapability;
 
         hardware.nvidia-container-toolkit.enable = true;
 
