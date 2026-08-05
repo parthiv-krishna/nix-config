@@ -42,6 +42,10 @@
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
+    # cuda builds
+    nixpkgs-flox = {
+      url = "github:flox/nixpkgs/unstable";
+    };
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
