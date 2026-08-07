@@ -41,15 +41,14 @@ _: {
 
     autoCmd = [
       {
-        event = "VimEnter";
+        event = "User";
+        pattern = "NixvimSessionNew";
         callback = {
           __raw = ''
             function()
-              if vim.fn.argc() == 0 and vim.api.nvim_buf_get_name(0) == "" and vim.bo.buftype == "" then
-                vim.schedule(function()
-                  require("telescope.builtin").find_files()
-                end)
-              end
+              vim.schedule(function()
+                require("telescope.builtin").find_files()
+              end)
             end
           '';
         };
