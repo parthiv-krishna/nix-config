@@ -10,7 +10,6 @@
         kitty.enable = lib.mkDefault true;
         brave.enable = lib.mkDefault true;
         discord.enable = lib.mkDefault true;
-        dolphin.enable = lib.mkDefault true;
         element-desktop.enable = lib.mkDefault true;
         librewolf.enable = lib.mkDefault true;
         protonmail-desktop.enable = lib.mkDefault true;

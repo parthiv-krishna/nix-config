@@ -41,7 +41,6 @@ lib.custom.mkFeature {
       environment.systemPackages = with pkgs; [
         brightnessctl
         kdePackages.dolphin
-        kitty
         niri
         playerctl
         wl-clipboard-rs

@@ -16,7 +16,6 @@ _: {
     manifests.required.enable = true;
 
     features.apps = {
-      opencode.enable = true;
       pi.enable = true;
     };
   };
