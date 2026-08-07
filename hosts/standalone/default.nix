@@ -1,9 +1,8 @@
 # home-manager config for standalone usage on non-NixOS hosts
-{ username, ... }:
-{
+_: {
   home = {
-    inherit username;
-    homeDirectory = "/home/${username}";
+    username = "parthiv";
+    homeDirectory = "/home/parthiv";
     stateVersion = "24.11";
   };
 
