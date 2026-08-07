@@ -69,19 +69,30 @@ lib.custom.mkSelfHostedFeature {
             repoAllowlist = [ "parthiv-krishna/nix-config" ];
             topic = null;
           };
-          pullBased = {
-            pollInterval = 60;
-            repositories."parthiv-krishna/nix-config" = {
-              defaultBranch = "main";
-              url = "https://github.com/parthiv-krishna/nix-config.git";
-            };
-          };
         };
 
         worker = {
           enable = true;
           workerPasswordFile = secretPath "worker-password";
         };
+      };
+
+      # we need polling to fetch changes since we can't receive webhooks from GH
+      services.buildbot-master = {
+        changeSource = [
+          ''
+            changes.GitPoller(
+              repourl="https://github.com/parthiv-krishna/nix-config",
+              branches=True,
+              pollInterval=60,
+              pollRandomDelayMin=0,
+              pollRandomDelayMax=0,
+              pollAtLaunch=True,
+              category="push",
+              project="parthiv-krishna/nix-config",
+            )
+          ''
+        ];
       };
 
       systemd.services.buildbot-worker.environment.GIT_SSH_COMMAND =
