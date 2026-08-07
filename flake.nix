@@ -138,42 +138,34 @@
         }
       ) darwinHosts;
 
-      # standalone home-manager configurations for non-NixOS systems
-      # generate for each of the configured usernames
-      homeConfigurations =
+      # standalone home-manager configuration for non-NixOS systems
+      homeConfigurations.parthiv =
         let
           hmLib = customLib.extend (
             _final: _prev: {
               inherit (inputs.home-manager.lib) hm;
             }
           );
-          mkHomeConfig =
-            username:
-            inputs.home-manager.lib.homeManagerConfiguration {
-              pkgs = nixpkgs.legacyPackages.${systems.x86};
-              modules = [
-                inputs.nix-colors.homeManagerModules.default
-                inputs.nixvim.homeModules.nixvim
-                inputs.sops-nix.homeManagerModules.sops
-                (hmLib.custom.loadFeatures {
-                  path = ./modules/features;
-                  mode = "home";
-                  customLib = hmLib;
-                })
-                ./modules/manifests
-                ./hosts/standalone
-              ];
-              extraSpecialArgs = {
-                inherit inputs username;
-                lib = hmLib;
-              };
-            };
-          usernames = [
-            "parthiv"
-            "parthivk"
-          ];
         in
-        lib.genAttrs usernames mkHomeConfig;
+        inputs.home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${systems.x86};
+          modules = [
+            inputs.nix-colors.homeManagerModules.default
+            inputs.nixvim.homeModules.nixvim
+            inputs.sops-nix.homeManagerModules.sops
+            (hmLib.custom.loadFeatures {
+              path = ./modules/features;
+              mode = "home";
+              customLib = hmLib;
+            })
+            ./modules/manifests
+            ./hosts/standalone
+          ];
+          extraSpecialArgs = {
+            inherit inputs;
+            lib = hmLib;
+          };
+        };
 
       # `nix fmt`
       formatter = forEachSystem (
