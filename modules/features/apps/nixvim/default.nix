@@ -11,6 +11,12 @@ lib.custom.mkFeature {
       default = "";
       description = "Command to run after creating a new Neovim split.";
     };
+
+    sessionFile = lib.mkOption {
+      type = lib.types.nonEmptyStr;
+      default = ".session.nvim";
+      description = "File used to save and restore the Neovim session.";
+    };
   };
 
   homeImports = lib.custom.scanPaths ./.;
@@ -19,6 +25,12 @@ lib.custom.mkFeature {
     cfg:
     { config, pkgs, ... }:
     {
+      programs.git.ignores = [
+        "*~"
+        "*.swp"
+        cfg.sessionFile
+      ];
+
       programs.nixvim = {
         config = {
           nixpkgs.source = pkgs.path;
@@ -35,13 +47,33 @@ lib.custom.mkFeature {
               callback = {
                 __raw = ''
                   function()
-                    if vim.v.this_session == "" and vim.fn.argc() == 0 then
-                      if vim.fn.filereadable("Session.vim") == 1 then
-                        vim.cmd("source Session.vim")
-                      else
-                        vim.cmd("Obsess")
-                      end
+                    if vim.v.this_session ~= "" or vim.fn.argc() ~= 0 then
+                      return
                     end
+
+                    -- defer until startup autocmds finish
+                    vim.schedule(function()
+                      local session_file = ${builtins.toJSON cfg.sessionFile}
+
+                      if vim.fn.filereadable(session_file) == 1 then
+                        vim.cmd("source " .. vim.fn.fnameescape(session_file))
+
+                        -- restore missing filetypes
+                        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+                          if vim.api.nvim_buf_is_loaded(bufnr)
+                              and vim.api.nvim_buf_get_name(bufnr) ~= ""
+                              and vim.bo[bufnr].buftype == ""
+                              and vim.bo[bufnr].filetype == "" then
+                            vim.api.nvim_buf_call(bufnr, function()
+                              vim.cmd("filetype detect")
+                            end)
+                          end
+                        end
+                      else
+                        vim.cmd("Obsess " .. vim.fn.fnameescape(session_file))
+                        vim.api.nvim_exec_autocmds("User", { pattern = "NixvimSessionNew" })
+                      end
+                    end)
                   end
                 '';
               };

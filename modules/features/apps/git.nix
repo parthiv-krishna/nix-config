@@ -87,13 +87,6 @@ lib.custom.mkFeature {
             email = "parthiv-krishna@users.noreply.github.com";
           };
         };
-
-        ignores = [
-          # vim stuff
-          "*~"
-          "*.swp"
-          "Session.vim"
-        ];
       };
 
       # difftastic for smarter diffs
