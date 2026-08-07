@@ -22,14 +22,14 @@ lib.custom.mkFeature {
         enable = true;
         extraPackages = [ pkgs.nodejs ];
 
+        context = "If <command> is missing, try `, <command>`";
+
         settings = {
           defaultProvider = "litellm";
           defaultModel = "openai/openai/gpt-5.6-sol";
           defaultThinkingLevel = "medium";
 
           enableInstallTelemetry = false;
-
-          context = "If <command> is missing, try `, <command>`";
 
           packages = [
             "npm:@gotgenes/pi-permission-system@21.0.0"
