@@ -74,8 +74,6 @@ lib.custom.mkSelfHostedFeature {
         });
     in
     {
-      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "seerr" ];
-
       # The OIDC branch pins pnpm 9, which nixpkgs marks insecure. It's a
       # build-time-only dependency (not part of the runtime closure), so allow it.
       nixpkgs.config.permittedInsecurePackages = [ "pnpm-9.15.9" ];
