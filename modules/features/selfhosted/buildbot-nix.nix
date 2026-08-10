@@ -60,6 +60,8 @@ lib.custom.mkSelfHostedFeature {
             "aarch64-linux"
             "x86_64-linux"
           ];
+          evalMaxMemorySize = 6144;
+          evalWorkerCount = 2;
           # cross-compilation and large test suites can be slow
           buildMaxSilentTime = 60 * 60 * 12;
           buildTimeout = 60 * 60 * 24;
