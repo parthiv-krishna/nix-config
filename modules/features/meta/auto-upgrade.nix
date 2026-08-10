@@ -28,6 +28,9 @@ lib.custom.mkFeature {
           "--option"
           "fallback"
           "false"
+          "--option"
+          "always-allow-substitutes"
+          "true"
         ];
         inherit (cfg) dates;
         randomizedDelaySec = "45min";
