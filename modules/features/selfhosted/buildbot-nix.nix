@@ -44,6 +44,12 @@ lib.custom.mkSelfHostedFeature {
       secretPath = name: config.sops.secrets."${secretsRoot}/${name}".path;
     in
     {
+      # keep intermediates of builds for cache serving
+      nix.settings = {
+        keep-derivations = true;
+        keep-outputs = true;
+      };
+
       services.buildbot-nix = {
         master = {
           enable = true;
