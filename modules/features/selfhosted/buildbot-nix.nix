@@ -103,6 +103,27 @@ lib.custom.mkSelfHostedFeature {
         ];
       };
 
+      systemd.services.buildbot-master = {
+        # reload, rather than restart, if service is changed
+        reloadIfChanged = true;
+        serviceConfig = {
+          ExecStop = pkgs.writeShellScript "buildbot-finish-jobs" ''
+            set -eu
+
+            if ! kill -0 "$MAINPID" 2>/dev/null; then
+              exit 0
+            fi
+
+            # tell buildbot to stop accepting work and exit after active builds finish.
+            kill -USR1 "$MAINPID"
+            while kill -0 "$MAINPID" 2>/dev/null; do
+              sleep 5
+            done
+          '';
+          TimeoutStopSec = "26h";
+        };
+      };
+
       systemd.services.buildbot-worker.environment.GIT_SSH_COMMAND =
         "${pkgs.openssh}/bin/ssh -i ${secretPath "github-nix-config-secrets-read-ssh-key"} -o IdentitiesOnly=yes -o UserKnownHostsFile=${pkgs.writeText "github-known-hosts" "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl"}";
 
