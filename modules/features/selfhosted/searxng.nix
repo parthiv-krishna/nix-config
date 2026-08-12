@@ -15,14 +15,7 @@ lib.custom.mkSelfHostedFeature {
     icon = "sh-searxng";
   };
 
-  persistentDirectories = [
-    {
-      directory = "/var/cache/searx";
-      user = "searx";
-      group = "searx";
-      mode = "0700";
-    }
-  ];
+  persistentDirectories = [ "/var/cache/private/searx" ];
 
   serviceConfig =
     _cfg:
