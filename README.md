@@ -49,20 +49,30 @@ home-manager switch --flake .
 
 ### macOS
 ```bash
-darwin-rebuild switch --flake .#honeycrisp
+sudo darwin-rebuild switch --flake .
 ```
 
 ## First-time setup
 
 ### NixOS
 
-TODO
+See [scripts/provisioning/README.md](/scripts/provisioning/README.md).
 
 ### Home-manager standalone
-First, [install nix](https://nixos.org/download/)
+First, [install nix](https://nixos.org/download/).
+
+Then install home manager:
 ```bash
 nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 nix-channel --update
 nix-shell '<home-manager>' -A install
 ```
 Then run the command in the Usage section.
+
+### macOS
+First, [install lix](https://lix.systems/install/#on-any-other-linuxmacos-system) (as recommended by the `nix-darwin` docs).
+
+Then, run the following for initial installation (update HOSTNAME to the desired one)
+```
+sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake .#HOSTNAME
+```

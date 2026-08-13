@@ -55,5 +55,7 @@ lib.custom.mkFeature {
       };
 
       custom.features.meta.impermanence.directories = [ ".pi/agent" ];
+
+      programs.git.ignores = [ ".pi-subagents" ];
     };
 }
