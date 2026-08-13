@@ -12,7 +12,7 @@ lib.custom.mkSelfHostedFeature {
   subdomain = "books";
   port = 8083;
 
-  backupServices = [ "docker-calibre-web-automated.service" ];
+  backupServices = [ "podman-calibre-web-automated.service" ];
 
   homepage = categories: {
     category = categories.media;
@@ -51,7 +51,7 @@ lib.custom.mkSelfHostedFeature {
     { config, ... }:
     {
       virtualisation.oci-containers.containers.calibre-web-automated = {
-        image = "crocodilestick/calibre-web-automated:latest";
+        image = "docker.io/crocodilestick/calibre-web-automated:latest";
         ports = [ "8083:8083" ];
         volumes = [
           "${stateDir}/calibre-web-automated/config:/config"
