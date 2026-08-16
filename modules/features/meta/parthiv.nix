@@ -66,6 +66,6 @@ lib.custom.mkFeature {
         shell = pkgs.bashInteractive;
       };
 
-      home-manager = homeManagerConfig inputs "24.11";
+      home-manager = homeManagerConfig inputs "26.11";
     };
 }

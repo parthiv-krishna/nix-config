@@ -12,6 +12,8 @@
     };
 
     features = {
+      desktop.darwin.enable = true;
+
       apps = {
         # not available on darwin
         pi.enable = true;
