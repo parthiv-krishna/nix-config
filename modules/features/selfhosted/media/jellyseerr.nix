@@ -37,12 +37,17 @@ lib.custom.mkSelfHostedFeature {
   serviceConfig =
     _cfg:
     {
+      inputs,
       pkgs,
       ...
     }:
     let
       # OIDC branch still requires pnpm 9, while upstream seerr uses pnpm 10.
-      pnpm = pkgs.pnpm_9.override { nodejs-slim = pkgs.nodejs-slim_22; };
+      pkgs-pnpm9 = import inputs.nixpkgs-pnpm9 {
+        system = pkgs.stdenv.hostPlatform.system;
+        config.permittedInsecurePackages = [ "pnpm-9.15.9" ];
+      };
+      pnpm = pkgs-pnpm9.pnpm_9.override { nodejs-slim = pkgs.nodejs-slim_22; };
       seerrOIDC =
         let
           src = pkgs.fetchFromGitHub {

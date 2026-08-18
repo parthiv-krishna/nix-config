@@ -12,7 +12,10 @@ lib.custom.mkFeature {
       home.packages = [ pkgs.discord ];
 
       custom.features.meta = {
-        unfree.allowedPackages = [ "discord" ];
+        unfree.allowedPackages = [
+          "discord"
+          "discord-unwrapped"
+        ];
         impermanence.directories = [ ".config/discord" ];
       };
     };
