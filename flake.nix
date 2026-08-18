@@ -42,6 +42,11 @@
     nixpkgs = {
       url = "nixpkgs/nixos-unstable";
     };
+    # pnpm 9 was removed from unstable after reaching EOL; keep it pinned for
+    # the Jellyseerr OIDC branch until that branch supports pnpm 10.
+    nixpkgs-pnpm9 = {
+      url = "github:NixOS/nixpkgs/f13ff45afd1bb73e640eaa08a7066dbed07e3238";
+    };
     # cuda builds
     nixpkgs-flox = {
       url = "github:flox/nixpkgs/unstable";
