@@ -90,9 +90,17 @@ lib.custom.mkSelfHostedFeature {
 
         widgets = [
           {
-            search = {
-              provider = [ "brave" ];
-            };
+            search =
+              let
+                searchUrl = lib.custom.mkPublicHttpsUrl config.constants "search";
+              in
+              {
+                provider = "custom";
+                url = "${searchUrl}/search?q=";
+                target = "_self";
+                showSearchSuggestions = true;
+                suggestionUrl = "${searchUrl}/autocompleter?q=";
+              };
           }
           {
             datetime = {

@@ -29,6 +29,13 @@ lib.custom.mkSelfHostedFeature {
         environmentFile = config.sops.templates."searxng/environment".path;
         settings = {
           general.instance_name = "${config.constants.domains.public} Search";
+          search = {
+            autocomplete = "duckduckgo";
+            formats = [
+              "html"
+              "json"
+            ];
+          };
           server = {
             inherit port;
             bind_address = "127.0.0.1";

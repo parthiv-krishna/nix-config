@@ -13,7 +13,7 @@ lib.custom.mkSelfHostedFeature {
   homepage = categories: {
     category = categories.network;
     description = "Nix binary cache";
-    icon = "sh-nix";
+    icon = "si-nixos-#5277c3";
   };
 
   serviceConfig =
