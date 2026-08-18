@@ -25,8 +25,8 @@ lib.custom.mkFeature {
         context = "If <command> is missing, try `, <command>`";
 
         settings = {
-          defaultProvider = "litellm";
-          defaultModel = "openai/openai/gpt-5.6-sol";
+          defaultProvider = "openai-codex";
+          defaultModel = "gpt-5.6-sol";
           defaultThinkingLevel = "medium";
 
           enableInstallTelemetry = false;
