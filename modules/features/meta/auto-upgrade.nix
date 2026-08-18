@@ -5,10 +5,18 @@ lib.custom.mkFeature {
     "auto-upgrade"
   ];
 
-  extraOptions.dates = lib.mkOption {
-    type = lib.types.str;
-    default = "05:00";
-    description = "systemd calendar expression for automatic upgrades";
+  extraOptions = {
+    dates = lib.mkOption {
+      type = lib.types.str;
+      default = "05:00";
+      description = "systemd calendar expression for automatic upgrades";
+    };
+
+    flake = lib.mkOption {
+      type = lib.types.str;
+      default = "github:parthiv-krishna/nix-config/built";
+      description = "Flake URI used for auto upgrades";
+    };
   };
 
   systemConfig =
@@ -17,7 +25,7 @@ lib.custom.mkFeature {
     {
       system.autoUpgrade = {
         enable = true;
-        flake = "github:parthiv-krishna/nix-config/built#${config.networking.hostName}";
+        flake = "${cfg.flake}#${config.networking.hostName}";
         # force copying build from cache.sub0.net
         flags = [
           "-L"
@@ -62,6 +70,53 @@ lib.custom.mkFeature {
         "github.com" = {
           hostNames = [ "github.com" ];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+        };
+      };
+    };
+
+  homeConfig =
+    cfg:
+    {
+      config,
+      lib,
+      osConfig ? null,
+      pkgs,
+      ...
+    }:
+    let
+      flakeTarget = "${cfg.flake}#${config.home.username}";
+      hmAutoUpgrade = pkgs.writeShellApplication {
+        name = "home-manager-auto-upgrade";
+        runtimeInputs = [
+          config.programs.home-manager.package
+          pkgs.nix
+        ];
+        text = ''
+          home-manager switch \
+            --flake ${lib.escapeShellArg flakeTarget} \
+            -L \
+            --option always-allow-substitutes true
+        '';
+      };
+    in
+    lib.optionalAttrs (osConfig == null) {
+      systemd.user = {
+        services.home-manager-auto-upgrade = {
+          Unit.Description = "Home Manager automatic upgrade";
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${hmAutoUpgrade}/bin/home-manager-auto-upgrade";
+          };
+        };
+
+        timers.home-manager-auto-upgrade = {
+          Unit.Description = "Home Manager automatic upgrade timer";
+          Timer = {
+            OnCalendar = cfg.dates;
+            RandomizedDelaySec = "45min";
+            Persistent = true;
+          };
+          Install.WantedBy = [ "timers.target" ];
         };
       };
     };
