@@ -4,10 +4,11 @@ let
   port = 8888;
 in
 lib.custom.mkSelfHostedFeature {
-  name = "searxng";
+  name = "searx";
   subdomain = "search";
   inherit port;
   statusPath = "/healthz";
+  vpn = true;
 
   homepage = categories: {
     category = categories.tools;
@@ -21,12 +22,12 @@ lib.custom.mkSelfHostedFeature {
     _cfg:
     { config, lib, ... }:
     let
-      secretsRoot = "searxng";
+      secretsRoot = "searx";
     in
     {
       services.searx = {
         enable = true;
-        environmentFile = config.sops.templates."searxng/environment".path;
+        environmentFile = config.sops.templates."searx/environment".path;
         settings = {
           general.instance_name = "${config.constants.domains.public} Search";
           search = {
@@ -38,7 +39,8 @@ lib.custom.mkSelfHostedFeature {
           };
           server = {
             inherit port;
-            bind_address = "127.0.0.1";
+            bind_address =
+              config.vpnNamespaces.${config.custom.features.networking.vpn.namespace}.namespaceAddress;
             base_url = "${lib.custom.mkPublicHttpsUrl config.constants "search"}/";
             secret_key = "$SEARX_SECRET_KEY";
           };
@@ -46,7 +48,7 @@ lib.custom.mkSelfHostedFeature {
       };
 
       sops = {
-        templates."searxng/environment" = {
+        templates."searx/environment" = {
           content = ''
             SEARX_SECRET_KEY=${config.sops.placeholder."${secretsRoot}/secret_key"}
           '';
