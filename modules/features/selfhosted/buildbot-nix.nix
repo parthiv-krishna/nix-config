@@ -40,6 +40,7 @@ lib.custom.mkSelfHostedFeature {
     _cfg:
     { config, pkgs, ... }:
     let
+      buildWorkerCount = 1;
       secretsRoot = "buildbot-nix";
       secretPath = name: config.sops.secrets."${secretsRoot}/${name}".path;
     in
@@ -81,12 +82,28 @@ lib.custom.mkSelfHostedFeature {
 
         worker = {
           enable = true;
+          workers = buildWorkerCount;
           workerPasswordFile = secretPath "worker-password";
         };
       };
 
       # we need polling to fetch changes since we can't receive webhooks from GH
       services.buildbot-master = {
+        extraConfig = ''
+          from buildbot.configurators import ConfiguratorBase
+
+          class WorkerConcurrencyConfigurator(ConfiguratorBase):
+              def configure(self, config):
+                  concurrency_lock = util.MasterLock(
+                      "buildbot-nix-worker-concurrency",
+                      maxCount=${toString buildWorkerCount},
+                  )
+                  for builder in config["builders"]:
+                      if builder.name.endswith("/nix-build"):
+                          builder.locks.append(concurrency_lock.access("counting"))
+
+          c["configurators"].append(WorkerConcurrencyConfigurator())
+        '';
         changeSource = [
           ''
             changes.GitPoller(
@@ -147,7 +164,7 @@ lib.custom.mkSelfHostedFeature {
           {
             name = config.networking.hostName;
             pass = config.sops.placeholder."${secretsRoot}/worker-password";
-            cores = 4;
+            cores = buildWorkerCount;
           }
         ];
         owner = "buildbot";
