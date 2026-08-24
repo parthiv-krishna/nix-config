@@ -38,7 +38,7 @@ lib.custom.mkFeature {
           ${pkgs.fastfetch}/bin/fastfetch
         '';
 
-        shellAliases = lib.optionalAttrs pkgs.stdenv.isLinux {
+        shellAliases = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
           open = "xdg-open";
         };
 

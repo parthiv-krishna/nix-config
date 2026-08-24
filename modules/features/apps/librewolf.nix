@@ -17,7 +17,7 @@ lib.custom.mkFeature {
         ];
       }
 
-      (lib.mkIf pkgs.stdenv.isLinux {
+      (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
         xdg.mimeApps = {
           enable = true;
           defaultApplications = {
