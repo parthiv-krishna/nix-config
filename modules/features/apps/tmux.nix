@@ -5,6 +5,16 @@ lib.custom.mkFeature {
     "tmux"
   ];
 
+  darwinConfig = _cfg: _: {
+    programs.tmux = {
+      enable = true;
+      # use home-manager tmux config
+      extraConfig = ''
+        source-file -q ~/.config/tmux/tmux.conf
+      '';
+    };
+  };
+
   homeConfig =
     _cfg:
     {
@@ -16,6 +26,8 @@ lib.custom.mkFeature {
     {
       programs.tmux = {
         enable = true;
+        # nix-darwin tmux has some fixes for PATH
+        package = if pkgs.stdenv.hostPlatform.isDarwin then null else pkgs.tmux;
 
         keyMode = "vi";
         shortcut = lib.mkDefault "a";
