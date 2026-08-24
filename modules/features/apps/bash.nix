@@ -5,6 +5,15 @@ lib.custom.mkFeature {
     "bash"
   ];
 
+  darwinConfig =
+    _cfg:
+    { config, pkgs, ... }:
+    lib.mkIf (config.system.primaryUser != null) {
+      programs.bash.enable = true;
+      environment.shells = [ pkgs.bashInteractive ];
+      users.users.${config.system.primaryUser}.shell = lib.mkDefault pkgs.bashInteractive;
+    };
+
   homeConfig =
     _cfg:
     { lib, pkgs, ... }:

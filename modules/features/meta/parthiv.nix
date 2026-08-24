@@ -61,8 +61,12 @@ lib.custom.mkFeature {
     { inputs, pkgs, ... }:
     {
       system.primaryUser = "parthiv";
+      users.knownUsers = [ "parthiv" ];
       users.users.parthiv = {
+        uid = 501;
+        description = "Parthiv Krishna";
         home = "/Users/parthiv";
+        isHidden = false;
         shell = pkgs.bashInteractive;
       };
 

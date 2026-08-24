@@ -33,9 +33,7 @@ lib.custom.mkFeature {
           orientation = lib.mkDefault "bottom";
           persistent-apps = lib.mkDefault [
             "/Users/parthiv/Applications/Home Manager Apps/kitty.app"
-            { spacer.small = true; }
             "/Users/parthiv/Applications/Home Manager Apps/LibreWolf.app"
-            "/Users/parthiv/Applications/Home Manager Apps/Brave Browser.app"
             { spacer.small = true; }
             "/System/Applications/Messages.app"
             "/System/Applications/FaceTime.app"
