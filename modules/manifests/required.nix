@@ -7,12 +7,12 @@
       apps = {
         bash.enable = lib.mkDefault true;
         btop.enable = lib.mkDefault true;
-        comma.enable = lib.mkDefault true;
         curl.enable = lib.mkDefault true;
         dig.enable = lib.mkDefault true;
         fastfetch.enable = lib.mkDefault true;
         fzf.enable = lib.mkDefault true;
         git.enable = lib.mkDefault true;
+        nix-index.enable = lib.mkDefault true;
         nixvim.enable = lib.mkDefault true;
         ripgrep.enable = lib.mkDefault true;
         tmux.enable = lib.mkDefault true;
