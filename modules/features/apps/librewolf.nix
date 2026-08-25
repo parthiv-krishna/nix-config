@@ -30,5 +30,11 @@ lib.custom.mkFeature {
           };
         };
       })
+
+      (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
+        home.activation.setDefaultBrowser = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+          run ${pkgs.defaultbrowser}/bin/defaultbrowser librewolf
+        '';
+      })
     ];
 }
