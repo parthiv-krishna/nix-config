@@ -65,7 +65,7 @@ lib.custom.mkSelfHostedFeature {
     let
       # pin to flox-built versions of cuda stuff
       pkgs-flox = import inputs.nixpkgs-flox {
-        inherit (pkgs) system;
+        system = pkgs.stdenv.hostPlatform.system;
         config = {
           allowUnfree = true;
           cudaSupport = true;

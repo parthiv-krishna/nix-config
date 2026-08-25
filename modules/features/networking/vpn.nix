@@ -239,10 +239,12 @@ lib.custom.mkFeature {
         }) cfg.confinedServices;
 
         timers.vpn-refresh = {
-          description = "Refresh wireguard every 12h";
+          description = "Refresh WireGuard every 4h";
           wantedBy = [ "timers.target" ];
           timerConfig = {
-            OnUnitActiveSec = "12h";
+            OnBootSec = "15m";
+            OnUnitActiveSec = "4h";
+            RandomizedDelaySec = "5m";
             Unit = "vpn-refresh.service";
           };
         };
