@@ -11,10 +11,10 @@
       jellyfin.enable = lib.mkDefault true;
       prowlarr.enable = lib.mkDefault true;
       radarr.enable = lib.mkDefault true;
+      recyclarr.enable = lib.mkDefault true;
       seerr.enable = lib.mkDefault true;
       sonarr.enable = lib.mkDefault true;
       transmission.enable = lib.mkDefault true;
-      unmanic.enable = lib.mkDefault true;
     };
   };
 }

@@ -69,6 +69,10 @@ lib.custom.mkSelfHostedFeature {
     users.users.jellyfin = {
       isSystemUser = true;
       group = "media";
+      extraGroups = [
+        "render"
+        "video"
+      ];
       uid = 146;
     };
   };
