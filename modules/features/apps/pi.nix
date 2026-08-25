@@ -22,8 +22,6 @@ lib.custom.mkFeature {
         enable = true;
         extraPackages = [ pkgs.nodejs ];
 
-        context = "If <command> is missing, try `, <command>`";
-
         settings = {
           defaultProvider = "openai-codex";
           defaultModel = "gpt-5.6-sol";
