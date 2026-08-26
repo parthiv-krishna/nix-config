@@ -5,15 +5,13 @@
 
   custom = {
     manifests = {
-      desktop-core.enable = true;
+      darwin.enable = true;
       laptop.enable = true;
       required.enable = true;
       sound-engineering.enable = true;
     };
 
     features = {
-      desktop.darwin.enable = true;
-
       apps = {
         # not available on darwin
         pi.enable = true;
