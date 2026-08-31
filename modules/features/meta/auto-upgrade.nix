@@ -102,7 +102,10 @@ lib.custom.mkFeature {
     lib.optionalAttrs (osConfig == null) {
       systemd.user = {
         services.home-manager-auto-upgrade = {
-          Unit.Description = "Home Manager automatic upgrade";
+          Unit = {
+            Description = "Home Manager automatic upgrade";
+            X-SwitchMethod = "keep-old";
+          };
           Service = {
             Type = "oneshot";
             ExecStart = "${hmAutoUpgrade}/bin/home-manager-auto-upgrade";
