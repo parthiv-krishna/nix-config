@@ -22,6 +22,12 @@ lib.custom.mkFeature {
         enable = true;
         extraPackages = [ pkgs.nodejs ];
 
+        models.providers.openai-codex.modelOverrides = {
+          "gpt-5.6-sol".contextWindow = 872000;
+          "gpt-5.6-terra".contextWindow = 872000;
+          "gpt-5.6-luna".contextWindow = 872000;
+        };
+
         settings = {
           defaultProvider = "openai-codex";
           defaultModel = "gpt-5.6-sol";
