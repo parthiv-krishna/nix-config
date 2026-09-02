@@ -7,9 +7,13 @@
     custom = {
       manifests.desktop-core.enable = lib.mkDefault true;
 
-      features.desktop.darwin = {
-        enable = lib.mkDefault true;
-        scroll-reverser.enable = lib.mkDefault true;
+      features = {
+        apps.vlc.enable = lib.mkDefault true;
+
+        desktop.darwin = {
+          enable = lib.mkDefault true;
+          scroll-reverser.enable = lib.mkDefault true;
+        };
       };
     };
   };
