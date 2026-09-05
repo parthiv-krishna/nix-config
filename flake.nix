@@ -74,6 +74,10 @@
     vpnconfinement = {
       url = "github:Maroka-chan/VPN-Confinement";
     };
+    nix-zulip = {
+      url = "git+https://git.afnix.fr/nix-zulip/nix-zulip.git";
+      flake = false;
+    };
   };
 
   outputs =
@@ -109,6 +113,7 @@
             inputs.buildbot-nix.nixosModules.buildbot-master
             inputs.buildbot-nix.nixosModules.buildbot-worker
             "${inputs.copyparty}/contrib/nixos/modules/copyparty.nix"
+            (import "${inputs.nix-zulip}/nix/nixos-modules/zulip/default.nix" { })
             (customLib.custom.loadFeatures {
               path = ./modules/features;
               mode = "nixos";

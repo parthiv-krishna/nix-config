@@ -248,10 +248,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1787632855,
-        "narHash": "sha256-2gn6N5okxBTnitmjVhvd50HZ20WFbXIeEbPZE7rp/rk=",
+        "lastModified": 1788499264,
+        "narHash": "sha256-PzAvRUzmDIlMvRqzGingv4fPsuHXWD+YvYB/fBxpKg4=",
         "ref": "main",
-        "rev": "67960bee744a1065e6efbe85e9c210f6cc45760a",
+        "rev": "b0bcb9e8a7bca67d2c2b941db1bafc782aff66d1",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -324,6 +324,22 @@
         "owner": "jmgilman",
         "repo": "nix-pre-commit",
         "type": "github"
+      }
+    },
+    "nix-zulip": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786883744,
+        "narHash": "sha256-iQp9gUBKtTKpUWy1G+ibuCJFRjEqDdjaRLor0beYkiQ=",
+        "ref": "refs/heads/main",
+        "rev": "d5b9a9323dabe4e86ba82da2f7c8882e115c26cd",
+        "revCount": 119,
+        "type": "git",
+        "url": "https://git.afnix.fr/nix-zulip/nix-zulip.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.afnix.fr/nix-zulip/nix-zulip.git"
       }
     },
     "nixos-hardware": {
@@ -512,6 +528,7 @@
         "nix-config-secrets": "nix-config-secrets",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
+        "nix-zulip": "nix-zulip",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-flox": "nixpkgs-flox",

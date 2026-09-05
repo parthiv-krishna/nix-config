@@ -43,7 +43,7 @@ lib.custom.mkFeature {
         On failure notifications, summarize the service logs via a direct
         OpenAI-compatible chat completion (see summarizerApiUrl/summarizerModel)
         and include a brief likely-cause summary in the Zulip message. Requires
-        the `zulip/build_nvidia_api_key` secret.
+        the `zulip-notifiers/build_nvidia_api_key` secret.
       '';
     };
 
@@ -85,8 +85,8 @@ lib.custom.mkFeature {
         '';
       };
 
-      webhookUrlPath = config.sops.secrets."zulip/webhook".path;
-      summarizerKeyPath = config.sops.secrets."zulip/build_nvidia_api_key".path;
+      webhookUrlPath = config.sops.secrets."zulip-notifiers/webhook".path;
+      summarizerKeyPath = config.sops.secrets."zulip-notifiers/build_nvidia_api_key".path;
 
       # helper function to create a notifier service
       mkNotifierService =
@@ -164,10 +164,10 @@ lib.custom.mkFeature {
       systemd.services = notifierServices;
 
       sops.secrets = {
-        "zulip/webhook" = { };
+        "zulip-notifiers/webhook" = { };
       }
       // lib.optionalAttrs cfg.summarizeFailures {
-        "zulip/build_nvidia_api_key" = { };
+        "zulip-notifiers/build_nvidia_api_key" = { };
       };
     };
 }
