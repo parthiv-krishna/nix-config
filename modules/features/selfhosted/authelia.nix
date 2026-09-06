@@ -111,10 +111,10 @@ lib.custom.mkSelfHostedFeature {
                   password: {{ secret "${config.sops.secrets."authelia/session/redis/password".path}" }}
               notifier:
                 smtp:
-                  address: 'submission://${config.constants.smtp.server}:${toString config.constants.smtp.port}'
-                  username: '${config.constants.smtp.username}'
+                  address: 'submission://${config.constants.secrets.smtp.server}:${toString config.constants.secrets.smtp.port}'
+                  username: '${config.constants.secrets.smtp.username}'
                   password: {{ secret "${config.sops.secrets."authelia/notifier/smtp/token".path}" | msquote }}
-                  sender: '${config.constants.smtp.username}'
+                  sender: '${config.constants.secrets.smtp.username}'
             '')
             (
               let

@@ -91,7 +91,12 @@ let
       throw "Unsupported constant type: ${builtins.typeOf value}";
 
   constantsModule = { inputs, ... }: {
-    options.constants = wrapAsOption (values // import "${inputs.nix-config-secrets}/constants.nix");
+    options.constants = wrapAsOption (
+      values
+      // {
+        secrets = import "${inputs.nix-config-secrets}/constants.nix";
+      }
+    );
   };
 in
 {
