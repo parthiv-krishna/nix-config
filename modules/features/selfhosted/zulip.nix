@@ -2,11 +2,11 @@
 { lib }:
 let
   port = 9080;
+  subdomain = "chat";
 in
 lib.custom.mkSelfHostedFeature {
   name = "zulip";
-  subdomain = "chat";
-  inherit port;
+  inherit port subdomain;
 
   homepage = categories: {
     category = categories.tools;
@@ -63,10 +63,7 @@ lib.custom.mkSelfHostedFeature {
       ...
     }:
     let
-      subdomain = "chat";
       publicFqdn = lib.custom.mkPublicFqdn config.constants subdomain;
-      secretsRoot = "zulip";
-      oidcConfigTemplate = "zulip/oidc-config.json";
       zulipSource = inputs.nix-zulip;
     in
     {
@@ -119,26 +116,34 @@ lib.custom.mkSelfHostedFeature {
           enablePostgresqlLocally = true;
           host = publicFqdn;
 
-          camoKeyFile = config.sops.secrets."${secretsRoot}/camo_key".path;
-          sharedSecretKeyFile = config.sops.secrets."${secretsRoot}/shared_secret".path;
-          secretKeyFile = config.sops.secrets."${secretsRoot}/secret_key".path;
-          avatarSaltKeyFile = config.sops.secrets."${secretsRoot}/avatar_salt".path;
-          rabbitmqPasswordFile = config.sops.secrets."${secretsRoot}/rabbitmq_password".path;
+          camoKeyFile = config.sops.secrets."zulip/camo_key".path;
+          sharedSecretKeyFile = config.sops.secrets."zulip/shared_secret".path;
+          secretKeyFile = config.sops.secrets."zulip/secret_key".path;
+          avatarSaltKeyFile = config.sops.secrets."zulip/avatar_salt".path;
+          rabbitmqPasswordFile = config.sops.secrets."zulip/rabbitmq/password".path;
+          extraSecrets.email_password = config.sops.secrets."zulip/smtp/token".path;
 
           zulipSettings = {
             EXTERNAL_HOST = publicFqdn;
-            ZULIP_ADMINISTRATOR = "admin@${config.constants.domains.public}";
+            ZULIP_ADMINISTRATOR = config.constants.smtp.username;
             ZULIP_SERVICE_PUSH_NOTIFICATIONS = false;
             ZULIP_SERVICE_SUBMIT_USAGE_STATISTICS = false;
             REDIS_PORT = 6380;
             CSRF_TRUSTED_ORIGINS = [ "https://${publicFqdn}" ];
             SOCIAL_AUTH_REDIRECT_IS_HTTPS = true;
+            EMAIL_HOST = config.constants.smtp.server;
+            EMAIL_HOST_USER = config.constants.smtp.username;
+            EMAIL_PORT = config.constants.smtp.port;
+            EMAIL_USE_TLS = true;
+            ADD_TOKENS_TO_NOREPLY_ADDRESS = false;
+            NOREPLY_EMAIL_ADDRESS = config.constants.smtp.username;
+            INSTALLATION_NAME = "${config.constants.domains.public} Zulip";
             AUTHENTICATION_BACKENDS = [
               "zproject.backends.EmailAuthBackend"
               "zproject.backends.GenericOpenIdConnectBackend"
             ];
             SOCIAL_AUTH_OIDC_ENABLED_IDPS = {
-              _get_secret = config.sops.templates.${oidcConfigTemplate}.path;
+              _get_secret = config.sops.templates."zulip/oidc-config.json".path;
             };
           };
         };
@@ -173,29 +178,32 @@ lib.custom.mkSelfHostedFeature {
       };
 
       sops = {
-        templates.${oidcConfigTemplate} = {
-          content = builtins.toJSON {
-            authelia = {
-              oidc_url = "${lib.custom.mkPublicHttpsUrl config.constants "login"}";
-              display_name = "${config.constants.domains.public} SSO";
-              display_icon = null;
-              client_id = config.sops.placeholder."${secretsRoot}/client_id";
-              secret = config.sops.placeholder."${secretsRoot}/client_secret_orig";
-              auto_signup = true;
+        templates = {
+          "zulip/oidc-config.json" = {
+            content = builtins.toJSON {
+              authelia = {
+                oidc_url = "${lib.custom.mkPublicHttpsUrl config.constants "login"}";
+                display_name = "${config.constants.domains.public} SSO";
+                display_icon = null;
+                client_id = config.sops.placeholder."zulip/oidc/client_id";
+                secret = config.sops.placeholder."zulip/oidc/client_secret";
+                auto_signup = true;
+              };
             };
+            owner = "zulip";
+            mode = "0400";
           };
-          owner = "zulip";
-          mode = "0400";
         };
 
         secrets = {
-          "${secretsRoot}/camo_key" = { };
-          "${secretsRoot}/shared_secret" = { };
-          "${secretsRoot}/secret_key" = { };
-          "${secretsRoot}/avatar_salt" = { };
-          "${secretsRoot}/rabbitmq_password" = { };
-          "${secretsRoot}/client_id" = { };
-          "${secretsRoot}/client_secret_orig" = { };
+          "zulip/camo_key" = { };
+          "zulip/shared_secret" = { };
+          "zulip/secret_key" = { };
+          "zulip/avatar_salt" = { };
+          "zulip/rabbitmq/password" = { };
+          "zulip/oidc/client_id" = { };
+          "zulip/oidc/client_secret" = { };
+          "zulip/smtp/token" = { };
         };
       };
     };
