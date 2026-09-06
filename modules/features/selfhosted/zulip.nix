@@ -131,6 +131,8 @@ lib.custom.mkSelfHostedFeature {
             ZULIP_SERVICE_PUSH_NOTIFICATIONS = false;
             ZULIP_SERVICE_SUBMIT_USAGE_STATISTICS = false;
             REDIS_PORT = 6380;
+            CSRF_TRUSTED_ORIGINS = [ "https://${publicFqdn}" ];
+            SOCIAL_AUTH_REDIRECT_IS_HTTPS = true;
             AUTHENTICATION_BACKENDS = [
               "zproject.backends.EmailAuthBackend"
               "zproject.backends.GenericOpenIdConnectBackend"
