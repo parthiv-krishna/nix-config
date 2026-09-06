@@ -100,10 +100,7 @@ lib.custom.mkSelfHostedFeature {
               local.path = "${stateDir}/db.sqlite3";
             };
             server.endpoints.authz.forward-auth.implementation = "ForwardAuth";
-            notifier = {
-              disable_startup_check = false;
-              filesystem.filename = "${stateDir}/notification.txt";
-            };
+            notifier.disable_startup_check = false;
           }
           // config.custom.features.selfhosted.autheliaExtraConfig;
 
@@ -112,6 +109,14 @@ lib.custom.mkSelfHostedFeature {
               session:
                 redis:
                   password: {{ secret "${config.sops.secrets."authelia/session/redis/password".path}" }}
+              notifier:
+                smtp:
+                  address: 'submission://{{ secret "${
+                    config.sops.secrets."authelia/notifier/smtp/server".path
+                  }" }}:{{ secret "${config.sops.secrets."authelia/notifier/smtp/port".path}" }}'
+                  username: {{ secret "${config.sops.secrets."authelia/notifier/smtp/username".path}" | msquote }}
+                  password: {{ secret "${config.sops.secrets."authelia/notifier/smtp/token".path}" | msquote }}
+                  sender: {{ secret "${config.sops.secrets."authelia/notifier/smtp/username".path}" | msquote }}
             '')
             (
               let
@@ -200,6 +205,10 @@ lib.custom.mkSelfHostedFeature {
             "authelia/identity_validation/reset_password/jwt_secret"
             "authelia/identity_providers/oidc/jwks/key"
             "authelia/identity_providers/oidc/hmac_secret"
+            "authelia/notifier/smtp/server"
+            "authelia/notifier/smtp/port"
+            "authelia/notifier/smtp/username"
+            "authelia/notifier/smtp/token"
             "authelia/session/secret"
             "authelia/session/redis/password"
             "authelia/storage/encryption_key"
