@@ -26,6 +26,7 @@ lib.custom.mkFeature {
           "gpt-5.6-sol".contextWindow = 872000;
           "gpt-5.6-terra".contextWindow = 872000;
           "gpt-5.6-luna".contextWindow = 872000;
+          "gpt-6-astra".contextWindow = 872000;
         };
 
         settings = {
