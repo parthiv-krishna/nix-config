@@ -84,7 +84,7 @@
     { nixpkgs, self, ... }@inputs:
     let
       inherit (nixpkgs) lib;
-      constants = import ./constants.nix;
+      constants = (import ./modules/features/meta/constants.nix { lib = customLib; }).values;
       inherit (constants) hosts systems;
       forEachSystem = lib.genAttrs (lib.attrValues systems);
       nixosHosts = lib.filterAttrs (_: host: lib.hasSuffix "-linux" host.system) hosts;
