@@ -9,7 +9,7 @@
   ...
 }:
 let
-  inherit (import ../constants.nix) hosts;
+  inherit ((import ../modules/features/meta/constants.nix { inherit lib; }).values) hosts;
   systemBuilds = lib.mapAttrs' (
     hostName: _hostConfig:
     lib.nameValuePair "build-${hostName}" (
