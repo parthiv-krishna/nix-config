@@ -125,18 +125,18 @@ lib.custom.mkSelfHostedFeature {
 
           zulipSettings = {
             EXTERNAL_HOST = publicFqdn;
-            ZULIP_ADMINISTRATOR = config.constants.smtp.username;
+            ZULIP_ADMINISTRATOR = config.constants.secrets.smtp.username;
             ZULIP_SERVICE_PUSH_NOTIFICATIONS = false;
             ZULIP_SERVICE_SUBMIT_USAGE_STATISTICS = false;
             REDIS_PORT = 6380;
             CSRF_TRUSTED_ORIGINS = [ "https://${publicFqdn}" ];
             SOCIAL_AUTH_REDIRECT_IS_HTTPS = true;
-            EMAIL_HOST = config.constants.smtp.server;
-            EMAIL_HOST_USER = config.constants.smtp.username;
-            EMAIL_PORT = config.constants.smtp.port;
+            EMAIL_HOST = config.constants.secrets.smtp.server;
+            EMAIL_HOST_USER = config.constants.secrets.smtp.username;
+            EMAIL_PORT = config.constants.secrets.smtp.port;
             EMAIL_USE_TLS = true;
             ADD_TOKENS_TO_NOREPLY_ADDRESS = false;
-            NOREPLY_EMAIL_ADDRESS = config.constants.smtp.username;
+            NOREPLY_EMAIL_ADDRESS = config.constants.secrets.smtp.username;
             INSTALLATION_NAME = "${config.constants.domains.public} Zulip";
             AUTHENTICATION_BACKENDS = [
               "zproject.backends.EmailAuthBackend"
