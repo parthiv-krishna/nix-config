@@ -2,21 +2,21 @@
 lib.custom.mkFeature {
   path = [
     "apps"
-    "vlc"
+    "zulip"
   ];
 
   darwinConfig = _cfg: _: {
-    homebrew.casks = [ "vlc" ];
+    homebrew.casks = [ "zulip" ];
   };
 
   homeConfig =
     _cfg:
-    { lib, pkgs, ... }:
+    { pkgs, ... }:
     lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-      home.packages = [ pkgs.vlc ];
+      home.packages = [ pkgs.zulip ];
 
       custom.features.meta.impermanence.directories = [
-        ".config/vlc"
+        ".config/Zulip"
       ];
     };
 }
