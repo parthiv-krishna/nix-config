@@ -17,6 +17,7 @@
         proton-vpn.enable = lib.mkDefault true;
         signal-desktop.enable = lib.mkDefault true;
         vlc.enable = lib.mkDefault true;
+        zulip.enable = lib.mkDefault true;
       };
 
       hardware = {

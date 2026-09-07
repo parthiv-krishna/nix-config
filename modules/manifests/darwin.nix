@@ -8,7 +8,7 @@
       manifests.desktop-core.enable = lib.mkDefault true;
 
       features = {
-        apps.vlc.enable = lib.mkDefault true;
+        apps.homebrew.enable = lib.mkDefault true;
 
         desktop.darwin = {
           enable = lib.mkDefault true;

@@ -5,13 +5,15 @@ lib.custom.mkFeature {
     "vlc"
   ];
 
+  darwinConfig = _cfg: _: {
+    homebrew.casks = [ "vlc" ];
+  };
+
   homeConfig =
     _cfg:
-    { pkgs, ... }:
-    {
-      home.packages = [
-        (if pkgs.stdenv.hostPlatform.isDarwin then pkgs.vlc-bin else pkgs.vlc)
-      ];
+    { lib, pkgs, ... }:
+    lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+      home.packages = [ pkgs.vlc ];
 
       custom.features.meta.impermanence.directories = [
         ".config/vlc"

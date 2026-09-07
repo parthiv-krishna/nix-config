@@ -5,6 +5,13 @@ lib.custom.mkFeature {
     "darwin"
   ];
 
+  homeConfig = _cfg: _: {
+    targets.darwin.copyApps = {
+      enable = true;
+      enableChecks = false;
+    };
+  };
+
   darwinConfig = _cfg: _: {
     system = {
       keyboard = {
@@ -38,6 +45,7 @@ lib.custom.mkFeature {
             "/System/Applications/Messages.app"
             "/System/Applications/FaceTime.app"
             "/Users/parthiv/Applications/Home Manager Apps/Signal.app"
+            "/Applications/Zulip.app"
             { spacer.small = true; }
             "/Users/parthiv/Applications/Home Manager Apps/Proton Mail.app"
             "/Applications/Proton Drive.app"
