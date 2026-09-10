@@ -44,6 +44,7 @@ lib.custom.mkFeature {
             "npm:pi-lens@4.1.5"
             "npm:@gotgenes/pi-permission-system@31.1.3"
             "npm:pi-subagents@0.67.0"
+            "npm:pi-tmux-session-map@0.4.0"
             "npm:pi-vimmode@0.9.0"
             "npm:pi-web-access@0.28.0"
           ]
@@ -61,7 +62,10 @@ lib.custom.mkFeature {
         };
       };
 
-      custom.features.meta.impermanence.directories = [ ".pi/agent" ];
+      custom.features.meta.impermanence.directories = [
+        ".local/state/pi/tmux-sessions"
+        ".pi/agent"
+      ];
 
       programs.git.ignores = [ ".pi-subagents" ];
     };
