@@ -23,7 +23,59 @@ lib.custom.mkFeature {
       pkgs,
       ...
     }:
+    let
+      piTmuxResume = pkgs.writeShellApplication {
+        name = "pi-tmux-resume";
+        runtimeInputs = [
+          pkgs.coreutils
+          pkgs.jq
+          pkgs.tmux
+        ];
+        text = ''
+          # adapted from https://pi.dev/packages/pi-tmux-session-map
+          state_dir="''${PI_TMUX_SESSION_MAP_STATE_DIR:-$HOME/.local/state/pi/tmux-sessions}"
+
+          fallback() {
+            exec pi --continue
+          }
+
+          if [[ -z "''${TMUX:-}" || -z "''${TMUX_PANE:-}" ]]; then
+            fallback
+          fi
+
+          key="$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null || true)"
+          if [[ -z "$key" ]]; then
+            fallback
+          fi
+
+          # keep in sync with pi-tmux-session-map's src/domain/pane-key.ts.
+          sanitized="$(printf '%s' "$key" | LC_ALL=C tr -c 'A-Za-z0-9._-' '_' | cut -c 1-120)"
+          if [[ -z "$sanitized" || "$sanitized" =~ ^\.+$ ]]; then
+            sanitized="pane"
+          fi
+          hash="$(printf '%s' "$key" | sha256sum | cut -c 1-12)"
+          map="$state_dir/$sanitized-$hash.session"
+
+          if [[ -f "$map" ]]; then
+            session_file="$(
+              jq -er --arg key "$key" '
+                select(type == "object" and .schema == 3 and .paneKey == $key)
+                | .sessionFile
+                | select(type == "string")
+              ' "$map" 2>/dev/null || true
+            )"
+            if [[ "$session_file" == /* && -f "$session_file" ]]; then
+              exec pi --session "$session_file"
+            fi
+          fi
+
+          fallback
+        '';
+      };
+    in
     {
+      home.packages = [ piTmuxResume ];
+
       programs.tmux = {
         enable = true;
         # nix-darwin tmux has some fixes for PATH
@@ -39,6 +91,7 @@ lib.custom.mkFeature {
             plugin = resurrect;
             extraConfig = ''
               set -g @resurrect-strategy-nvim 'session'
+              set -g @resurrect-processes '"pi->${lib.getExe piTmuxResume}"'
             '';
           }
           sensible
