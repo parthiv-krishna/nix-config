@@ -37,15 +37,15 @@ lib.custom.mkFeature {
           enableInstallTelemetry = false;
 
           packages = [
-            "npm:@juicesharp/rpiv-ask-user-question@2.1.0"
-            "npm:pi-background-tasks@2.4.2"
-            "npm:@narumitw/pi-goal@0.28.0"
-            "npm:pi-intercom@0.12.1"
-            "npm:pi-lens@3.8.71"
-            "npm:@gotgenes/pi-permission-system@21.0.0"
-            "npm:pi-subagents@0.35.1"
+            "npm:@juicesharp/rpiv-ask-user-question@2.9.0"
+            "npm:pi-background-tasks@2.5.0"
+            "npm:pi-intercom@0.13.0"
+            "npm:@narumitw/pi-goal@0.54.4"
+            "npm:pi-lens@4.1.5"
+            "npm:@gotgenes/pi-permission-system@31.1.3"
+            "npm:pi-subagents@0.67.0"
             "npm:pi-vimmode@0.9.0"
-            "npm:pi-web-access@0.13.0"
+            "npm:pi-web-access@0.28.0"
           ]
           ++ map toString (builtins.attrValues plugins);
 
