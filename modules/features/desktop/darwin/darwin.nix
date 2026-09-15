@@ -32,6 +32,93 @@ lib.custom.mkFeature {
           NSAutomaticSpellingCorrectionEnabled = lib.mkDefault false;
         };
 
+        CustomUserPreferences."com.apple.Spotlight".orderedItems = lib.mkDefault [
+          {
+            enabled = true;
+            name = "APPLICATIONS";
+          }
+          {
+            enabled = false;
+            name = "MENU_SPOTLIGHT_SUGGESTIONS";
+          }
+          {
+            enabled = false;
+            name = "MENU_CONVERSION";
+          }
+          {
+            enabled = false;
+            name = "MENU_EXPRESSION";
+          }
+          {
+            enabled = false;
+            name = "MENU_DEFINITION";
+          }
+          {
+            enabled = false;
+            name = "SYSTEM_PREFS";
+          }
+          {
+            enabled = true;
+            name = "DOCUMENTS";
+          }
+          {
+            enabled = true;
+            name = "DIRECTORIES";
+          }
+          {
+            enabled = false;
+            name = "PRESENTATIONS";
+          }
+          {
+            enabled = false;
+            name = "SPREADSHEETS";
+          }
+          {
+            enabled = false;
+            name = "PDF";
+          }
+          {
+            enabled = false;
+            name = "MESSAGES";
+          }
+          {
+            enabled = false;
+            name = "CONTACT";
+          }
+          {
+            enabled = false;
+            name = "EVENT_TODO";
+          }
+          {
+            enabled = false;
+            name = "IMAGES";
+          }
+          {
+            enabled = false;
+            name = "BOOKMARKS";
+          }
+          {
+            enabled = false;
+            name = "MUSIC";
+          }
+          {
+            enabled = false;
+            name = "MOVIES";
+          }
+          {
+            enabled = false;
+            name = "FONTS";
+          }
+          {
+            enabled = false;
+            name = "MENU_OTHER";
+          }
+          {
+            enabled = false;
+            name = "MENU_WEBSEARCH";
+          }
+        ];
+
         dock = {
           autohide = lib.mkDefault true;
           autohide-delay = lib.mkDefault 0.0;
