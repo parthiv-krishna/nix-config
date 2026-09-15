@@ -104,13 +104,6 @@ lib.custom.mkSelfHostedFeature {
         "render"
       ];
 
-      # Enable cuda support for onnxruntime
-      nixpkgs.overlays = [
-        (_: prev: {
-          onnxruntime = prev.onnxruntime.override { cudaSupport = true; };
-        })
-      ];
-
       # Unfree build requirements for cuda support
       custom.features.meta.unfree.allowedPackages = [
         "cudnn"
