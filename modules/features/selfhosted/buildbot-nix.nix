@@ -49,6 +49,9 @@ lib.custom.mkSelfHostedFeature {
       nix.settings = {
         keep-derivations = true;
         keep-outputs = true;
+        # conservative build parallelism due to memory pressure
+        max-jobs = 1;
+        cores = 2;
       };
 
       services.buildbot-nix = {

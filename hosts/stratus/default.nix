@@ -16,6 +16,14 @@
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
+  # reduce chance of memory pressure from compiling
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 100;
+    priority = 100;
+  };
+
   custom = {
     manifests = {
       required.enable = true;
