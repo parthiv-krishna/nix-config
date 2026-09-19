@@ -6,6 +6,8 @@ lib.custom.mkFeature {
   ];
 
   homeConfig = _cfg: _: {
+    programs.git.ignores = [ ".DS_Store" ];
+
     targets.darwin.copyApps = {
       enable = true;
       enableChecks = false;
