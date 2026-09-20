@@ -77,7 +77,6 @@ in
         forgejo.enable = true;
         immich.enable = true;
         # kasm.enable = true;
-        # librechat.enable = true;
         # llama-swap.enable = true;
         mealie.enable = true;
         ocis.enable = true;
