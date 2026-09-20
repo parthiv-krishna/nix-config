@@ -248,10 +248,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1788662001,
-        "narHash": "sha256-yaoyL52a9FfUyuOv4gW8EtA053FOUrXEWZh4W5MlKG8=",
+        "lastModified": 1789892029,
+        "narHash": "sha256-bNlv3Utd5tHT4LinX3QdB2qabw9GWtNAH/nKTPjXWVc=",
         "ref": "main",
-        "rev": "d8fd551b91d7de239bf8eb20adb5af0509db30cf",
+        "rev": "63a0c04db79a302243cb302facb6c9d4acf5c60d",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -536,6 +536,7 @@
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",
         "sops-nix": "sops-nix",
+        "sub0-assistants": "sub0-assistants",
         "treefmt-nix": "treefmt-nix_2",
         "vpnconfinement": "vpnconfinement"
       }
@@ -558,6 +559,27 @@
         "owner": "mic92",
         "repo": "sops-nix",
         "type": "github"
+      }
+    },
+    "sub0-assistants": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789932168,
+        "narHash": "sha256-CzVLDaxGuMU7sFVjk32qshDWxPmQ8N6yxfu6i5wr+5s=",
+        "ref": "main",
+        "rev": "0ed3fe57c58e970806cd80884b8e9474818b2598",
+        "revCount": 45,
+        "type": "git",
+        "url": "ssh://git@git.sub0.net:2222/parthiv/sub0-assistants.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@git.sub0.net:2222/parthiv/sub0-assistants.git"
       }
     },
     "systems": {
