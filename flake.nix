@@ -68,7 +68,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sub0-assistants = {
-      url = "git+ssh://git@git.sub0.net:2222/parthiv/sub0-assistants.git?ref=main";
+      url = "git+https://git.sub0.net/parthiv/sub0-assistants.git?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     treefmt-nix = {
