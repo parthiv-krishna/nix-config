@@ -568,18 +568,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1789932168,
-        "narHash": "sha256-CzVLDaxGuMU7sFVjk32qshDWxPmQ8N6yxfu6i5wr+5s=",
+        "lastModified": 1789939775,
+        "narHash": "sha256-PS+mxlbNW5V7SRtgX4AuumYMz2fcqJw5lP1+AsXNjyU=",
         "ref": "main",
-        "rev": "0ed3fe57c58e970806cd80884b8e9474818b2598",
-        "revCount": 45,
+        "rev": "99d826d6a88d35623897195e83efef68e5b1ad48",
+        "revCount": 46,
         "type": "git",
-        "url": "ssh://git@git.sub0.net:2222/parthiv/sub0-assistants.git"
+        "url": "https://git.sub0.net/parthiv/sub0-assistants.git"
       },
       "original": {
         "ref": "main",
         "type": "git",
-        "url": "ssh://git@git.sub0.net:2222/parthiv/sub0-assistants.git"
+        "url": "https://git.sub0.net/parthiv/sub0-assistants.git"
       }
     },
     "systems": {
