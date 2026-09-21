@@ -54,36 +54,55 @@ lib.custom.mkSelfHostedFeature {
     }
   ];
 
-  serviceConfig = _cfg: _: {
-    services = {
-      immich = {
-        enable = true;
-        host = "0.0.0.0";
-        mediaLocation = "/var/lib/immich";
-        machine-learning = {
+  serviceConfig =
+    _cfg:
+    { pkgs, ... }:
+    let
+      # immich machine learning is broken on intel GPU (openVINO)
+      # fall back to CPU for now
+      immich-machine-learning-cpu = pkgs.immich-machine-learning.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          substituteInPlace immich_ml/models/constants.py \
+            --replace-fail '    "OpenVINOExecutionProvider",' ""
+        '';
+        pytestFlagsArray = (old.pytestFlagsArray or [ ]) ++ [
+          "--deselect=test_main.py::TestOrtSession::test_sets_openvino_provider_if_available"
+        ];
+      });
+    in
+    {
+      services = {
+        immich = {
           enable = true;
-          environment = {
-            MPLCONFIGDIR = "/var/lib/immich/matplotlib";
-            HF_HOME = "/var/lib/immich/hf-cache";
-            TRANSFORMERS_CACHE = "/var/lib/immich/hf-cache";
+          host = "0.0.0.0";
+          mediaLocation = "/var/lib/immich";
+          package = pkgs.immich.override {
+            "immich-machine-learning" = immich-machine-learning-cpu;
           };
+          machine-learning = {
+            enable = true;
+            environment = {
+              MPLCONFIGDIR = "/var/lib/immich/matplotlib";
+              HF_HOME = "/var/lib/immich/hf-cache";
+              TRANSFORMERS_CACHE = "/var/lib/immich/hf-cache";
+            };
+          };
+          # Allow access to all acceleration devices
+          accelerationDevices = null;
         };
-        # Allow access to all acceleration devices
-        accelerationDevices = null;
       };
+
+      users.users.immich.extraGroups = [
+        "video"
+        "render"
+      ];
+
+      # Don't backup transcoded videos or thumbnails
+      custom.features.storage.restic.excludePaths = [
+        "/var/lib/immich/encoded-video"
+        "/var/lib/immich/thumbs"
+        "/var/lib/immich/matplotlib"
+        "/var/lib/immich/hf-cache"
+      ];
     };
-
-    users.users.immich.extraGroups = [
-      "video"
-      "render"
-    ];
-
-    # Don't backup transcoded videos or thumbnails
-    custom.features.storage.restic.excludePaths = [
-      "/var/lib/immich/encoded-video"
-      "/var/lib/immich/thumbs"
-      "/var/lib/immich/matplotlib"
-      "/var/lib/immich/hf-cache"
-    ];
-  };
 }
