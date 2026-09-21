@@ -248,10 +248,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1789892029,
-        "narHash": "sha256-bNlv3Utd5tHT4LinX3QdB2qabw9GWtNAH/nKTPjXWVc=",
+        "lastModified": 1789944679,
+        "narHash": "sha256-1wqTCRz9pCnF/O05vH8QhmoccSLXa+sfVLoJah5itbw=",
         "ref": "main",
-        "rev": "63a0c04db79a302243cb302facb6c9d4acf5c60d",
+        "rev": "c30d8ad5f2699ea34c1dfdabd6526b3708f2dccf",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -551,11 +551,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789939775,
-        "narHash": "sha256-PS+mxlbNW5V7SRtgX4AuumYMz2fcqJw5lP1+AsXNjyU=",
+        "lastModified": 1789966885,
+        "narHash": "sha256-Fy0g+hRxIcy245Ay7mREcTZcUBzFhcGkybRZH34HlZg=",
         "ref": "main",
-        "rev": "99d826d6a88d35623897195e83efef68e5b1ad48",
-        "revCount": 46,
+        "rev": "6ce055210576609834f30f7110f42a09b2c443c0",
+        "revCount": 62,
         "type": "git",
         "url": "https://git.sub0.net/parthiv/sub0-assistants.git"
       },
