@@ -43,8 +43,8 @@ lib.custom.mkFeature {
       environment.persistence."/persist/system".directories = [
         {
           directory = "/var/lib/sub0-assistants/home/aurora";
-          user = "sub0-assistant-aurora";
-          group = "sub0-assistant-aurora";
+          user = "sub0-assistants-aurora";
+          group = "sub0-assistants-aurora";
           mode = "0700";
         }
       ];

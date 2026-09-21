@@ -11,7 +11,15 @@ lib.custom.mkFeature {
       constants = config.constants.secrets.sub0-assistants;
     in
     lib.mkIf config.custom.features.sub0-assistants.enable {
-      sops.secrets."sub0-assistants/zulip_api_keys/privy" = { };
+      sops.secrets = {
+        "sub0-assistants/zulip_api_keys/privy" = { };
+        "sub0-assistants/abilities/actual/server_password" = {
+          restartUnits = [ "sub0-assistants-privy-actual.service" ];
+        };
+        "sub0-assistants/abilities/actual/budget_encryption_password" = {
+          restartUnits = [ "sub0-assistants-privy-actual.service" ];
+        };
+      };
 
       services.sub0-assistants.agents.privy = {
         zulip = {
@@ -23,6 +31,14 @@ lib.custom.mkFeature {
           endpoint = "https://llm.sub0.net/v1";
           name = "qwen3-next";
           contextWindow = 65536;
+        };
+        abilities.actual = {
+          enable = true;
+          url = "https://actual.sub0.net";
+          syncId = constants.abilities.actual.budget_sync_id;
+          passwordFile = config.sops.secrets."sub0-assistants/abilities/actual/server_password".path;
+          encryptionPasswordFile =
+            config.sops.secrets."sub0-assistants/abilities/actual/budget_encryption_password".path;
         };
         instructions = ''
           You are Privy, a personal assistant. Treat personal information as sensitive.
@@ -39,8 +55,14 @@ lib.custom.mkFeature {
       environment.persistence."/persist/system".directories = [
         {
           directory = "/var/lib/sub0-assistants/home/privy";
-          user = "sub0-assistant-privy";
-          group = "sub0-assistant-privy";
+          user = "sub0-assistants-privy";
+          group = "sub0-assistants-privy";
+          mode = "0700";
+        }
+        {
+          directory = "/var/lib/sub0-assistants/abilities/actual/privy";
+          user = "sub0-assistants-privy-actual";
+          group = "sub0-assistants-privy-actual";
           mode = "0700";
         }
       ];
