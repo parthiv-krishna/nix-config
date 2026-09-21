@@ -51,10 +51,6 @@
     nixpkgs-pnpm9 = {
       url = "github:NixOS/nixpkgs/f13ff45afd1bb73e640eaa08a7066dbed07e3238";
     };
-    # cuda builds
-    nixpkgs-flox = {
-      url = "github:flox/nixpkgs/unstable";
-    };
     nixvim = {
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";

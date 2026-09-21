@@ -376,22 +376,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-flox": {
-      "locked": {
-        "lastModified": 1788614874,
-        "narHash": "sha256-7QYjT2vHLuX9Z1pdxHXDKCbh1CR3D/2rywB9Tx0MPRg=",
-        "owner": "flox",
-        "repo": "nixpkgs",
-        "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "flox",
-        "ref": "unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1697935651,
@@ -531,7 +515,6 @@
         "nix-zulip": "nix-zulip",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
-        "nixpkgs-flox": "nixpkgs-flox",
         "nixpkgs-pnpm9": "nixpkgs-pnpm9",
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",

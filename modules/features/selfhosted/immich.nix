@@ -54,69 +54,36 @@ lib.custom.mkSelfHostedFeature {
     }
   ];
 
-  serviceConfig =
-    _cfg:
-    {
-      config,
-      inputs,
-      pkgs,
-      ...
-    }:
-    let
-      # pin to flox-built versions of cuda stuff
-      pkgs-flox = import inputs.nixpkgs-flox {
-        system = pkgs.stdenv.hostPlatform.system;
-        config = {
-          allowUnfree = true;
-          cudaSupport = true;
-          inherit (config.custom.features.hardware.gpu.nvidia) cudaCapability;
-        };
-      };
-      immich-machine-learning-flox = pkgs-flox.immich-machine-learning.override {
-        inherit (pkgs) immich;
-      };
-    in
-    {
-      services = {
-        immich = {
+  serviceConfig = _cfg: _: {
+    services = {
+      immich = {
+        enable = true;
+        host = "0.0.0.0";
+        mediaLocation = "/var/lib/immich";
+        machine-learning = {
           enable = true;
-          host = "0.0.0.0";
-          mediaLocation = "/var/lib/immich";
-          package = pkgs.immich.override {
-            "immich-machine-learning" = immich-machine-learning-flox;
+          environment = {
+            MPLCONFIGDIR = "/var/lib/immich/matplotlib";
+            HF_HOME = "/var/lib/immich/hf-cache";
+            TRANSFORMERS_CACHE = "/var/lib/immich/hf-cache";
           };
-          machine-learning = {
-            enable = true;
-            environment = {
-              LD_LIBRARY_PATH = "${pkgs-flox.python3Packages.onnxruntime}/${pkgs-flox.python3.sitePackages}/onnxruntime/capi";
-              MPLCONFIGDIR = "/var/lib/immich/matplotlib";
-              HF_HOME = "/var/lib/immich/hf-cache";
-              TRANSFORMERS_CACHE = "/var/lib/immich/hf-cache";
-            };
-          };
-          # Allow access to all acceleration devices
-          accelerationDevices = null;
         };
+        # Allow access to all acceleration devices
+        accelerationDevices = null;
       };
-
-      users.users.immich.extraGroups = [
-        "video"
-        "render"
-      ];
-
-      # Unfree build requirements for cuda support
-      custom.features.meta.unfree.allowedPackages = [
-        "cudnn"
-        "libcufile"
-        "libcusparse_lt"
-      ];
-
-      # Don't backup transcoded videos or thumbnails
-      custom.features.storage.restic.excludePaths = [
-        "/var/lib/immich/encoded-video"
-        "/var/lib/immich/thumbs"
-        "/var/lib/immich/matplotlib"
-        "/var/lib/immich/hf-cache"
-      ];
     };
+
+    users.users.immich.extraGroups = [
+      "video"
+      "render"
+    ];
+
+    # Don't backup transcoded videos or thumbnails
+    custom.features.storage.restic.excludePaths = [
+      "/var/lib/immich/encoded-video"
+      "/var/lib/immich/thumbs"
+      "/var/lib/immich/matplotlib"
+      "/var/lib/immich/hf-cache"
+    ];
+  };
 }

@@ -50,10 +50,6 @@ in
       hardware = {
         gpu = {
           intel.enable = true;
-          nvidia = {
-            enable = true;
-            cudaCapability = "8.6"; # RTX 3060
-          };
         };
         seagate-hdd = {
           enable = true;
