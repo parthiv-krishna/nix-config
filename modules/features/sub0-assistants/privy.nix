@@ -29,8 +29,8 @@ lib.custom.mkFeature {
         };
         model = {
           endpoint = "https://llm.sub0.net/v1";
-          name = "qwen3-next";
-          contextWindow = 65536;
+          name = "qwen3.8-flash-next";
+          contextWindow = 262144;
         };
         abilities.actual = {
           enable = true;
