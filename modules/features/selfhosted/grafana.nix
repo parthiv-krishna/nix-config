@@ -61,6 +61,19 @@ lib.custom.mkSelfHostedFeature {
 
       services.grafana = {
         enable = true;
+        provision.datasources.settings = {
+          apiVersion = 1;
+          datasources = [
+            {
+              name = "Loki";
+              type = "loki";
+              access = "proxy";
+              url = "http://127.0.0.1:3100";
+              editable = false;
+              jsonData.maxLines = 1000;
+            }
+          ];
+        };
         settings = {
           server = {
             http_port = 3000;

@@ -19,7 +19,7 @@ let
 in
 lib.custom.mkFeature {
   path = [
-    "meta"
+    "systemd"
     "zulip-notifiers"
   ];
 

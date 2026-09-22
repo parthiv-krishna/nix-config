@@ -39,6 +39,7 @@
         gatus.enable = true;
         grafana.enable = true;
         homepage.enable = true;
+        loki.enable = true;
         prometheus.enable = true;
         prometheus-blackbox.enable = true;
         prometheus-caddy.enable = true;
