@@ -61,7 +61,7 @@ lib.custom.mkFeature {
         };
       };
 
-      custom.features.meta.zulip-notifiers.notifiers = {
+      custom.features.systemd.zulip-notifiers.notifiers = {
         nixos-upgrade.enable = true;
         nix-gc-after-upgrade.enable = true;
       };

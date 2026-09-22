@@ -29,10 +29,10 @@
         auto-upgrade.enable = false;
         impermanence.enable = false;
         sops.enable = false;
-        zulip-notifiers.enable = false;
       };
 
       storage.restic.enable = false;
+      systemd.zulip-notifiers.enable = false;
     };
   };
 
