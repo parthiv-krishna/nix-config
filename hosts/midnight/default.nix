@@ -75,7 +75,6 @@ in
         actual.enable = true;
         authelia.enable = true;
         calibre-web-automated.enable = true;
-        copyparty.enable = true;
         forgejo.enable = true;
         immich.enable = true;
         mealie.enable = true;
