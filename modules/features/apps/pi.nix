@@ -7,8 +7,15 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    { pkgs, ... }:
+    {
+      config,
+      osConfig ? null,
+      pkgs,
+      ...
+    }:
     let
+      hostConfig = if osConfig == null then config else osConfig;
+
       plugins = {
         provider-litellm = pkgs.fetchzip {
           name = "pi-provider-litellm-1.3.0";
@@ -22,11 +29,33 @@ lib.custom.mkFeature {
         enable = true;
         extraPackages = [ pkgs.nodejs ];
 
-        models.providers.openai-codex.modelOverrides = {
-          "gpt-5.6-sol".contextWindow = 872000;
-          "gpt-5.6-terra".contextWindow = 872000;
-          "gpt-5.6-luna".contextWindow = 872000;
-          "gpt-6-astra".contextWindow = 872000;
+        models.providers = {
+          openai-codex.modelOverrides = {
+            "gpt-5.6-sol".contextWindow = 872000;
+            "gpt-5.6-terra".contextWindow = 872000;
+            "gpt-5.6-luna".contextWindow = 872000;
+            "gpt-6-astra".contextWindow = 872000;
+          };
+
+          sub0 = {
+            baseUrl = "${lib.custom.mkPublicHttpsUrl hostConfig.constants "llm"}/v1";
+            api = "openai-completions";
+            apiKey = "sub0";
+            compat = {
+              supportsDeveloperRole = false;
+              supportsReasoningEffort = false;
+              thinkingFormat = "qwen-chat-template";
+            };
+            models = [
+              {
+                id = "qwen3.8-flash-next";
+                name = "Qwen 3.8 Flash Next";
+                reasoning = true;
+                contextWindow = 262144;
+                maxTokens = 32768;
+              }
+            ];
+          };
         };
 
         settings = {
