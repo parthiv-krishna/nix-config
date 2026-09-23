@@ -67,6 +67,9 @@ lib.custom.mkFeature {
         ".pi/agent"
       ];
 
-      programs.git.ignores = [ ".pi-subagents" ];
+      programs.git.ignores = [
+        ".pi"
+        ".pi-subagents"
+      ];
     };
 }
