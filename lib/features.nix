@@ -67,14 +67,19 @@ rec {
                         ...
                       }@hmArgs:
                       let
-                        # In NixOS mode, read cfg from osConfig (the NixOS-level config)
+                        # In NixOS mode, read cfg and constants from the NixOS-level config.
                         hmCfg = lib.getAttrFromPath optionPath osConfig;
+                        homeArgs = hmArgs // {
+                          config = hmArgs.config // {
+                            inherit (osConfig) constants;
+                          };
+                        };
                       in
                       {
                         imports = homeImports;
                         # Still define options for standalone compatibility
                         options = lib.setAttrByPath optionPath (mkOptionsDef pkgs);
-                        config = lib.mkIf hmCfg.enable (if homeConfig != null then homeConfig hmCfg hmArgs else { });
+                        config = lib.mkIf hmCfg.enable (if homeConfig != null then homeConfig hmCfg homeArgs else { });
                       }
                     )
                   ];
@@ -115,11 +120,16 @@ rec {
                       }@hmArgs:
                       let
                         hmCfg = lib.getAttrFromPath optionPath osConfig;
+                        homeArgs = hmArgs // {
+                          config = hmArgs.config // {
+                            inherit (osConfig) constants;
+                          };
+                        };
                       in
                       {
                         imports = homeImports;
                         options = lib.setAttrByPath optionPath (mkOptionsDef pkgs);
-                        config = lib.mkIf hmCfg.enable (if homeConfig != null then homeConfig hmCfg hmArgs else { });
+                        config = lib.mkIf hmCfg.enable (if homeConfig != null then homeConfig hmCfg homeArgs else { });
                       }
                     )
                   ];

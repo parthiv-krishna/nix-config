@@ -7,15 +7,8 @@ lib.custom.mkFeature {
 
   homeConfig =
     _cfg:
-    {
-      config,
-      osConfig ? null,
-      pkgs,
-      ...
-    }:
+    { config, pkgs, ... }:
     let
-      hostConfig = if osConfig == null then config else osConfig;
-
       plugins = {
         provider-litellm = pkgs.fetchzip {
           name = "pi-provider-litellm-1.3.0";
@@ -38,7 +31,7 @@ lib.custom.mkFeature {
           };
 
           sub0 = {
-            baseUrl = "${lib.custom.mkPublicHttpsUrl hostConfig.constants "llm"}/v1";
+            baseUrl = "${lib.custom.mkPublicHttpsUrl config.constants "llm"}/v1";
             api = "openai-completions";
             apiKey = "sub0";
             compat = {
