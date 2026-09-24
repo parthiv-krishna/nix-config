@@ -155,6 +155,9 @@ lib.custom.mkSelfHostedFeature {
         # localhost so that we can still sit behind the common Caddy.
         nginx.virtualHosts = {
           "127.0.0.1" = {
+            locations."= /api/v1/user_uploads".extraConfig =
+              config.services.nginx.virtualHosts."127.0.0.1".locations."/api/".extraConfig
+              + "\nclient_max_body_size 11m;\n";
             listen = lib.mkForce [
               {
                 addr = "127.0.0.1";
@@ -164,6 +167,9 @@ lib.custom.mkSelfHostedFeature {
             ];
           };
           ${publicFqdn} = {
+            locations."= /api/v1/user_uploads".extraConfig =
+              config.services.nginx.virtualHosts.${publicFqdn}.locations."/api/".extraConfig
+              + "\nclient_max_body_size 11m;\n";
             enableACME = lib.mkForce false;
             forceSSL = lib.mkForce false;
             listen = lib.mkForce [
