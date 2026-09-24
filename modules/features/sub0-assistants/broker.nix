@@ -1,10 +1,10 @@
 { lib }:
 lib.custom.mkFeature {
   path = [ "sub0-assistants" ];
-  systemConfig = _cfg: _: {
+  systemConfig = _cfg: { config, ... }: {
     services.sub0-assistants = {
       enable = true;
-      zulip.url = "https://chat.sub0.net";
+      zulip.url = lib.custom.mkPublicHttpsUrl config.constants "chat";
     };
     environment.persistence."/persist/system".directories = [
       {

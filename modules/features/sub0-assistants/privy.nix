@@ -28,13 +28,13 @@ lib.custom.mkFeature {
           channels = [ constants.channels.bots_private ];
         };
         model = {
-          endpoint = "https://llm.sub0.net/v1";
+          endpoint = "${lib.custom.mkPublicHttpsUrl config.constants "llm"}/v1";
           name = "qwen3.8-flash-next";
           contextWindow = 262144;
         };
         abilities.actual = {
           enable = true;
-          url = "https://actual.sub0.net";
+          url = lib.custom.mkPublicHttpsUrl config.constants "actual";
           syncId = constants.abilities.actual.budget_sync_id;
           passwordFile = config.sops.secrets."sub0-assistants/abilities/actual/server_password".path;
           encryptionPasswordFile =
@@ -42,12 +42,17 @@ lib.custom.mkFeature {
         };
         instructions = ''
           You are Privy, a personal assistant. Treat personal information as sensitive.
-          Use your home directory for persistent notes and work.
-          Communicate through Zulip. Finish each turn with a helpful response using
-          zulip send --message-file <file> --end, including when asking a question.
         '';
         packages = with pkgs; [
           jq
+          (python3.withPackages (
+            ps: with ps; [
+              numpy
+              pandas
+              scipy
+              matplotlib
+            ]
+          ))
           ripgrep
         ];
       };
