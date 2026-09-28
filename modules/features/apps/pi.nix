@@ -60,7 +60,10 @@ lib.custom.mkFeature {
 
           packages = [
             "npm:@juicesharp/rpiv-ask-user-question@2.9.0"
-            "npm:pi-background-tasks@2.5.0"
+            {
+              source = "npm:pi-background-tasks@2.5.0";
+              extensions = [ "-extensions/anthropic-attribution.ts" ];
+            }
             "npm:pi-intercom@0.13.0"
             "npm:@narumitw/pi-goal@0.54.4"
             "npm:pi-lens@4.1.5"
