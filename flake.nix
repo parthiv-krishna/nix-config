@@ -70,6 +70,10 @@
     vpnconfinement = {
       url = "github:Maroka-chan/VPN-Confinement";
     };
+    zeroclaw = {
+      url = "github:zeroclaw-labs/zeroclaw/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-zulip = {
       url = "git+https://git.afnix.fr/nix-zulip/nix-zulip.git";
       flake = false;
@@ -105,6 +109,7 @@
             inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
             inputs.sub0-assistants.nixosModules.default
+            inputs.zeroclaw.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.vpnconfinement.nixosModules.default
             inputs.buildbot-nix.nixosModules.buildbot-master

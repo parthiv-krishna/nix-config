@@ -1,0 +1,543 @@
+diff --git a/crates/zeroclaw-channels/src/orchestrator/mod.rs b/crates/zeroclaw-channels/src/orchestrator/mod.rs
+index 53b213a..b760771 100644
+--- a/crates/zeroclaw-channels/src/orchestrator/mod.rs
++++ b/crates/zeroclaw-channels/src/orchestrator/mod.rs
+@@ -12808,6 +12808,7 @@ fn build_channel_by_id(
+                     sg.ignore_attachments,
+                     sg.ignore_stories,
+                 )
++                .with_group_policy(sg.group_only, sg.dm_unsupported_notice)
+                 .with_approval_timeout_secs(sg.approval_timeout_secs),
+             ))
+         }
+@@ -14550,6 +14551,7 @@ fn collect_configured_channels_with_authority(
+                         sig.ignore_attachments,
+                         sig.ignore_stories,
+                     )
++                    .with_group_policy(sig.group_only, sig.dm_unsupported_notice)
+                     .with_proxy_url(sig.proxy_url.clone())
+                     .with_approval_timeout_secs(sig.approval_timeout_secs),
+                 ),
+@@ -17394,7 +17396,8 @@ pub async fn deliver_announcement(
+                 peer_resolver,
+                 sg.ignore_attachments,
+                 sg.ignore_stories,
+-            );
++            )
++            .with_group_policy(sg.group_only, sg.dm_unsupported_notice);
+             zeroclaw_api::channel::Channel::send(&ch, &make_msg(&safe_output)).await?;
+         }
+         #[cfg(not(feature = "channel-signal"))]
+diff --git a/crates/zeroclaw-channels/src/signal.rs b/crates/zeroclaw-channels/src/signal.rs
+index ea3c4fa..becc852 100644
+--- a/crates/zeroclaw-channels/src/signal.rs
++++ b/crates/zeroclaw-channels/src/signal.rs
+@@ -7,7 +7,7 @@ use serde::Deserialize;
+ use std::collections::HashMap;
+ use std::num::NonZeroUsize;
+ use std::sync::Arc;
+-use std::time::Duration;
++use std::time::{Duration, Instant};
+ use tokio::sync::{Mutex, mpsc, oneshot};
+ use uuid::Uuid;
+ use zeroclaw_api::channel::{
+@@ -17,6 +17,8 @@ use zeroclaw_api::channel::{
+ const GROUP_TARGET_PREFIX: &str = "group:";
+
+ const RECENT_TARGETS_CAPACITY: usize = 1024;
++const DM_NOTICE_INTERVAL: Duration = Duration::from_secs(300);
++const DM_NOTICE_TEXT: &str = "DMs aren't supported. Please use an agent's group.";
+
+ #[derive(Debug, Clone, PartialEq, Eq)]
+ enum RecipientTarget {
+@@ -40,6 +42,10 @@ pub struct SignalChannel {
+     group_ids: Vec<String>,
+     /// When true, accept only DMs and reject all group traffic.
+     dm_only: bool,
++    group_only: bool,
++    dm_unsupported_notice: bool,
++    /// Bounded, shared by clones; reserve before sending to avoid concurrent spam.
++    dm_notice_times: Arc<SyncMutex<LruCache<String, Instant>>>,
+     /// The alias key under `[channels.signal.<alias>]` this handle is
+     /// bound to. Used to scope peer-group writes and resolver lookups.
+     alias: String,
+@@ -153,6 +159,12 @@ impl SignalChannel {
+             account,
+             group_ids,
+             dm_only,
++            group_only: false,
++            dm_unsupported_notice: false,
++            dm_notice_times: Arc::new(SyncMutex::new(LruCache::new(
++                NonZeroUsize::new(RECENT_TARGETS_CAPACITY)
++                    .expect("RECENT_TARGETS_CAPACITY is a non-zero constant"),
++            ))),
+             alias: alias.into(),
+             peer_resolver,
+             ignore_attachments,
+@@ -184,6 +196,59 @@ impl SignalChannel {
+         self
+     }
+
++    /// Opt into group-only dispatch. Exactly one alias per account may emit DM notices.
++    pub fn with_group_policy(mut self, group_only: bool, dm_unsupported_notice: bool) -> Self {
++        self.group_only = group_only;
++        self.dm_unsupported_notice = dm_unsupported_notice;
++        self
++    }
++
++    fn take_dm_notice_recipient(&self, envelope: &Envelope, now: Instant) -> Option<String> {
++        if !self.group_only || !self.dm_unsupported_notice || envelope.story_message.is_some() {
++            return None;
++        }
++        let message = envelope.data_message.as_ref()?;
++        if message.group_info.is_some()
++            || !message
++                .message
++                .as_deref()
++                .is_some_and(|text| !text.trim().is_empty())
++        {
++            return None;
++        }
++        let sender = Self::sender(envelope)?;
++        if sender == self.account || !self.is_sender_allowed(&sender) {
++            return None;
++        }
++        let mut notices = self.dm_notice_times.lock();
++        if notices
++            .get(&sender)
++            .is_some_and(|last| now.duration_since(*last) < DM_NOTICE_INTERVAL)
++        {
++            return None;
++        }
++        notices.put(sender.clone(), now);
++        Some(sender)
++    }
++
++    /// Used for both complete SSE events and the final unterminated event.
++    async fn process_envelope_with_dm_notice(&self, envelope: &Envelope) -> Vec<ChannelMessage> {
++        if let Some(recipient) = self.take_dm_notice_recipient(envelope, Instant::now()) {
++            let reply = SendMessage::new(DM_NOTICE_TEXT, &recipient);
++            if !matches!(
++                tokio::time::timeout(Duration::from_secs(10), self.send(&reply)).await,
++                Ok(Ok(()))
++            ) {
++                ::zeroclaw_log::record!(
++                    WARN,
++                    ::zeroclaw_log::Event::new(module_path!(), ::zeroclaw_log::Action::Note),
++                    "Signal unsupported-DM notice failed or timed out"
++                );
++            }
++        }
++        self.process_envelope(envelope)
++    }
++
+     fn http_client(&self) -> Client {
+         let builder = Client::builder().connect_timeout(Duration::from_secs(10));
+         let builder = zeroclaw_config::schema::apply_channel_proxy_to_builder(
+@@ -339,6 +404,9 @@ impl SignalChannel {
+             .as_ref()
+             .and_then(|g| g.group_id.as_deref());
+
++        if self.group_only && incoming_group.is_none() {
++            return false;
++        }
+         if self.dm_only {
+             return incoming_group.is_none();
+         }
+@@ -802,7 +870,8 @@ impl Channel for SignalChannel {
+                                 Ok(sse) => {
+                                     if let Some(ref envelope) = sse.envelope {
+                                         let mut consumed_as_approval = false;
+-                                        let messages = self.process_envelope(envelope);
++                                        let messages =
++                                            self.process_envelope_with_dm_notice(envelope).await;
+                                         for msg in messages {
+                                             if let Some(resolution) =
+                                                 self.resolve_approval_reply(&msg).await
+@@ -854,7 +923,7 @@ impl Channel for SignalChannel {
+                 match serde_json::from_str::<SseEnvelope>(&current_data) {
+                     Ok(sse) => {
+                         if let Some(ref envelope) = sse.envelope {
+-                            for msg in self.process_envelope(envelope) {
++                            for msg in self.process_envelope_with_dm_notice(envelope).await {
+                                 if let Some(resolution) = self.resolve_approval_reply(&msg).await
+                                     && !matches!(
+                                         resolution,
+@@ -2096,6 +2165,169 @@ mod tests {
+         assert_eq!(rx.await.unwrap(), ChannelApprovalResponse::Approve);
+     }
+
++    #[test]
++    fn group_only_filters_dms_and_unlisted_groups() {
++        let mut ch = make_channel().with_group_policy(true, false);
++        ch.group_ids = vec!["media-group".into()];
++        let mut envelope = make_envelope(Some("+1111111111"), Some("hello"));
++        assert!(ch.process_envelope(&envelope).is_empty());
++        envelope.data_message.as_mut().unwrap().group_info = Some(GroupInfo {
++            group_id: Some("media-group".into()),
++        });
++        assert_eq!(ch.process_envelope(&envelope).len(), 1);
++        assert_eq!(
++            ch.process_envelope(&envelope)[0].reply_target,
++            "group:media-group"
++        );
++        envelope
++            .data_message
++            .as_mut()
++            .unwrap()
++            .group_info
++            .as_mut()
++            .unwrap()
++            .group_id = Some("other-group".into());
++        assert!(ch.process_envelope(&envelope).is_empty());
++        envelope.source_number = Some("+2222222222".into());
++        envelope
++            .data_message
++            .as_mut()
++            .unwrap()
++            .group_info
++            .as_mut()
++            .unwrap()
++            .group_id = Some("media-group".into());
++        assert!(ch.process_envelope(&envelope).is_empty());
++    }
++
++    #[test]
++    fn dm_notice_rate_limit_is_per_sender_and_shared_by_clones() {
++        let ch = make_channel().with_group_policy(true, true);
++        let envelope = make_envelope(Some("+1111111111"), Some("hello"));
++        let now = Instant::now();
++        assert_eq!(
++            ch.take_dm_notice_recipient(&envelope, now),
++            Some("+1111111111".into())
++        );
++        assert!(
++            ch.clone()
++                .take_dm_notice_recipient(&envelope, now + Duration::from_secs(299))
++                .is_none()
++        );
++        assert!(
++            ch.take_dm_notice_recipient(&envelope, now + DM_NOTICE_INTERVAL)
++                .is_some()
++        );
++        assert!(
++            make_channel()
++                .take_dm_notice_recipient(&envelope, now)
++                .is_none()
++        );
++        assert!(
++            make_channel()
++                .with_group_policy(true, false)
++                .take_dm_notice_recipient(&envelope, now)
++                .is_none()
++        );
++        let mut multi = make_channel().with_group_policy(true, true);
++        multi.peer_resolver = Arc::new(|| vec!["+1111111111".into(), "+2222222222".into()]);
++        assert!(multi.take_dm_notice_recipient(&envelope, now).is_some());
++        assert!(
++            multi
++                .take_dm_notice_recipient(&make_envelope(Some("+2222222222"), Some("hello")), now)
++                .is_some()
++        );
++    }
++
++    #[test]
++    fn dm_notices_ignore_receipts_groups_stories_self_and_unauthorized_senders() {
++        let ch = make_channel().with_group_policy(true, true);
++        let now = Instant::now();
++        assert!(
++            ch.take_dm_notice_recipient(&make_envelope(Some("+1111111111"), None), now)
++                .is_none()
++        );
++        assert!(
++            ch.take_dm_notice_recipient(&make_envelope(Some("+1111111111"), Some("  ")), now)
++                .is_none()
++        );
++        assert!(
++            ch.take_dm_notice_recipient(&make_envelope(Some("+2222222222"), Some("hello")), now)
++                .is_none()
++        );
++        assert!(
++            ch.take_dm_notice_recipient(&make_envelope(Some("+1234567890"), Some("hello")), now)
++                .is_none()
++        );
++        let mut group = make_envelope(Some("+1111111111"), Some("hello"));
++        group.data_message.as_mut().unwrap().group_info = Some(GroupInfo {
++            group_id: Some("group".into()),
++        });
++        assert!(ch.take_dm_notice_recipient(&group, now).is_none());
++        let mut story = make_envelope(Some("+1111111111"), Some("hello"));
++        story.story_message = Some(serde_json::json!({}));
++        assert!(ch.take_dm_notice_recipient(&story, now).is_none());
++        assert!(ch.dm_notice_times.lock().is_empty());
++    }
++
++    #[tokio::test]
++    async fn dm_notice_uses_rpc_once_without_agent_dispatch() {
++        use wiremock::matchers::{body_partial_json, method, path};
++        use wiremock::{Mock, MockServer, ResponseTemplate};
++        let server = MockServer::start().await;
++        Mock::given(method("POST"))
++            .and(path("/api/v1/rpc"))
++            .and(body_partial_json(serde_json::json!({
++                "method": "send",
++                "params": { "account": "+1234567890", "recipient": ["+1111111111"], "message": DM_NOTICE_TEXT }
++            })))
++            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({"result": {"timestamp": 1}})))
++            .expect(1)
++            .mount(&server).await;
++        let mut ch = make_channel().with_group_policy(true, true);
++        ch.http_url = server.uri();
++        let envelope = make_envelope(Some("+1111111111"), Some("hello"));
++        assert!(
++            ch.process_envelope_with_dm_notice(&envelope)
++                .await
++                .is_empty()
++        );
++        assert!(
++            ch.process_envelope_with_dm_notice(&envelope)
++                .await
++                .is_empty()
++        );
++    }
++
++    #[tokio::test]
++    async fn failed_dm_notice_does_not_dispatch_or_retry_immediately() {
++        use wiremock::matchers::{method, path};
++        use wiremock::{Mock, MockServer, ResponseTemplate};
++        let server = MockServer::start().await;
++        Mock::given(method("POST"))
++            .and(path("/api/v1/rpc"))
++            .respond_with(
++                ResponseTemplate::new(200)
++                    .set_body_json(serde_json::json!({"error": {"code": -1, "message": "failed"}})),
++            )
++            .expect(1)
++            .mount(&server)
++            .await;
++        let mut ch = make_channel().with_group_policy(true, true);
++        ch.http_url = server.uri();
++        let envelope = make_envelope(Some("+1111111111"), Some("hello"));
++        assert!(
++            ch.process_envelope_with_dm_notice(&envelope)
++                .await
++                .is_empty()
++        );
++        assert!(
++            ch.process_envelope_with_dm_notice(&envelope)
++                .await
++                .is_empty()
++        );
++    }
++
+     fn make_reaction_channel() -> SignalChannel {
+         SignalChannel::new(
+             "http://127.0.0.1:8686".to_string(),
+diff --git a/crates/zeroclaw-config/src/schema.rs b/crates/zeroclaw-config/src/schema.rs
+index ad87221..168df9b 100644
+--- a/crates/zeroclaw-config/src/schema.rs
++++ b/crates/zeroclaw-config/src/schema.rs
+@@ -17814,7 +17814,7 @@ pub struct SignalConfig {
+     /// Group IDs to filter messages. Empty = accept all messages (DMs and
+     /// groups). When non-empty, only messages from listed groups are
+     /// accepted (DMs are still accepted unless `dm_only` flips the policy
+-    /// to DMs-only). Migrated from the legacy `group_id` singular field.
++    /// to DMs-only, or `group_only` rejects DMs). Migrated from the legacy `group_id` singular field.
+     #[tab(Advanced)]
+     #[serde(default)]
+     pub group_ids: Vec<String>,
+@@ -17824,6 +17824,17 @@ pub struct SignalConfig {
+     #[tab(Advanced)]
+     #[serde(default)]
+     pub dm_only: bool,
++    /// Reject all DMs before agent/approval processing. Group IDs and sender
++    /// allowlists still apply. Mutually exclusive with `dm_only`.
++    #[tab(Behavior)]
++    #[serde(default)]
++    pub group_only: bool,
++    /// Send allowlisted DM senders a fixed unsupported-DM notice, at most once
++    /// per five minutes per sender. Requires `group_only`; enable on exactly
++    /// one channel alias per account to prevent duplicate notices.
++    #[tab(Behavior)]
++    #[serde(default)]
++    pub dm_unsupported_notice: bool,
+     /// Skip messages that are attachment-only (no text body).
+     #[tab(Advanced)]
+     #[serde(default)]
+@@ -17892,6 +17903,12 @@ impl SignalConfig {
+     /// never connects and crashloops its per-channel supervisor, so reject
+     /// it at config-load time instead.
+     pub fn validate_required(&self, alias: &str) -> Result<()> {
++        if self.group_only && self.dm_only {
++            anyhow::bail!("channels.signal.{alias}: group_only and dm_only are mutually exclusive");
++        }
++        if self.dm_unsupported_notice && !self.group_only {
++            anyhow::bail!("channels.signal.{alias}: dm_unsupported_notice requires group_only");
++        }
+         let enabled_path = format!("channels.signal.{alias}.enabled");
+         validate_required_field(
+             &format!("channels.signal.{alias}.http_url"),
+@@ -23949,8 +23966,17 @@ impl Config {
+         // enabled channel built with an empty credential never connects and
+         // its per-channel supervisor restarts it forever (crashloop), so
+         // reject at config-load time instead.
++        let mut signal_notice_accounts = std::collections::HashSet::new();
+         for (alias, sig) in &self.channels.signal {
+             sig.validate_required(alias)?;
++            if sig.enabled
++                && sig.dm_unsupported_notice
++                && !signal_notice_accounts.insert(sig.account.trim())
++            {
++                anyhow::bail!(
++                    "channels.signal: enable dm_unsupported_notice on only one alias per account"
++                );
++            }
+         }
+
+         for (alias, vc) in &self.channels.voice_call {
+@@ -31900,6 +31926,63 @@ api_base_url = "http://127.0.0.1:8081"
+         assert!(err.to_string().contains("channels.signal.signal.http_url"));
+     }
+
++    #[test]
++    async fn signal_group_policy_validation() {
++        let mut sig = SignalConfig {
++            http_url: "http://127.0.0.1:8686".into(),
++            account: "+15551234567".into(),
++            group_only: true,
++            dm_only: true,
++            ..Default::default()
++        };
++        assert!(
++            sig.validate_required("media")
++                .unwrap_err()
++                .to_string()
++                .contains("mutually exclusive")
++        );
++        sig.dm_only = false;
++        sig.group_only = false;
++        sig.dm_unsupported_notice = true;
++        assert!(
++            sig.validate_required("media")
++                .unwrap_err()
++                .to_string()
++                .contains("requires group_only")
++        );
++        sig.group_only = true;
++        sig.validate_required("media").unwrap();
++    }
++
++    #[test]
++    async fn signal_notice_requires_one_alias_per_account() {
++        let mut config = Config::default();
++        let sig = SignalConfig {
++            enabled: true,
++            http_url: "http://127.0.0.1:8686".into(),
++            account: "+15551234567".into(),
++            group_only: true,
++            dm_unsupported_notice: true,
++            ..Default::default()
++        };
++        config.channels.signal.insert("media".into(), sig.clone());
++        config.channels.signal.insert("personal".into(), sig);
++        assert!(
++            config
++                .validate()
++                .unwrap_err()
++                .to_string()
++                .contains("only one alias per account")
++        );
++        config
++            .channels
++            .signal
++            .get_mut("personal")
++            .unwrap()
++            .dm_unsupported_notice = false;
++        config.validate().unwrap();
++    }
++
+     #[test]
+     async fn signal_has_required_credentials_true_when_both_set() {
+         let sig = SignalConfig {
+@@ -34858,6 +34941,8 @@ allowed_users = ["@u:matrix.org"]
+             account: "+1234567890".into(),
+             group_ids: vec!["group123".into()],
+             dm_only: false,
++            group_only: true,
++            dm_unsupported_notice: true,
+             ignore_attachments: true,
+             ignore_stories: false,
+             proxy_url: None,
+@@ -34872,6 +34957,8 @@ allowed_users = ["@u:matrix.org"]
+         assert_eq!(parsed.account, "+1234567890");
+         assert_eq!(parsed.group_ids, vec!["group123".to_string()]);
+         assert!(!parsed.dm_only);
++        assert!(parsed.group_only);
++        assert!(parsed.dm_unsupported_notice);
+         assert!(parsed.ignore_attachments);
+         assert!(!parsed.ignore_stories);
+     }
+@@ -34884,6 +34971,8 @@ allowed_users = ["@u:matrix.org"]
+             account: "+9876543210".into(),
+             group_ids: Vec::new(),
+             dm_only: true,
++            group_only: false,
++            dm_unsupported_notice: false,
+             ignore_attachments: false,
+             ignore_stories: true,
+             proxy_url: None,
+@@ -34907,6 +34996,8 @@ allowed_users = ["@u:matrix.org"]
+         let parsed: SignalConfig = serde_json::from_str(json).unwrap();
+         assert!(parsed.group_ids.is_empty());
+         assert!(!parsed.dm_only);
++        assert!(!parsed.group_only);
++        assert!(!parsed.dm_unsupported_notice);
+         assert!(!parsed.ignore_attachments);
+         assert!(!parsed.ignore_stories);
+     }
+diff --git a/docs/book/src/channels/signal.md b/docs/book/src/channels/signal.md
+index 3531222..76ab9ba 100644
+--- a/docs/book/src/channels/signal.md
++++ b/docs/book/src/channels/signal.md
+@@ -29,6 +29,41 @@ Keep the daemon bound to localhost unless you have put it behind your own authen
+
+ Bind the channel to an agent via that agent's `channels` list.
+
++### Group-only agents on one Signal account
++
++Set `group_only = true` and list each agent's group in `group_ids` to reject
++DMs before agent or approval processing. Bind each channel alias to one agent.
++This is mutually exclusive with `dm_only`; both new options default to false.
++
++On exactly one enabled alias for an account, optionally set
++`dm_unsupported_notice = true`. Allowlisted senders who DM that account receive
++"DMs aren't supported. Please use an agent's group." The DM is never dispatched
++to an agent. Notices are limited to one attempt per sender per five minutes,
++shared by clones of that channel, with a bounded in-memory cache. Restarting
++resets the cache. Failed sends are also rate limited. Configure the notice
++alias's external peers to include everyone who should receive this notice;
++unauthorized senders, stories, receipts, and empty-text messages are ignored.
++Enabling notices on multiple aliases for the same account fails validation.
++
++```toml
++[channels.signal.media]
++enabled = true
++http_url = "http://127.0.0.1:8686"
++account = "+15551234567"
++group_ids = ["<media-group-id>"]
++group_only = true
++dm_unsupported_notice = true
++
++[agents.media]
++channels = ["signal.media"]
++# Also configure this agent's model_provider, risk_profile, and runtime_profile.
++
++[peer_groups.media-members]
++channel = "signal.media"
++agents = ["media"]
++external_peers = ["+15557654321"]
++```
++
+ ## Start and check
+
+ Start the daemon first, then start ZeroClaw channels:
