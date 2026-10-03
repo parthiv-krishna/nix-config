@@ -1,0 +1,192 @@
+--- a/crates/zeroclaw-channels/src/orchestrator/mod.rs
++++ b/crates/zeroclaw-channels/src/orchestrator/mod.rs
+@@ -5483,6 +5483,21 @@
+     AssistantChannelOutcome::Reply(String::new())
+ }
+
++/// Recognize only a standalone quiet final response, never arbitrary prose
++/// containing a marker or a refusal/failure classification. Unlike the
++/// precheck parser, an empty response is not a silence instruction here.
++fn is_silent_channel_final_response(response: &str) -> bool {
++    let trimmed = response.trim();
++    if trimmed.eq_ignore_ascii_case("NO_REPLY") {
++        return true;
++    }
++    let Some(reason) = trimmed.strip_prefix("NO_REPLY[INFO]:") else {
++        return false;
++    };
++    let reason = reason.trim();
++    !reason.is_empty() && !reason.contains(['\n', '\r'])
++}
++
+ async fn resolve_classifier_route(
+     ctx: &ChannelRuntimeContext,
+     provider_ref: &zeroclaw_config::providers::ModelProviderRef,
+@@ -10366,6 +10381,44 @@
+                 }
+             }
+
++            // Skills can return the quiet marker after a precheck fails open.
++            // Suppress before sanitization, fallback footers, receipts and TTS;
++            // this is delivery-only, not a gate on earlier tool execution.
++            if is_silent_channel_final_response(&outbound_response) {
++                if !history_resync_failed {
++                    let keep_tool_turns = ctx.agent_cfg.resolved.keep_tool_context_turns;
++                    if keep_tool_turns > 0 {
++                        for tool_msg in extract_current_turn_tool_messages(&history) {
++                            append_sender_turn(ctx.as_ref(), &history_key, tool_msg);
++                        }
++                    }
++                    append_sender_turn(
++                        ctx.as_ref(),
++                        &history_key,
++                        ChatMessage::assistant("[No reply sent]"),
++                    );
++                }
++                if let Some(channel) = target_channel.as_ref() {
++                    if let Some(draft_id) = draft_message_id.as_deref() {
++                        let _ = channel.cancel_draft(&msg.reply_target, draft_id).await;
++                    }
++                    if resolve_channel_ack_reactions(&ctx, &msg) {
++                        if let Some(task) = early_ack_task {
++                            let _ = task.await;
++                        }
++                        let _ = channel
++                            .remove_reaction(&msg.reply_target, &msg.id, "\u{1F440}")
++                            .await;
++                    }
++                }
++                ::zeroclaw_log::record!(
++                    INFO,
++                    ::zeroclaw_log::Event::new(module_path!(), ::zeroclaw_log::Action::Note),
++                    "quiet final response suppressed"
++                );
++                return;
++            }
++
+             let sanitized_response = sanitize_channel_response_for_format_with_leak_detection(
+                 &outbound_response,
+                 ctx.tools_registry.as_ref(),
+@@ -31545,6 +31598,122 @@
+         );
+     }
+
++    #[test]
++    fn silent_channel_final_response_accepts_only_quiet_markers() {
++        for response in [
++            "NO_REPLY",
++            "  no_reply\n",
++            "NO_REPLY[INFO]: unrelated group conversation",
++            " \nNO_REPLY[INFO]: nothing to add\n ",
++        ] {
++            assert!(is_silent_channel_final_response(response), "{response:?}");
++        }
++        for response in [
++            "",
++            "   ",
++            "NO_REPLYING",
++            "NO_REPLY[INFO]",
++            "NO_REPLY[INFO]:",
++            "NO_REPLY[FAIL]: request failed",
++            "NO_REPLY[REFUSE]: unsafe request",
++            "NO_REPLY: legacy classification",
++            "The classifier returned NO_REPLY",
++            "`NO_REPLY`",
++            "NO_REPLY[INFO]: nothing to add\nHere is an actual reply.",
++        ] {
++            assert!(!is_silent_channel_final_response(response), "{response:?}");
++        }
++    }
++
++    #[tokio::test]
++    async fn silent_channel_final_response_is_not_delivered_after_precheck_bypass() {
++        let channel_impl = Arc::new(RecordingChannel::default());
++        let agent_cfg = zeroclaw_config::schema::AliasedAgentConfig {
++            precheck: zeroclaw_config::scattered_types::ChannelPrecheckConfig {
++                enabled: false,
++                ..Default::default()
++            },
++            ..Default::default()
++        };
++        let runtime_ctx = test_runtime_ctx_with_config_agent_and_provider_ref(
++            channel_impl.clone(),
++            Arc::new(NoReplyModelProvider),
++            zeroclaw_config::schema::Config::default(),
++            agent_cfg,
++            "test-provider",
++            None,
++        );
++        process_channel_message(
++            runtime_ctx,
++            zeroclaw_api::channel::ChannelMessage {
++                id: "msg-silent-final".to_string(),
++                sender: "alice".to_string(),
++                reply_target: "chat-silent-final".to_string(),
++                content: "background chatter".to_string(),
++                channel: "test-channel".into(),
++                timestamp: 1,
++                ..Default::default()
++            },
++            CancellationToken::new(),
++        )
++        .await;
++        assert!(channel_impl.sent_messages.lock().await.is_empty());
++        assert_eq!(channel_impl.final_send_calls.load(Ordering::SeqCst), 0);
++        assert!(!channel_impl
++            .reactions_added
++            .lock()
++            .await
++            .iter()
++            .any(|(_, _, emoji)| emoji == "\u{2705}"));
++        assert!(channel_impl
++            .reactions_removed
++            .lock()
++            .await
++            .iter()
++            .any(|(_, _, emoji)| emoji == "\u{1F440}"));
++    }
++
++    #[tokio::test]
++    async fn silent_channel_final_response_preserves_failures_and_refusals() {
++        let providers: Vec<Arc<dyn ModelProvider>> = vec![
++            Arc::new(NoReplyFailedModelProvider),
++            Arc::new(NoReplyRefusedModelProvider),
++        ];
++        for provider in providers {
++            let channel_impl = Arc::new(RecordingChannel::default());
++            let agent_cfg = zeroclaw_config::schema::AliasedAgentConfig {
++                precheck: zeroclaw_config::scattered_types::ChannelPrecheckConfig {
++                    enabled: false,
++                    ..Default::default()
++                },
++                ..Default::default()
++            };
++            let runtime_ctx = test_runtime_ctx_with_config_agent_and_provider_ref(
++                channel_impl.clone(),
++                provider,
++                zeroclaw_config::schema::Config::default(),
++                agent_cfg,
++                "test-provider",
++                None,
++            );
++            process_channel_message(
++                runtime_ctx,
++                zeroclaw_api::channel::ChannelMessage {
++                    id: "msg-nonquiet-final".to_string(),
++                    sender: "alice".to_string(),
++                    reply_target: "chat-nonquiet-final".to_string(),
++                    content: "addressed request".to_string(),
++                    channel: "test-channel".into(),
++                    timestamp: 1,
++                    ..Default::default()
++                },
++                CancellationToken::new(),
++            )
++            .await;
++            assert_eq!(channel_impl.sent_messages.lock().await.len(), 1);
++        }
++    }
++
+     #[tokio::test]
+     async fn process_channel_message_skips_reply_intent_classifier_when_agent_precheck_disabled() {
+         let channel_impl = Arc::new(RecordingChannel::default());
