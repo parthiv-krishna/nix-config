@@ -24,9 +24,8 @@ lib.custom.mkFeature {
 
         models.providers = {
           openai-codex.modelOverrides = {
-            "gpt-5.6-sol".contextWindow = 872000;
-            "gpt-5.6-terra".contextWindow = 872000;
-            "gpt-5.6-luna".contextWindow = 872000;
+            "gpt-6.1-sol".contextWindow = 872000;
+            "gpt-6-luna".contextWindow = 872000;
             "gpt-6-astra".contextWindow = 872000;
           };
 
@@ -59,7 +58,6 @@ lib.custom.mkFeature {
           enableInstallTelemetry = false;
 
           packages = [
-            "npm:@juicesharp/rpiv-ask-user-question@2.9.0"
             {
               source = "npm:pi-background-tasks@2.5.0";
               extensions = [ "-extensions/anthropic-attribution.ts" ];
@@ -69,6 +67,7 @@ lib.custom.mkFeature {
             "npm:pi-lens@4.1.5"
             "npm:@gotgenes/pi-permission-system@31.1.3"
             "npm:pi-subagents@0.67.0"
+            "npm:threadroom-pi@0.1.0-beta.0"
             "npm:pi-tmux-session-map@0.4.0"
             "npm:pi-vimmode@0.9.0"
             "npm:pi-web-access@0.28.0"
