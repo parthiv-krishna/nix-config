@@ -154,15 +154,16 @@ lib.custom.mkSelfHostedFeature {
             uri = cfg.endpoint;
             inherit (cfg) model;
             wire_api = "chat_completions";
+            context_window = 262144;
             # Custom endpoints default to text-fallback.
             native_tools = true;
           };
-          agents.default = {
+          agents.personal = {
             enabled = true;
             channels = [ "signal.personal" ];
             skill_bundles = [ "personal" ];
             model_provider = "custom.sub0";
-            risk_profile = "default";
+            risk_profile = "yolo";
             runtime_profile = "default";
             workspace.path = "${dataDir}/workspace";
           };
@@ -176,24 +177,32 @@ lib.custom.mkSelfHostedFeature {
             runtime_profile = "default";
             workspace.path = "${dataDir}/workspace-media";
           };
-          risk_profiles.default = {
-            level = "supervised";
-            workspace_only = true;
-          };
-          risk_profiles.media = {
-            level = "supervised";
-            workspace_only = true;
-            # Block built-ins; granted MCP tools are auto-admitted.
-            allowed_tools = [ "seerr__search_media" ];
-            # Block arbitrary Seerr API access.
-            excluded_tools = [ "seerr__raw_request" ];
-            # Confirmation lives in the media skill.
-            auto_approve = [
-              "seerr__search_media"
-              "seerr__request_media"
-              "seerr__get_request"
-              "seerr__ping"
-            ];
+          risk_profiles = {
+            default = {
+              level = "supervised";
+              workspace_only = true;
+            };
+            yolo = {
+              level = "full";
+              workspace_only = true;
+              require_approval_for_medium_risk = false;
+              always_ask = [ ];
+            };
+            media = {
+              level = "supervised";
+              workspace_only = true;
+              # Block built-ins; granted MCP tools are auto-admitted.
+              allowed_tools = [ "seerr__search_media" ];
+              # Block arbitrary Seerr API access.
+              excluded_tools = [ "seerr__raw_request" ];
+              # Confirmation lives in the media skill.
+              auto_approve = [
+                "seerr__search_media"
+                "seerr__request_media"
+                "seerr__get_request"
+                "seerr__ping"
+              ];
+            };
           };
           mcp = {
             enabled = true;
@@ -212,7 +221,7 @@ lib.custom.mkSelfHostedFeature {
             personal.directory = "${dataDir}/shared/skills/personal";
             media.directory = "${dataDir}/shared/skills/media";
           };
-          runtime_profiles.default = { };
+          runtime_profiles.default.context_compact_ratio = 0.8;
           channels.signal.personal = {
             enabled = true;
             http_url = "http://127.0.0.1:8686";
@@ -232,7 +241,7 @@ lib.custom.mkSelfHostedFeature {
           };
           peer_groups.signal-owner = {
             channel = "signal.personal";
-            agents = [ "default" ];
+            agents = [ "personal" ];
             external_peers = [ "$SIGNAL_USER_PHONE" ];
           };
           peer_groups.signal-media = {
