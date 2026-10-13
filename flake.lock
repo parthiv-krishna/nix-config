@@ -521,7 +521,6 @@
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",
         "sops-nix": "sops-nix",
-        "sub0-assistants": "sub0-assistants",
         "treefmt-nix": "treefmt-nix_2",
         "vpnconfinement": "vpnconfinement",
         "zeroclaw": "zeroclaw"
@@ -562,27 +561,6 @@
         "owner": "mic92",
         "repo": "sops-nix",
         "type": "github"
-      }
-    },
-    "sub0-assistants": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1790266177,
-        "narHash": "sha256-SQQB6Lq/KOXi+Ti8adMlPPzH45PG/mkakrkhfXksf48=",
-        "ref": "main",
-        "rev": "09104018cafeabb14a5e5e4e514b6dd4b7a3f74d",
-        "revCount": 90,
-        "type": "git",
-        "url": "https://git.sub0.net/parthiv/sub0-assistants.git"
-      },
-      "original": {
-        "ref": "main",
-        "type": "git",
-        "url": "https://git.sub0.net/parthiv/sub0-assistants.git"
       }
     },
     "systems": {

@@ -59,10 +59,6 @@
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    sub0-assistants = {
-      url = "git+https://git.sub0.net/parthiv/sub0-assistants.git?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -108,7 +104,6 @@
             inputs.disko.nixosModules.default
             inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
-            inputs.sub0-assistants.nixosModules.default
             inputs.zeroclaw.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.vpnconfinement.nixosModules.default
