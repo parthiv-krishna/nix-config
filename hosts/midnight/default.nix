@@ -37,12 +37,6 @@ in
     };
 
     features = {
-      sub0-assistants = {
-        enable = true;
-        aurora.enable = true;
-        privy.enable = true;
-      };
-
       apps = {
         pi.enable = true;
       };
