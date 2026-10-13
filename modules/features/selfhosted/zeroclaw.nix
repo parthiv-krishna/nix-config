@@ -25,7 +25,6 @@ lib.custom.mkSelfHostedFeature {
     };
     endpoint = lib.mkOption {
       type = lib.types.str;
-      default = "https://llm.sub0.net/v1";
       description = "OpenAI-compatible inference API base URL";
     };
   };
@@ -141,6 +140,9 @@ lib.custom.mkSelfHostedFeature {
       '';
     in
     {
+      custom.features.selfhosted.zeroclaw.endpoint =
+        lib.mkDefault "${lib.custom.mkPublicHttpsUrl config.constants "llm"}/v1";
+
       services.zeroclaw.instances.assistant = {
         package = pkgs.callPackage (lib.custom.relativeToRoot "packages/zeroclaw") {
           inherit lib inputs;
@@ -186,7 +188,37 @@ lib.custom.mkSelfHostedFeature {
               level = "full";
               workspace_only = true;
               require_approval_for_medium_risk = false;
+              block_high_risk_commands = true;
               always_ask = [ ];
+              # Upstream defaults plus Nix tooling.
+              allowed_commands = [
+                "git"
+                "npm"
+                "cargo"
+                "ls"
+                "cat"
+                "grep"
+                "find"
+                "echo"
+                "pwd"
+                "wc"
+                "head"
+                "tail"
+                "date"
+                "df"
+                "du"
+                "uname"
+                "uptime"
+                "hostname"
+                "python"
+                "python3"
+                "pip"
+                "node"
+                "free"
+                "which"
+                "nix"
+                "nix-shell"
+              ];
             };
             media = {
               level = "supervised";
@@ -203,6 +235,11 @@ lib.custom.mkSelfHostedFeature {
                 "seerr__ping"
               ];
             };
+          };
+          web_search = {
+            enabled = true;
+            search_provider = "searxng";
+            searxng_instance_url = lib.custom.mkPublicHttpsUrl config.constants "search";
           };
           mcp = {
             enabled = true;
@@ -299,6 +336,10 @@ lib.custom.mkSelfHostedFeature {
         services.zeroclaw-assistant = {
           wants = [ "zeroclaw-signal-cli.service" ];
           after = [ "zeroclaw-signal-cli.service" ];
+          path = [
+            pkgs.nix
+            pkgs.which
+          ];
           serviceConfig.ExecStartPre = lib.mkForce [ renderConfig ];
         };
 
