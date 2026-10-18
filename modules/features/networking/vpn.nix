@@ -102,7 +102,8 @@ lib.custom.mkFeature {
             --form-string "password=$password")"
           token="$(jq -er '.token' <<< "$token_response")"
 
-          server_list="$(curl_retry -fsSL 'https://serverlist.piaservers.net/vpninfo/servers/v6' | head -n 1)"
+          server_list="$(curl_retry -fsSL 'https://serverlist.piaservers.net/vpninfo/servers/v6')"
+          server_list="$(head -n 1 <<< "$server_list")"
           region_data="$(jq -er --arg region '${cfg.piaRegion}' '.regions[] | select(.id == $region)' <<< "$server_list")"
           wg_server_ip="$(jq -er '.servers.wg[0].ip' <<< "$region_data")"
           wg_hostname="$(jq -er '.servers.wg[0].cn' <<< "$region_data")"
