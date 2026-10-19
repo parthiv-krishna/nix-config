@@ -16,6 +16,25 @@ lib.custom.mkFeature {
           hash = "sha256-dq4QjOCBQh2GIFf6LpyCvKXb+X69McLGz5DLw7A5oF4=";
         };
       };
+
+      # agent client protocol adapter for pi to drive over stdio
+      pi-acp = pkgs.buildNpmPackage rec {
+        pname = "pi-acp";
+        version = "0.0.34";
+        src = pkgs.fetchFromGitHub {
+          owner = "svkozak";
+          repo = "pi-acp";
+          tag = "v${version}";
+          hash = "sha256-QRwxOtTZOY+Np3PkAoy2o2PrUzEqjItM/372sCPlSMo=";
+        };
+        npmDepsHash = "sha256-BvLNtFfp1cMVjzWcMRSdhTqiJrTfbFoUbWkkPW9200o=";
+        meta = {
+          description = "ACP adapter for the pi coding agent";
+          homepage = "https://github.com/svkozak/pi-acp";
+          license = lib.licenses.mit;
+          mainProgram = "pi-acp";
+        };
+      };
     in
     {
       programs.pi-coding-agent = {
@@ -85,6 +104,8 @@ lib.custom.mkFeature {
           };
         };
       };
+
+      home.packages = [ pi-acp ];
 
       custom.features.meta.impermanence.directories = [
         ".local/state/pi/tmux-sessions"
