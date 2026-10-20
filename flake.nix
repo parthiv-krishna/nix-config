@@ -70,10 +70,6 @@
       url = "github:zeroclaw-labs/zeroclaw/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-zulip = {
-      url = "git+https://git.afnix.fr/nix-zulip/nix-zulip.git";
-      flake = false;
-    };
   };
 
   outputs =
@@ -109,7 +105,6 @@
             inputs.vpnconfinement.nixosModules.default
             inputs.buildbot-nix.nixosModules.buildbot-master
             inputs.buildbot-nix.nixosModules.buildbot-worker
-            (import "${inputs.nix-zulip}/nix/nixos-modules/zulip/default.nix" { })
             (customLib.custom.loadFeatures {
               path = ./modules/features;
               mode = "nixos";
