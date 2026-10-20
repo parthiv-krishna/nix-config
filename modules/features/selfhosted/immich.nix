@@ -66,7 +66,7 @@ lib.custom.mkSelfHostedFeature {
             --replace-fail '    "OpenVINOExecutionProvider",' ""
         '';
         pytestFlagsArray = (old.pytestFlagsArray or [ ]) ++ [
-          "--deselect=test_main.py::TestOrtSession::test_sets_openvino_provider_if_available"
+          "--deselect=test_main.py::TestOrtSessions::test_sets_openvino_provider_if_available"
         ];
       });
     in
