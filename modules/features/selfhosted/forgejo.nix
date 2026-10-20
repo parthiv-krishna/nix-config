@@ -42,11 +42,22 @@ lib.custom.mkSelfHostedFeature {
       group = "git";
       mode = "0700";
     }
+    {
+      directory = "/var/lib/private/forgejo-runner";
+      user = "root";
+      group = "root";
+      mode = "0700";
+    }
   ];
 
   serviceConfig =
     _cfg:
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       subdomain = "git";
       sshPort = 2222;
@@ -56,34 +67,77 @@ lib.custom.mkSelfHostedFeature {
       mkPublicHttpsUrl = lib.custom.mkPublicHttpsUrl config.constants;
     in
     {
-      services.forgejo = {
-        enable = true;
-        inherit user group;
-        dump.enable = true;
-        lfs.enable = true;
+      services = {
+        forgejo = {
+          enable = true;
+          inherit user group;
+          dump.enable = true;
+          lfs.enable = true;
 
-        settings = {
-          server = {
-            HTTP_PORT = 3001;
-            DOMAIN = lib.custom.mkPublicFqdn config.constants subdomain;
-            LANDING_PAGE = "explore";
-            ROOT_URL = mkPublicHttpsUrl subdomain;
-            SSH_DOMAIN = lib.custom.mkPublicFqdn config.constants subdomain;
-            SSH_USER = user;
-            SSH_PORT = sshPort;
+          settings = {
+            actions.ENABLED = true;
+            server = {
+              HTTP_PORT = 3001;
+              DOMAIN = lib.custom.mkPublicFqdn config.constants subdomain;
+              LANDING_PAGE = "explore";
+              ROOT_URL = mkPublicHttpsUrl subdomain;
+              SSH_DOMAIN = lib.custom.mkPublicFqdn config.constants subdomain;
+              SSH_USER = user;
+              SSH_PORT = sshPort;
+            };
+            service = {
+              DISABLE_REGISTRATION = false;
+              ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
+              SHOW_REGISTRATION_BUTTON = false;
+            };
+            oauth2_client = {
+              ENABLE_AUTO_REGISTRATION = true;
+              ACCOUNT_LINKING = "login";
+            };
+            session = {
+              COOKIE_SECURE = true;
+            };
           };
-          service = {
-            DISABLE_REGISTRATION = false;
-            ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
-            SHOW_REGISTRATION_BUTTON = false;
+        };
+
+        # CI with forgejo runner
+        forgejo-runner = {
+          instances.forgejo = {
+            enable = true;
+            secrets.server.connections.default.token_url = config.sops.secrets."forgejo/runner/token".path;
+            hostPackages = with pkgs; [
+              bash
+              coreutils
+              curl
+              gawk
+              gnused
+              nodejs
+              python3
+              wget
+            ];
+            settings = {
+              server.connections.default = {
+                url = mkPublicHttpsUrl subdomain;
+                uuid = config.constants.secrets.forgejo.runner.uuid;
+              };
+              runner = {
+                labels = [ "${config.networking.hostName}:host" ];
+                capacity = 1;
+                timeout = "30m";
+              };
+              cache.enabled = false;
+            };
           };
-          oauth2_client = {
-            ENABLE_AUTO_REGISTRATION = true;
-            ACCOUNT_LINKING = "login";
-          };
-          session = {
-            COOKIE_SECURE = true;
-          };
+        };
+
+        openssh.ports = [ sshPort ];
+      };
+
+      systemd.services.forgejo-runner-forgejo = {
+        after = [ "forgejo.service" ];
+        serviceConfig = {
+          CPUQuota = "200%";
+          MemoryMax = "2G";
         };
       };
 
@@ -120,14 +174,20 @@ lib.custom.mkSelfHostedFeature {
           fi
         '';
 
-      sops.secrets."authelia/identity_providers/oidc/clients/forgejo/client_id" = {
-        group = user;
-        mode = "0440";
-      };
-
-      sops.secrets."authelia/identity_providers/oidc/clients/forgejo/client_secret_orig" = {
-        owner = user;
-        mode = "0400";
+      sops.secrets = {
+        "authelia/identity_providers/oidc/clients/forgejo/client_id" = {
+          group = user;
+          mode = "0440";
+        };
+        "authelia/identity_providers/oidc/clients/forgejo/client_secret_orig" = {
+          owner = user;
+          mode = "0400";
+        };
+        "forgejo/runner/token" = {
+          owner = "root";
+          mode = "0400";
+          restartUnits = [ "forgejo-runner-forgejo.service" ];
+        };
       };
 
       users.users.${user} = {
@@ -137,8 +197,6 @@ lib.custom.mkSelfHostedFeature {
         useDefaultShell = true;
       };
       users.groups.${group} = { };
-
-      services.openssh.ports = [ sshPort ];
 
       networking.firewall.allowedTCPPorts = [ sshPort ];
     };
