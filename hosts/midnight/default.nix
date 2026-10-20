@@ -83,7 +83,6 @@ in
         searx.enable = true;
         shelfmark.enable = true;
         zeroclaw.enable = true;
-        zulip.enable = true;
       };
 
       storage = {

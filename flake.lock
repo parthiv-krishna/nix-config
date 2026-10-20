@@ -330,22 +330,6 @@
         "type": "github"
       }
     },
-    "nix-zulip": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791478235,
-        "narHash": "sha256-6RvvMlGMZW8vmmaQUiHWUs34f34K7B4a970YOc0HX/A=",
-        "ref": "refs/heads/main",
-        "rev": "c9816638b7b3072dfed221d3fb7a4ab5d4e85aa1",
-        "revCount": 131,
-        "type": "git",
-        "url": "https://git.afnix.fr/nix-zulip/nix-zulip.git"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://git.afnix.fr/nix-zulip/nix-zulip.git"
-      }
-    },
     "nixos-hardware": {
       "inputs": {
         "nixpkgs": "nixpkgs_2"
@@ -515,7 +499,6 @@
         "nix-config-secrets": "nix-config-secrets",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
-        "nix-zulip": "nix-zulip",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-pnpm9": "nixpkgs-pnpm9",
