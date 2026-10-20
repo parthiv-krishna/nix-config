@@ -25,7 +25,7 @@ lib.custom.mkSelfHostedFeature {
       user = "bazarr";
       group = "media";
       dataDir = stateDir;
-      listenPort = port;
+      settings.general.port = port;
     };
 
     systemd.services.bazarr.serviceConfig.UMask = lib.mkForce "0002";
