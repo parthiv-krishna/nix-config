@@ -38,7 +38,6 @@
 
       selfhosted = {
         enable = true;
-        buildbot-nix.enable = true;
         harmonia.enable = true;
       };
 

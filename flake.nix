@@ -2,10 +2,6 @@
   description = "My nix flake for system configuration, intended to be usable on NixOS and non-NixOS machines";
 
   inputs = {
-    buildbot-nix = {
-      url = "github:nix-community/buildbot-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     compose2nix = {
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -103,8 +99,6 @@
             inputs.zeroclaw.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.vpnconfinement.nixosModules.default
-            inputs.buildbot-nix.nixosModules.buildbot-master
-            inputs.buildbot-nix.nixosModules.buildbot-worker
             (customLib.custom.loadFeatures {
               path = ./modules/features;
               mode = "nixos";
@@ -188,12 +182,6 @@
           };
         }
       );
-
-      herculesCI = import ./flake/ci.nix {
-        inherit lib;
-        inherit (inputs) buildbot-nix;
-        pkgs = nixpkgs.legacyPackages.${systems.x86};
-      };
 
       # Pre-commit
       checks = forEachSystem (

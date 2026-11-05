@@ -51,8 +51,6 @@ read -r -a backup_services <<< "$3"
 restore_services=(
   caddy.service
   harmonia.service
-  buildbot-master.service
-  buildbot-worker.service
   postgresql.service
 )
 stopped_services=()
