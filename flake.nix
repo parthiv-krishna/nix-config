@@ -6,6 +6,9 @@
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    controlroom = {
+      url = "github:parthiv-krishna/controlroom";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -97,6 +100,7 @@
             inputs.impermanence.nixosModules.impermanence
             inputs.sops-nix.nixosModules.sops
             inputs.zeroclaw.nixosModules.default
+            inputs.controlroom.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.vpnconfinement.nixosModules.default
             (customLib.custom.loadFeatures {
