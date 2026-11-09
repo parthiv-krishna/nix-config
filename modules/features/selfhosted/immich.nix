@@ -65,7 +65,7 @@ lib.custom.mkSelfHostedFeature {
           substituteInPlace immich_ml/models/constants.py \
             --replace-fail '    "OpenVINOExecutionProvider",' ""
         '';
-        pytestFlagsArray = (old.pytestFlagsArray or [ ]) ++ [
+        pytestFlags = (old.pytestFlags or [ ]) ++ [
           "--deselect=test_main.py::TestOrtSessions::test_sets_openvino_provider_if_available"
         ];
       });

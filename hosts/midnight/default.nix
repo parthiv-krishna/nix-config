@@ -82,7 +82,6 @@ in
         prometheus-zfs.enable = true;
         searx.enable = true;
         shelfmark.enable = true;
-        zeroclaw.enable = true;
       };
 
       storage = {
