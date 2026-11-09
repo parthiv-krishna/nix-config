@@ -7,6 +7,22 @@
   ...
 }:
 {
+  # CI update tools, without the interactive shell's pre-commit hooks.
+  update = pkgs.mkShellNoCC {
+    packages = with pkgs; [
+      bash
+      coreutils
+      curl
+      git
+      gnugrep
+      gnused
+      gnutar
+      gzip
+      nix
+      openssh
+    ];
+  };
+
   default = pkgs.mkShell {
     NIX_CONFIG = "extra-experimental-features = nix-command flakes";
 

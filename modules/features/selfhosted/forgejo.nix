@@ -42,22 +42,11 @@ lib.custom.mkSelfHostedFeature {
       group = "git";
       mode = "0700";
     }
-    {
-      directory = "/var/lib/private/forgejo-runner";
-      user = "root";
-      group = "root";
-      mode = "0700";
-    }
   ];
 
   serviceConfig =
     _cfg:
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+    { config, lib, ... }:
     let
       subdomain = "git";
       sshPort = 2222;
@@ -100,45 +89,7 @@ lib.custom.mkSelfHostedFeature {
           };
         };
 
-        # CI with forgejo runner
-        forgejo-runner = {
-          instances.forgejo = {
-            enable = true;
-            secrets.server.connections.default.token_url = config.sops.secrets."forgejo/runner/token".path;
-            hostPackages = with pkgs; [
-              bash
-              coreutils
-              curl
-              gawk
-              gnused
-              nodejs
-              python3
-              wget
-            ];
-            settings = {
-              server.connections.default = {
-                url = mkPublicHttpsUrl subdomain;
-                uuid = config.constants.secrets.forgejo.runner.uuid;
-              };
-              runner = {
-                labels = [ "${config.networking.hostName}:host" ];
-                capacity = 1;
-                timeout = "30m";
-              };
-              cache.enabled = false;
-            };
-          };
-        };
-
         openssh.ports = [ sshPort ];
-      };
-
-      systemd.services.forgejo-runner-forgejo = {
-        after = [ "forgejo.service" ];
-        serviceConfig = {
-          CPUQuota = "200%";
-          MemoryMax = "2G";
-        };
       };
 
       # Auto configure OIDC if needed
@@ -182,11 +133,6 @@ lib.custom.mkSelfHostedFeature {
         "authelia/identity_providers/oidc/clients/forgejo/client_secret_orig" = {
           owner = user;
           mode = "0400";
-        };
-        "forgejo/runner/token" = {
-          owner = "root";
-          mode = "0400";
-          restartUnits = [ "forgejo-runner-forgejo.service" ];
         };
       };
 

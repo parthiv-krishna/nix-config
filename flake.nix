@@ -195,6 +195,11 @@
         }
       );
 
+      # all checks of a system, built by CI
+      packages = forEachSystem (system: {
+        ci = nixpkgs.legacyPackages.${system}.linkFarmFromDrvs "ci" (lib.attrValues self.checks.${system});
+      });
+
       # `nix develop`
       devShells = forEachSystem (
         system:

@@ -1,0 +1,29 @@
+name: "Auto update"
+on:
+  schedule:
+    # monday at midnight UTC
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+concurrency:
+  group: auto-update
+jobs:
+  update:
+    runs-on: x86_64-linux
+    steps:
+      - uses: https://data.forgejo.org/actions/checkout@v4
+      - name: Update
+        env:
+          KEY: ${{ secrets.NIX_CONFIG_SECRETS_READ_SSH_PRIVATE_KEY }}
+        run: |
+          install -m 600 <(printf '%s\n' "$KEY") "$RUNNER_TEMP/key"
+          export GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/key"
+          git config user.name "Parthiv Krishna"
+          git config user.email "parthiv-krishna@users.noreply.github.com"
+          nix develop .#update --command nix flake update --commit-lock-file
+          nix develop .#update --command bash ./scripts/update-caddy-and-commit.sh ./modules/features/selfhosted/base.nix
+      - name: Push
+        env:
+          KEY: ${{ secrets.NIX_CONFIG_WRITE_SSH_PRIVATE_KEY }}
+        run: |
+          install -m 600 <(printf '%s\n' "$KEY") "$RUNNER_TEMP/push-key"
+          GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/push-key" git push git@github.com:parthiv-krishna/nix-config.git HEAD:main

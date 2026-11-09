@@ -1,0 +1,34 @@
+name: "CI"
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    strategy:
+      matrix:
+        system: [x86_64-linux, aarch64-linux]
+    runs-on: cache
+    steps:
+      - uses: https://data.forgejo.org/actions/checkout@v4
+      - name: Build
+        env:
+          KEY: ${{ secrets.NIX_CONFIG_SECRETS_READ_SSH_PRIVATE_KEY }}
+        run: |
+          install -m 600 <(printf '%s\n' "$KEY") "$RUNNER_TEMP/key"
+          GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/key" nix build -L --out-link "$HOME/gcroots/ci-${{ matrix.system }}" ".#packages.${{ matrix.system }}.ci"
+  tag:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: cache
+    steps:
+      - uses: https://data.forgejo.org/actions/checkout@v4
+      - name: Move built tag
+        env:
+          KEY: ${{ secrets.NIX_CONFIG_WRITE_SSH_PRIVATE_KEY }}
+        run: |
+          install -m 600 <(printf '%s\n' "$KEY") "$RUNNER_TEMP/key"
+          GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/key" git push --force git@github.com:parthiv-krishna/nix-config.git HEAD:refs/tags/built

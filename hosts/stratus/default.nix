@@ -41,6 +41,12 @@
         harmonia.enable = true;
       };
 
+      services.forgejo-runner = {
+        enable = true;
+        timeout = "24h";
+        extraLabels = [ "cache" ];
+      };
+
       storage.restic.snapshotType = "btrfs";
     };
   };
