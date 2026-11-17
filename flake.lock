@@ -44,11 +44,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1793912587,
-        "narHash": "sha256-0sqhEWI7Z0cSpCaE8UIZUcrKQkKo0gCcSbbl1CLIG3U=",
+        "lastModified": 1795248374,
+        "narHash": "sha256-Y6qV8oMMofn+ddOF9i9o7qwSTEckgWxCv3ZiirzJYwQ=",
         "owner": "parthiv-krishna",
         "repo": "controlroom",
-        "rev": "774f982fa42de49610d6370dc405bd6a9b336dfb",
+        "rev": "681efedd289d3297bae08a5d6def5f9c9ea685b0",
         "type": "github"
       },
       "original": {
