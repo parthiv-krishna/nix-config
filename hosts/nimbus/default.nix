@@ -28,6 +28,10 @@
       };
 
       meta = {
+        agent_users = {
+          enable = true;
+          users.public.groups = [ "systemd-journal" ];
+        };
         auto-upgrade.dates = "12:00";
         impermanence.rootPartitionPath = "/dev/root_vg/root";
         sops.sopsFile = "nimbus.yaml";

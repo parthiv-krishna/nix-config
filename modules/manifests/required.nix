@@ -30,6 +30,7 @@
         impermanence.enable = lib.mkDefault true;
         nix.enable = lib.mkDefault true;
         parthiv.enable = lib.mkDefault true;
+        root.enable = lib.mkDefault true;
         sops.enable = lib.mkDefault true;
         unfree.enable = lib.mkDefault true;
         theme.enable = lib.mkDefault true;

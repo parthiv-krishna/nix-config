@@ -57,6 +57,10 @@ in
       };
 
       meta = {
+        agent_users = {
+          enable = true;
+          users.public.groups = [ "systemd-journal" ];
+        };
         auto-upgrade.dates = "13:00";
         # tell impermanence to wipe our ssd-root partition on boot
         impermanence.rootPartitionPath = "/dev/disk/by-partlabel/ssd-root";

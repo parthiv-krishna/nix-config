@@ -32,6 +32,10 @@
 
     features = {
       meta = {
+        agent_users = {
+          enable = true;
+          users.public.groups = [ "systemd-journal" ];
+        };
         impermanence.rootPartitionPath = "/dev/root_vg/root";
         sops.sopsFile = "stratus.yaml";
       };
