@@ -49,7 +49,15 @@
         prometheus-caddy.enable = true;
         prometheus-node.enable = true;
         prometheus-systemd.enable = true;
+        tinypaas.enable = true;
         vaultwarden.enable = true;
+      };
+
+      # builds and deploys tinypaas apps (jobs with `runs-on: tinypaas`)
+      services.forgejo-runner = {
+        enable = true;
+        cpuQuota = "200%";
+        memoryMax = "6G";
       };
 
       storage.restic = {

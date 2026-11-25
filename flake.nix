@@ -58,6 +58,10 @@
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    tinypaas = {
+      url = "github:parthiv-krishna/tinypaas";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -101,6 +105,7 @@
             inputs.sops-nix.nixosModules.sops
             inputs.zeroclaw.nixosModules.default
             inputs.controlroom.nixosModules.default
+            inputs.tinypaas.nixosModules.default
             inputs.home-manager.nixosModules.home-manager
             inputs.vpnconfinement.nixosModules.default
             (customLib.custom.loadFeatures {

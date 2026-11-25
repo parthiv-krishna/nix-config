@@ -266,10 +266,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1794212285,
-        "narHash": "sha256-ljOm64Go/b4sle/L60H9FRnuGTXw04bxSYzp4eKu7hA=",
+        "lastModified": 1795580164,
+        "narHash": "sha256-EvpLSESg0+wBWruc6PXUhL7TQNfdi6cR6pY1eFxlZcI=",
         "ref": "main",
-        "rev": "04e0f7f163e2d2ceda4af656f0b2fbe6b183e13b",
+        "rev": "be2d191793a4a8f8eb0fa75639172d592823f469",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"
@@ -535,6 +535,7 @@
         "nixvim": "nixvim",
         "pre-commit-hooks": "pre-commit-hooks",
         "sops-nix": "sops-nix",
+        "tinypaas": "tinypaas",
         "treefmt-nix": "treefmt-nix",
         "vpnconfinement": "vpnconfinement",
         "zeroclaw": "zeroclaw"
@@ -627,6 +628,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "tinypaas": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795578025,
+        "narHash": "sha256-0luhk2Tbc3Js9dsMd85YxjkJJJSmBDZdOefYi9BXCWI=",
+        "owner": "parthiv-krishna",
+        "repo": "tinypaas",
+        "rev": "350739d4857dafc05b4899f9cf67a5f8b64a39da",
+        "type": "github"
+      },
+      "original": {
+        "owner": "parthiv-krishna",
+        "repo": "tinypaas",
         "type": "github"
       }
     },
