@@ -44,11 +44,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1795506027,
-        "narHash": "sha256-BGyCtpuVosAlycmbp7AojlyhUE/u9TAtPjz65Thm3wI=",
+        "lastModified": 1795573964,
+        "narHash": "sha256-KgOjzxciXWXZqMmygqdrM5ys07ZYnU16agYxOfe14M4=",
         "owner": "parthiv-krishna",
         "repo": "controlroom",
-        "rev": "4c802a00ae21070dd54ebda019d5e1f17f8a06c5",
+        "rev": "a860fe805ddd65afea3313ced89d29c4141e8af2",
         "type": "github"
       },
       "original": {
@@ -266,10 +266,10 @@
     "nix-config-secrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1795580164,
-        "narHash": "sha256-EvpLSESg0+wBWruc6PXUhL7TQNfdi6cR6pY1eFxlZcI=",
+        "lastModified": 1795713894,
+        "narHash": "sha256-dnDQdz9gsz546HOjeLYbAKgIwsxaqikxhxoB+ULG90M=",
         "ref": "main",
-        "rev": "be2d191793a4a8f8eb0fa75639172d592823f469",
+        "rev": "9c6668d24bed17863a9c81c03341df8f5b4bc908",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/parthiv-krishna/nix-config-secrets.git"

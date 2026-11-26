@@ -77,6 +77,7 @@ in
         forgejo.enable = true;
         immich.enable = true;
         mealie.enable = true;
+        monica.enable = true;
         ocis.enable = true;
         paperless.enable = true;
         prometheus-caddy.enable = true;
