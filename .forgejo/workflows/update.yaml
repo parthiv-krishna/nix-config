@@ -22,8 +22,4 @@ jobs:
           nix develop .#update --command nix flake update --commit-lock-file
           nix develop .#update --command bash ./scripts/update-caddy-and-commit.sh ./modules/features/selfhosted/base.nix
       - name: Push
-        env:
-          KEY: ${{ secrets.NIX_CONFIG_WRITE_SSH_PRIVATE_KEY }}
-        run: |
-          install -m 600 <(printf '%s\n' "$KEY") "$RUNNER_TEMP/push-key"
-          GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/push-key" git push git@github.com:parthiv-krishna/nix-config.git HEAD:main
+        run: git push origin HEAD:main

@@ -27,8 +27,4 @@ jobs:
     steps:
       - uses: https://data.forgejo.org/actions/checkout@v4
       - name: Move built tag
-        env:
-          KEY: ${{ secrets.NIX_CONFIG_WRITE_SSH_PRIVATE_KEY }}
-        run: |
-          install -m 600 <(printf '%s\n' "$KEY") "$RUNNER_TEMP/key"
-          GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/key" git push --force git@github.com:parthiv-krishna/nix-config.git HEAD:refs/tags/built
+        run: git push --force origin HEAD:refs/tags/built
